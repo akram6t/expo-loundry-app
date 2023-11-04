@@ -1,0 +1,420 @@
+import { View, Image, FlatList, TouchableOpacity } from "react-native";
+import React, { useEffect, useRef, useState } from "react";
+import { useRoute } from "@react-navigation/native";
+import {
+  Tabs,
+  TabScreen,
+  TabsProvider,
+  useTabIndex,
+} from "react-native-paper-tabs";
+import { SafeAreaView } from "react-native-safe-area-context";
+import {
+  Appbar,
+  useTheme,
+  Text,
+  Button,
+  MD2Colors,
+  IconButton,
+  TouchableRipple,
+  Snackbar,
+} from "react-native-paper";
+// import BottomSheet from 'reanimated-bottom-sheet';
+import { Entypo, AntDesign, MaterialCommunityIcons, MaterialIcons, Feather } from "@expo/vector-icons";
+import { routes } from "../../Constaints";
+import ProductItem from "../components/ProductItem";
+import { useDispatch, useSelector } from "react-redux";
+import { getProducts, cleanProduct } from "./../utils/reducers/ProductReducer";
+import Loader from "../components/Loader";
+import axios from "axios";
+
+import { api } from "../../Constaints";
+import { cleanCart } from "../utils/reducers/CartReducer";
+
+const ClothsScreen = ({ navigation }) => {
+  const route = useRoute();
+  const {service} = route.params;
+  const [ message, setMessage ] = useState('');
+  const [ snackBar, setSnackbar ] = useState(false);
+  const cart = useSelector((state) => state.cart.cart);
+  const [ loader, setLoader ] = useState(false);
+  // const total = cart.map((item) => item.quantity * item.price).reduce((curr,prev) => curr + prev,0);
+  const [ totalPrice, setTotalPrice ] = useState(0);
+  const theme = useTheme();
+
+  // const [ shop, setShop ] = useState();
+
+  const {shop} = route.params;
+  // const [products, setProducts] = useState(products_data);
+
+  const products = useSelector((state) => state.product.product);
+  const dispatch = useDispatch();
+
+  function getCloths(){
+    dispatch(cleanProduct());
+    dispatch(cleanCart());
+      setLoader(true);
+      // const uid = auth.currentUser.uid;
+      // if(auth.currentUser == null) return;
+      axios.get(`${api.baseUrl}/${api.products}/${shop._id}`, {headers: {"Content-Type": 'application/json'}})
+      .then((result, err) => {
+        setLoader(false);
+        const {status, data} = result.data;
+        if(status){
+            // setShops([...data]);
+            console.log(data);
+            [...data].map(item => dispatch(getProducts(item)));
+        }
+      }).catch(err => {
+        setLoader(false);
+        setMessage(`${err}`);
+        setSnackbar(true);
+        console.log(err);
+      })
+  }
+
+  useEffect(() => {
+    getCloths();
+  }, []);
+
+
+  useEffect(() =>{ 
+    function calculateTotalPrice(cartData) {
+      let totalPrice = 0;
+
+      for (let i = 0; i < cartData.length; i++) {
+        const item = cartData[i];
+        
+        if (item.quantity > 0) {
+          for (let j = 0; j < item.services.length; j++) {
+            const service = item.services[j];
+            totalPrice += service.price * item.quantity;
+          }
+        }
+      }
+    
+      return totalPrice;
+    }
+    
+    setTotalPrice(calculateTotalPrice(cart));
+   },[cart]);
+
+  return (
+    <SafeAreaView style={{ flex: 1, backgroundColor: theme.colors.background }}>
+      {/* Header Start */}
+      <View
+        style={{
+          // marginTop: 20,
+          height: 50,
+          flexDirection: "row",
+          alignItems: "center",
+          justifyContent: "space-between",
+          paddingHorizontal: 12,
+        }}
+      >
+        <TouchableOpacity
+          style={{ padding: 5, borderRadius: 10 }}
+          onPress={() => navigation.goBack()}
+        >
+          <Entypo name="chevron-thin-left" size={24} />
+        </TouchableOpacity>
+
+        <TouchableOpacity
+          style={{ padding: 5, borderRadius: 100 }}
+          onPress={() => { }}
+        >
+          <AntDesign name="search1" size={24} />
+        </TouchableOpacity>
+      </View>
+      {/* Header End */}
+
+      <View
+        style={{ marginStart: 15, paddingHorizontal: 10, paddingVertical: 5 }}
+      >
+        <Text style={{ fontSize: 22, fontWeight: "bold" }}>{ shop.name }</Text>
+        <View
+          style={{
+            marginTop: 5,
+            flexDirection: "row",
+            alignItems: "center",
+            gap: 5,
+          }}
+        >
+          <Entypo style={{ opacity: 0.5 }} size={16} name="location-pin" />
+          <Text style={{ opacity: 0.5 }}>6.2 km </Text>
+          <Entypo
+            style={{ opacity: 0.5 }}
+            color={theme.colors.primary}
+            name="flow-line"
+          />
+          <Text style={{ opacity: 0.5 }}>Sant Nagar, Indore</Text>
+        </View>
+      </View>
+
+      <TabsProvider defaultIndex={0}>
+        <Tabs
+          showLeadingSpace={false}
+          mode="scrollable"
+          style={{ backgroundColor: theme.colors.background, marginTop: 10 }}
+        >
+          <TabScreen label={"MEN"}>
+            <View style={{ flex: 1 }}>
+              <FlatList
+                data={products.filter((item) => item.gender === "men")}
+                renderItem={({ item, index }) => <ProductItem item={item} index={index} service={service} setSnackbar={setSnackbar} setMessage={setMessage}/>}
+                keyExtractor={(item, index) => index.toString()}
+              />
+            </View>
+          </TabScreen>
+          <TabScreen label={"WOMEN"}>
+            <View style={{ flex: 1 }}>
+              <FlatList
+                data={products.filter((item) => item.gender === "women")}
+                renderItem={({ item, index }) =><ProductItem item={item} index={index} service={service} setSnackbar={setSnackbar} setMessage={setMessage}/>}
+                keyExtractor={(item, index) => index.toString()}
+              />
+            </View>
+          </TabScreen>
+          <TabScreen label={"KIDS"}>
+            <View style={{ flex: 1 }}>
+              <FlatList
+                data={products.filter((item) => item.gender === "kids")}
+                renderItem={({ item, index }) =><ProductItem item={item} index={index} service={service} setSnackbar={setSnackbar} setMessage={setMessage}/>}
+                keyExtractor={(item, index) => index.toString()}
+              />
+            </View>
+          </TabScreen>
+          <TabScreen label={"OTHERS"}>
+            <View style={{ flex: 1 }}>
+              <FlatList
+                data={products.filter((item) => item.gender === "other")}
+                renderItem={({ item, index }) => <ProductItem item={item} index={index} service={service} setSnackbar={setSnackbar} setMessage={setMessage}/>}
+                keyExtractor={(item, index) => index.toString()}
+              />
+            </View>
+          </TabScreen>
+        </Tabs>
+      </TabsProvider>
+
+      { totalPrice === 0  ? null :
+      <View style={{backgroundColor: theme.colors.primary, padding: 15, flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between'}}>
+        <View style={{flexDirection: 'row', alignItems: 'center'}}>
+          <Feather name="shopping-cart" size={25} color={'white'}/>
+          <Text style={{color: 'white', fontSize: 18, marginStart: 10}}>{cart.length} items</Text>
+          <Entypo size={18}
+            color={'white'}
+            name="flow-line"
+          />
+          <MaterialCommunityIcons color={'white'} size={18} name="currency-inr" />
+            <Text style={{color: 'white', fontSize: 18}}>{totalPrice}</Text>
+        </View>
+        <Button onPress={() => navigation.navigate(routes.CartScreen)} mode="elevated" buttonColor="white" style={{borderRadius: 100}}>View Cart</Button>
+      </View>}
+
+
+      <Loader loader={loader} setLoader={setLoader}/>
+
+
+      {/* SnackBar */}
+      <Snackbar
+            style={{ position: 'fixed', bottom: 0, left: 0}}
+                visible={snackBar}
+                onDismiss={() => setSnackbar(false)}
+                action={{
+                    
+                    label: 'X',
+                    onPress: () => {
+                        setSnackbar(false)
+                    },
+                }}>
+                {message}
+            </Snackbar>
+
+    </SafeAreaView>
+  );
+};
+
+// products data
+const products_data = [
+  {
+    _id: 'mskdsldm',
+    image: "https://cdn-icons-png.flaticon.com/128/4643/4643574.png",
+    name: "shirt",
+    quantity: 0,
+    gender: "men",
+    services:[
+      {
+        name: 'Wash Only',
+        price: 10
+      },
+      {
+        name: 'Iron Only',
+        price: 10
+      },
+      {
+        name: 'Wash & Iron',
+        price: 20
+      },
+      {
+        name: 'Dry Clean',
+        price: 25
+      }
+    ]
+  },
+  {
+    _id: 'mskdsldmsmkd',
+    image: "https://cdn-icons-png.flaticon.com/128/892/892458.png",
+    name: "T-shirt",
+    quantity: 0,
+    gender: "men",
+    services:[
+      {
+        name: 'Wash Only',
+        price: 10
+      },
+      {
+        name: 'Iron Only',
+        price: 10
+      },
+      {
+        name: 'Wash & Iron',
+        price: 20
+      },
+      {
+        name: 'Dry Clean',
+        price: 25
+      }
+    ]
+  },
+  {
+    _id: 'mskdsldmamsdad',
+    image: "https://cdn-icons-png.flaticon.com/128/9609/9609161.png",
+    name: "dresses",
+    gender: "women",
+    quantity: 0,
+    services:[
+      {
+        name: 'Wash Only',
+        price: 10
+      },
+      {
+        name: 'Iron Only',
+        price: 10
+      },
+      {
+        name: 'Wash & Iron',
+        price: 20
+      },
+      {
+        name: 'Dry Clean',
+        price: 25
+      }
+    ]
+  },
+  {
+    _id: 'asmlskanl',
+    image: "https://cdn-icons-png.flaticon.com/128/599/599388.png",
+    name: "jeans",
+    quantity: 0,
+    gender: "men",
+    services:[
+      {
+        name: 'Wash Only',
+        price: 10
+      },
+      {
+        name: 'Iron Only',
+        price: 10
+      },
+      {
+        name: 'Wash & Iron',
+        price: 20
+      },
+      {
+        name: 'Dry Clean',
+        price: 25
+      }
+    ]
+  },
+  {
+    _id: 'asnklasmfk',
+    image: "https://cdn-icons-png.flaticon.com/128/9431/9431166.png",
+    name: "Sweater",
+    quantity: 0,
+    gender: "women",
+    services:[
+      {
+        name: 'Wash Only',
+        price: 10
+      },
+      {
+        name: 'Iron Only',
+        price: 10
+      },
+      {
+        name: 'Wash & Iron',
+        price: 20
+      },
+      {
+        name: 'Dry Clean',
+        price: 25
+      }
+    ]
+  },
+  {
+    _id: 'samflaskfs',
+    image: "https://cdn-icons-png.flaticon.com/128/3345/3345397.png",
+    name: "shorts",
+    quantity: 0,
+    gender: "women",
+    services:[
+      {
+        name: 'Wash Only',
+        price: 10
+      },
+      {
+        name: 'Iron Only',
+        price: 10
+      },
+      {
+        name: 'Wash & Iron',
+        price: 20
+      },
+      {
+        name: 'Dry Clean',
+        price: 25
+      }
+    ]
+  },
+  {
+    _id: 'asmnfoiasmfp',
+    image: "https://cdn-icons-png.flaticon.com/128/293/293241.png",
+    name: "Sleeveless",
+    quantity: 0,
+    gender: "women",
+    services:[
+      {
+        name: 'Wash Only',
+        price: 10
+      },
+      {
+        name: 'Iron Only',
+        price: 10
+      },
+      {
+        name: 'Wash & Iron',
+        price: 20
+      },
+      {
+        name: 'Dry Clean',
+        price: 25
+      }
+    ]
+  },
+];
+
+export default ClothsScreen;
+
+
+
+
+
