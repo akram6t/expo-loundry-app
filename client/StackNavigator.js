@@ -12,6 +12,7 @@ import ConfirmOrderScreen from "./src/screens/ConfirmOrderScreen";
 import OrderSuccessScreen from "./src/screens/OrderSuccessScreen";
 import OrderStatusScreen from "./src/screens/OrderStatusScreen";
 import MyAddressesScreen from "./src/screens/MyAddressesScreen";
+import NotificationsScreen from './src/screens/NotificationScreen';
 
 const StackNavigator = () => {
     const Stack =  createNativeStackNavigator();
@@ -33,6 +34,7 @@ const StackNavigator = () => {
                 <Stack.Screen name={routes.OrderSuccessScreen} component={OrderSuccessScreen} options={{headerShown: false}}/>
                 <Stack.Screen name={routes.OrderStatusScreen} component={OrderStatusScreen} options={{headerShown: false}}/>
                 <Stack.Screen name={routes.MyAddressesScreen} component={MyAddressesScreen} options={{headerShown: false}}/>
+                <Stack.Screen name={routes.NotificationsScreen} component={NotificationsScreen} options={{headerShown: false}}/>
             </Stack.Navigator>
         </NavigationContainer>
     )

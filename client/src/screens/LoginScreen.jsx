@@ -76,7 +76,7 @@ const LoginScreen = ({ navigation }) => {
                         <Text style={{ fontSize: 16, fontWeight: 'bold' }}>Email</Text>
                         <TextInput textContentType='emailAddress'
                             onChangeText={(text) => onValueChange('email', text)} value={user.email}
-                            keyboardType='email-address'
+                            // keyboardType='email-address'
                             autoCapitalize='none'
                             autoCorrect={false}
                             autoCompleteType='email'

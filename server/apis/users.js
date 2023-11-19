@@ -98,5 +98,41 @@ router.post('/create_user', (req, res) => {
 });
 
 
+router.post('/update_user', (req, res) => {
+    const data = req.body;
+
+    const run = async () => {
+        const client = new MongoClient(DB_URL);
+        await client.connect();
+        console.log('connect...')
+        const db = client.db();
+        const collection = db.collection(Collections.USERS);
+        const insertData = {_id:data.uid , ...data, createdAt: new Date().toString()}
+        const result = await collection.insertOne(insertData);
+
+        if (result.insertedId) {
+            console.log(result.insertedId);
+            res.json({
+                status: true,
+                message: 'user created successfully',
+            });
+
+        }else{
+            console.log(result);
+            res.json({
+                status: false,
+                message: 'error',
+            });
+        }
+
+        client.close();
+
+    }
+
+    run();
+
+});
+
+
 
 module.exports = router;

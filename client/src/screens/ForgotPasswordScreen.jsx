@@ -20,9 +20,9 @@ const ForgotPasswordScreen = ({navigation}) => {
         setLoading(true);
         sendPasswordResetEmail(auth, email.trim()).then(() => {
             setLoading(false);
-            setMessage('link send succussfully please check your mail!');
+            setMessage('link send succussfully please check your mail !');
             setSnackbar(true);
-            navigation.goBack();
+            // navigation.goBack();
         }).catch(error => {
             setLoading(false);
             setMessage(error.toString());

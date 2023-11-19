@@ -127,7 +127,6 @@ const ProfileScreen = ({ navigation }) => {
                   <Avatar.Image size={90} source={(require('../../assets/images/icon_user.png'))}/>
                 </View>
                 <TextInput value={user.name} style={{width: '100%'}} mode='outlined' label={'Enter Name'}/>
-                <TextInput value={user.email} style={{width: '100%'}} mode='outlined' label={'Enter Email'}/>
                 <TextInput value={user.mobile} style={{width: '100%'}} mode='outlined' label={'Enter Mobile'}/>
               </ScrollView>
             </Dialog.Content>

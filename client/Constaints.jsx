@@ -14,6 +14,7 @@ const routes = {
     OrdersScreen: 'OrdersScreen',
     OrderStatusScreen: 'OrderStatusScreen',
     MyAddressesScreen: 'MyAddressesScreen',
+    NotificationsScreen: 'NotificationsScreen',
 }
 
 const api = {

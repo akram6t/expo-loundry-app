@@ -137,7 +137,7 @@ const HomeScreen = ({ navigation }) => {
           <Text style={{ fontSize: 22, fontWeight: 'bold' }} numberOfLines={1}>{user.name.length > 15 ? user.name.slice(0, 15) : user.name}</Text>
         </View>
         <View style={{ flexDirection: 'row' }}>
-          <View>
+          <TouchableOpacity onPress={() => navigation.navigate(routes.NotificationsScreen)}>
             <Badge
               visible={unread && unread > 0}
               size={16}
@@ -151,7 +151,7 @@ const HomeScreen = ({ navigation }) => {
             // onPress={() => history.push('/notes')}
             // {...commonProps}
             />
-          </View>
+          </TouchableOpacity>
           <TouchableOpacity activeOpacity={0.8} onPress={() => navigation.navigate(routes.ProfileScreen)}>
             {user.profile ? (<Avatar.Image style={{ marginStart: 8, marginEnd: 8 }} size={40} source={{ uri: user.profile }} />)
               : (<Avatar.Image style={{ marginStart: 8, marginEnd: 8 }} size={40} source={require('../../assets/images/icon_user.png')} />)}

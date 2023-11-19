@@ -30,6 +30,11 @@ const SignupScreen = ({ navigation }) => {
     });
 
     const onValueChange = (name, text) => {
+        if(name === 'mobile'){
+            if(text.length > 10){
+                return;
+            }
+        }
         setUser({
             ...user,
             [name]: text,
@@ -136,7 +141,7 @@ const SignupScreen = ({ navigation }) => {
                         <Text style={{ marginTop: 10, fontSize: 16, fontWeight: 'bold' }}>Email</Text>
                         <TextInput onChangeText={(text) => onValueChange('email', text)} value={user.email}
                             textContentType='emailAddress'
-                            keyboardType='email-address'
+                            // keyboardType='email-address'
                             autoCapitalize='none'
                             autoCorrect={false}
                             autoCompleteType='email'

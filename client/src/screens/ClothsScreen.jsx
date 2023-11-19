@@ -115,7 +115,7 @@ const ClothsScreen = ({ navigation }) => {
         </TouchableOpacity>
 
         <TouchableOpacity
-          style={{ padding: 5, borderRadius: 100 }}
+          style={{ padding: 5, borderRadius: 100, opacity:0 }}
           onPress={() => { }}
         >
           <AntDesign name="search1" size={24} />
