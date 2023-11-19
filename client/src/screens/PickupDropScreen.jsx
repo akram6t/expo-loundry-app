@@ -11,9 +11,10 @@ import { SafeAreaView } from "react-native-safe-area-context";
 import { MaterialCommunityIcons, Entypo } from "@expo/vector-icons";
 import { TabScreen, Tabs, TabsProvider, useTabIndex, useTabNavigation } from "react-native-paper-tabs";
 import HorizontalDatepicker from "@awrminkhodaei/react-native-horizontal-datepicker";
-import { routes, api } from "../../Constaints";
+import { routes, api } from "../Constaints";
 import Loader from "../components/Loader";
 import axios from "axios";
+import { useSelector } from "react-redux";
 
 const PickupDropScreen = ({ navigation }) => {
     const theme = useTheme();
@@ -26,11 +27,13 @@ const PickupDropScreen = ({ navigation }) => {
     const [snackBar, setSnackbar] = useState(false);
     const [message, setMessage] = useState('');
 
+    const server = useSelector(state => state.path.path);
+
 
     const getTimingData = () => {
         setLoader(true);
         // const uid = auth.currentUser.uid;
-        axios.get(`${api.baseUrl}/${api.ordertiming}`, { headers: { "Content-Type": 'application/json' } })
+        axios.get(`${server.baseUrl}/${api.ordertiming}`, { headers: { "Content-Type": 'application/json' } })
             .then((result, err) => {
                 setLoader(false);
                 const { status, data } = result.data;

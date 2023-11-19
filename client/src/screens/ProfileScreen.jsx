@@ -3,10 +3,11 @@ import React, { useEffect, useState } from 'react';
 import { useTheme, Card, Title, Portal, Button, Avatar, Dialog, TouchableRipple, Divider, List, TextInput, Snackbar } from 'react-native-paper';
 import { Entypo, AntDesign, MaterialCommunityIcons } from '@expo/vector-icons';
 import { SafeAreaView } from 'react-native-safe-area-context';
-import { auth } from '../../firebaseConfig';
+import { auth } from '../firebaseConfig';
 import Loader from '../components/Loader';
 import axios from 'axios';
-import { api, routes } from '../../Constaints';
+import { api, routes } from '../Constaints';
+import { useSelector } from 'react-redux';
 
 const ProfileScreen = ({ navigation }) => {
   const theme = useTheme();
@@ -20,6 +21,8 @@ const ProfileScreen = ({ navigation }) => {
     password: ''
   });
 
+  const server = useSelector(state => state.path.path);
+
   const hideDialog = () => setVisible(false);
 
   const showDialog = () => setVisible(true);
@@ -27,7 +30,7 @@ const ProfileScreen = ({ navigation }) => {
   function getUser(){
     setLoader(true);
     const uid = auth.currentUser.uid;
-    axios.get(`${api.baseUrl}/${api.users}/${uid}`, {headers: {"Content-Type": 'application/json'}})
+    axios.get(`${server.baseUrl}/${api.users}/${uid}`, {headers: {"Content-Type": 'application/json'}})
     .then((result, err) => {
       setLoader(false);
       const {status, data} = result.data;

@@ -16,14 +16,14 @@ import {
 } from "react-native-paper";
 // import BottomSheet from 'reanimated-bottom-sheet';
 import { Entypo, AntDesign, MaterialCommunityIcons, MaterialIcons, Feather } from "@expo/vector-icons";
-import { routes } from "../../Constaints";
+import { routes } from "../Constaints";
 import ProductItem from "../components/ProductItem";
 import { useDispatch, useSelector } from "react-redux";
 import { getProducts, cleanProduct } from "./../utils/reducers/ProductReducer";
 import Loader from "../components/Loader";
 import axios from "axios";
 
-import { api } from "../../Constaints";
+import { api } from "../Constaints";
 import { cleanCart } from "../utils/reducers/CartReducer";
 
 const ClothsScreen = ({ navigation }) => {
@@ -42,6 +42,8 @@ const ClothsScreen = ({ navigation }) => {
   const {shop} = route.params;
   // const [products, setProducts] = useState(products_data);
 
+  const server = useSelector(state => state.path.path);
+
   const products = useSelector((state) => state.product.product);
   const dispatch = useDispatch();
 
@@ -51,7 +53,7 @@ const ClothsScreen = ({ navigation }) => {
       setLoader(true);
       // const uid = auth.currentUser.uid;
       // if(auth.currentUser == null) return;
-      axios.get(`${api.baseUrl}/${api.products}/${shop._id}`, {headers: {"Content-Type": 'application/json'}})
+      axios.get(`${server.baseUrl}/${api.products}/${shop._id}`, {headers: {"Content-Type": 'application/json'}})
       .then((result, err) => {
         setLoader(false);
         const {status, data} = result.data;

@@ -17,11 +17,12 @@ import IconOrderPickup from '../../assets/images/icon_order_pickup.png';
 import IconOrderProcess from '../../assets/images/icon_order_process.png';
 import IconOrderShipped from '../../assets/images/icon_order_shipped.png';
 import IconOrderDelivered from '../../assets/images/icon_order_delivered.png';
-import { api, monthNames, routes } from './../../Constaints';
+import { api, monthNames, routes } from '../Constaints';
 import Loader from "../components/Loader";
-import { auth } from "../../firebaseConfig";
+import { auth } from "../firebaseConfig";
 import axios from "axios";
 import ItemOrder from "../components/ItemOrder";
+import { useSelector } from "react-redux";
 
 const OrdersScreen = ({ navigation }) => {
     const [ordersList, setOrdersList] = useState([]);
@@ -31,10 +32,12 @@ const OrdersScreen = ({ navigation }) => {
 
     const theme = useTheme();
 
+    const server = useSelector(state => state.path.path);
+
     function getOrders() {
         setLoading(true);
         const uid = auth.currentUser.uid;
-        axios.get(`${api.baseUrl}/${api.orders}/${uid}`, { headers: { "Content-Type": 'application/json' } })
+        axios.get(`${server.baseUrl}/${api.orders}/${uid}`, { headers: { "Content-Type": 'application/json' } })
             .then((result, err) => {
                 setLoading(false);
                 const { status, data } = result.data;

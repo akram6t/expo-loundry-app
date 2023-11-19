@@ -10,10 +10,10 @@ import React, { useState, useEffect } from "react";
 import { Button, MD2Colors, Portal, Dialog, useTheme, Divider, Snackbar } from "react-native-paper";
 import { SafeAreaView } from "react-native-safe-area-context";
 import { MaterialCommunityIcons, Entypo } from "@expo/vector-icons";
-import { monthNames, routes, api } from "../../Constaints";
+import { monthNames, routes, api } from "../Constaints";
 import { useSelector } from "react-redux";
 import { useRoute } from "@react-navigation/native";
-import { auth } from "../../firebaseConfig";
+import { auth } from "../firebaseConfig";
 import axios from "axios";
 import Loader from "../components/Loader";
 
@@ -45,6 +45,8 @@ const CartScreen = ({ navigation }) => {
     const showDialog = () => setVisible(true);
     const hideDialog = () => setVisible(false);
 
+    const server = useSelector(state => state.path.path);
+
     const cart = useSelector(state => state.cart.cart);
 
     const onOrderPlaced = () => {
@@ -62,7 +64,7 @@ const CartScreen = ({ navigation }) => {
             service_fee: serviceFee,
             order_status: 'Confirmed'
         } 
-        axios.post(`${api.baseUrl}/${api.addorder}`,
+        axios.post(`${server.baseUrl}/${api.addorder}`,
             {
                ...insertData
             },

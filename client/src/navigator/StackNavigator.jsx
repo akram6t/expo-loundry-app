@@ -1,18 +1,18 @@
 import { NavigationContainer } from "@react-navigation/native";
 import { createNativeStackNavigator } from '@react-navigation/native-stack';
-import { routes } from "./Constaints";
-import HomeScreen from "./src/screens/HomeScreen";
-import ProfileScreen from "./src/screens/ProfileScreen";
-import ClothsScreen from "./src/screens/ClothsScreen";
-import CartScreen from "./src/screens/CartScreen";
-import PickupDropScreen from "./src/screens/PickupDropScreen";
-import AddressScreen from "./src/screens/AddressScreen";
-import OrdersScreen from "./src/screens/OrdersScreen";
-import ConfirmOrderScreen from "./src/screens/ConfirmOrderScreen";
-import OrderSuccessScreen from "./src/screens/OrderSuccessScreen";
-import OrderStatusScreen from "./src/screens/OrderStatusScreen";
-import MyAddressesScreen from "./src/screens/MyAddressesScreen";
-import NotificationsScreen from './src/screens/NotificationScreen';
+import { routes } from "../Constaints";
+import HomeScreen from "../screens/HomeScreen";
+import ProfileScreen from "../screens/ProfileScreen";
+import ClothsScreen from "../screens/ClothsScreen";
+import CartScreen from "../screens/CartScreen";
+import PickupDropScreen from "../screens/PickupDropScreen";
+import AddressScreen from "../screens/AddressScreen";
+import OrdersScreen from "../screens/OrdersScreen";
+import ConfirmOrderScreen from "../screens/ConfirmOrderScreen";
+import OrderSuccessScreen from "../screens/OrderSuccessScreen";
+import OrderStatusScreen from "../screens/OrderStatusScreen";
+import MyAddressesScreen from "../screens/MyAddressesScreen";
+import NotificationsScreen from '../screens/NotificationScreen';
 
 const StackNavigator = () => {
     const Stack =  createNativeStackNavigator();

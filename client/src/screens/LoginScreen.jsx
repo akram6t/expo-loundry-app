@@ -1,13 +1,17 @@
 import { View, Text, ScrollView, Image, TouchableOpacity } from 'react-native'
-import React, { useState } from 'react'
+import React, { useState, useEffect } from 'react'
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { Button, Divider, TextInput, useTheme, Snackbar } from 'react-native-paper';
-import { routes } from '../../Constaints';
+import { routes } from '../Constaints';
 import { MaterialCommunityIcons } from '@expo/vector-icons';
 import { signInWithEmailAndPassword } from "firebase/auth";
-import { auth } from '../../firebaseConfig';
+import { auth } from '../firebaseConfig';
 import Loader from '../components/Loader';
 import { KeyboardAwareScrollView } from 'react-native-keyboard-aware-scroll-view';
+import { useDispatch, useSelector } from 'react-redux';
+import { setPath } from '../utils/reducers/PathReducer';
+import { database } from '../firebaseConfig';
+import { onValue, ref } from 'firebase/database';
 
 const LoginScreen = ({ navigation }) => {
     const theme = useTheme();
@@ -19,6 +23,23 @@ const LoginScreen = ({ navigation }) => {
         email: '',
         password: ''
     });
+
+    const dispatch = useDispatch();
+    const server = useSelector(state => state.path.path);
+
+    useEffect(() => {
+        if(server.baseUrl === ""){
+            setLoading(true);
+            const dbRef = ref(database, 'utils/path/baseUrl');
+            onValue(dbRef, (snapshot) => {
+                dispatch(setPath(snapshot.val()));
+                setLoading(false);
+            }, (error) => {
+                console.log(error);
+                setLoading(false);
+            })
+        }
+      },[])
 
     const onValueChange = (name, text) => {
         setUser({
@@ -111,10 +132,10 @@ const LoginScreen = ({ navigation }) => {
 
                 <Divider style={{ marginTop: 10, height: 2 }} />
 
-                <Text style={{ textAlign: 'center', marginTop: 10 }}>login with</Text>
+                {/* <Text style={{ textAlign: 'center', marginTop: 10 }}>login with</Text> */}
 
                 {/* <View style={{ marginTop: 20, marginHorizontal: 20 }}> */}
-                <Button style={{ marginTop: 10, marginHorizontal: 20 }} mode='contained' theme={{ colors: { primary: 'white' }, roundness: 100 }} contentStyle={{ padding: 5 }} onPress={() => { }} icon={'google'}>Login With Google</Button>
+                {/* <Button style={{ marginTop: 10, marginHorizontal: 20 }} mode='contained' theme={{ colors: { primary: 'white' }, roundness: 100 }} contentStyle={{ padding: 5 }} onPress={() => { }} icon={'google'}>Login With Google</Button> */}
                 {/* </View> */}
 
                 <TouchableOpacity style={{ marginTop: 20, alignSelf: 'center' }} onPress={() => navigation.navigate(routes.SignupScreen)}>

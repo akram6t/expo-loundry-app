@@ -6,9 +6,10 @@ import { KeyboardAwareScrollView } from 'react-native-keyboard-aware-scroll-view
 import { useState, useEffect } from 'react';
 import { AntDesign, Entypo } from '@expo/vector-icons';
 import axios from 'axios';
-import { api } from '../../Constaints';
-import { auth } from '../../firebaseConfig';
+import { api } from '../Constaints';
+import { auth } from '../firebaseConfig';
 import * as Location from 'expo-location';
+import { useSelector } from 'react-redux';
 
 const MyAddressesScreen = ({ navigation }) => {
     const theme = useTheme();
@@ -28,11 +29,13 @@ const MyAddressesScreen = ({ navigation }) => {
     });
     const [locationServicesEnabled, setLocationServicesEnabled] = useState();
 
+    const server = useSelector(state => state.path.path);
+
     const removeAddress = (address) => {
         const uid = auth.currentUser.uid;
             setLoader(true);
             // API endpoint to remove an address object
-            const apiUrl = `${api.baseUrl}/${api.remove_address}`;
+            const apiUrl = `${server.baseUrl}/${api.remove_address}`;
 
             // Replace with your documentId and addressToRemove data
             const data = {
@@ -64,7 +67,7 @@ const MyAddressesScreen = ({ navigation }) => {
     const addAddresstoDb = () => {
         setLoader(true);
         // API endpoint to add a new address or create a new document
-        const apiUrl = `${api.baseUrl}/${api.add_address}`;
+        const apiUrl = `${server.baseUrl}/${api.add_address}`;
 
         const uid = auth.currentUser.uid;
         // Replace with your documentId and newAddress data
@@ -215,7 +218,7 @@ const MyAddressesScreen = ({ navigation }) => {
     const getAddresses = () => {
         setLoader(true);
         const uid = auth.currentUser.uid;
-        axios.get(`${api.baseUrl}/${api.addresses}/${uid}`, { headers: { "Content-Type": 'application/json' } })
+        axios.get(`${server.baseUrl}/${api.addresses}/${uid}`, { headers: { "Content-Type": 'application/json' } })
             .then((result, err) => {
                 setLoader(false);
                 // console.log(result.data);

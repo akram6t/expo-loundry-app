@@ -3,9 +3,9 @@ import React, { useState } from 'react'
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { Button, Divider, FAB, MD2Colors, Snackbar, TextInput, useTheme } from 'react-native-paper';
 import PagerView from 'react-native-pager-view';
-import { routes } from '../../Constaints';
+import { routes } from '../Constaints';
 import { Entypo } from '@expo/vector-icons';
-import { auth } from './../../firebaseConfig';
+import { auth } from '../firebaseConfig';
 import { sendPasswordResetEmail } from 'firebase/auth';
 import Loader from '../components/Loader';
 

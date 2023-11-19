@@ -2,14 +2,15 @@ import { View, Text, ScrollView, StyleSheet, Image, TouchableOpacity } from 'rea
 import React, { useState } from 'react'
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { Button, Snackbar, FAB, MD2Colors, TextInput, useTheme } from 'react-native-paper';
-import { routes, api } from '../../Constaints';
+import { routes, api } from '../Constaints';
 import { Entypo, MaterialCommunityIcons } from '@expo/vector-icons';
 // import { getAuth, onAuthStateChanged, User } from 'firebase/auth';
 import Loader from '../components/Loader';
 import { KeyboardAwareScrollView } from 'react-native-keyboard-aware-scroll-view';
-import { auth } from './../../firebaseConfig';
+import { auth } from '../firebaseConfig';
 import { createUserWithEmailAndPassword } from 'firebase/auth';
 import axios from 'axios';
+import { useSelector } from 'react-redux';
 // import { useDispatch, useSelector } from 'react-redux';
 // import { isCreated } from '../utils/reducers/AuthStateReducer';
 // const auth = getAuth();
@@ -20,6 +21,7 @@ const SignupScreen = ({ navigation }) => {
     const [snackbar, setSnackbar] = useState(false);
     const [message, setMessage ] = useState('');
     const theme = useTheme();
+    const server = useSelector(state => state.path.path);
     // const dispatch = useDispatch();
     // const authState = useSelector(state => state.auth.userCreated)
     const [user, setUser] = useState({
@@ -76,7 +78,7 @@ const SignupScreen = ({ navigation }) => {
             .then((userCredential) => {
                 // Signed up 
                 const currentUser = userCredential.user;
-                axios.post(`${api.baseUrl}/${api.createUser}`,
+                axios.post(`${server.baseUrl}/${api.createUser}`,
                     {
                         uid: currentUser.uid, 
                         name: user.name, 

@@ -10,7 +10,7 @@ import React, { useState, useEffect } from "react";
 import { Button, MD2Colors, useTheme } from "react-native-paper";
 import { SafeAreaView } from "react-native-safe-area-context";
 import { MaterialCommunityIcons, Entypo } from "@expo/vector-icons";
-import { routes } from "../../Constaints";
+import { routes } from "../Constaints";
 import CartItem from "../components/CartItem";
 import { useSelector, useDispatch } from 'react-redux';
 import { cleanCart } from "../utils/reducers/CartReducer";

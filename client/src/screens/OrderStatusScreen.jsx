@@ -18,7 +18,7 @@ import IconOrderProcess from '../../assets/images/icon_order_process.png';
 import IconOrderShipped from '../../assets/images/icon_order_shipped.png';
 import IconOrderDelivered from '../../assets/images/icon_order_delivered.png';
 import { useRoute } from "@react-navigation/native";
-import { monthNames } from "../../Constaints";
+import { monthNames } from "../Constaints";
 
 const OrdersScreen = ({ navigation }) => {
     const route = useRoute();

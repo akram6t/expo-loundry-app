@@ -2,7 +2,7 @@ import { View, Text, Image } from 'react-native'
 import React, { useEffect, useState } from 'react'
 import { useTheme, TouchableRipple, MD2Colors, Divider } from 'react-native-paper'
 import { useNavigation } from '@react-navigation/native'
-import { monthNames, routes } from '../../Constaints'
+import { monthNames, routes } from '../Constaints'
 import { MaterialCommunityIcons } from '@expo/vector-icons'
 
 const ItemOrder = ({item, index, status}) => {
@@ -81,10 +81,10 @@ const ItemOrder = ({item, index, status}) => {
                     <View>
                         <View style={{ alignItems: 'flex-end' }}>
                             <View style={{ flexDirection: 'row', alignItems: 'center' }}>
-                                <MaterialCommunityIcons size={16} name="currency-inr" color={theme.colors.primary} />
-                                <Text style={{ fontSize: 16, fontWeight: 'bold', color: theme.colors.primary }}>{totalPrice + item.service_fee}</Text>
+                                <MaterialCommunityIcons size={16} name="currency-inr" color={item.order_status === 'Delivered' ? theme.colors.primary : MD2Colors.blue500} />
+                                <Text style={{ fontSize: 16, fontWeight: 'bold', color: item.order_status === 'Delivered' ? theme.colors.primary : MD2Colors.blue500 }}>{totalPrice + item.service_fee}</Text>
                             </View>
-                            <Text style={{ color: theme.colors.primary, fontWeight: 'bold' }}>{item.order_status}</Text>
+                            <Text style={{ color: item.order_status === 'Delivered' ? theme.colors.primary : MD2Colors.blue500, fontWeight: 'bold' }}>{item.order_status}</Text>
                         </View>
                     </View>
                 </View>

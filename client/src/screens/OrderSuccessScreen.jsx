@@ -4,7 +4,7 @@ import { Image, TouchableOpacity } from "react-native";
 import { Button } from "react-native-paper";
 import { Entypo } from "@expo/vector-icons";
 import { SafeAreaView } from "react-native-safe-area-context";
-import { routes } from "../../Constaints";
+import { routes } from "../Constaints";
 import { BackHandler } from "react-native";
 
 const OrderSuccessScreen = ({ navigation }) => {

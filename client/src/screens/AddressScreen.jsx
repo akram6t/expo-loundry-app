@@ -3,13 +3,14 @@ import React, { useState, useEffect, useCallback } from 'react';
 import { Entypo, MaterialIcons } from '@expo/vector-icons';
 import { useTheme, Button, TextInput, MD2Colors, Divider, Snackbar } from 'react-native-paper';
 import { SafeAreaView } from 'react-native-safe-area-context';
-import { routes, api } from '../../Constaints';
+import { routes, api } from '../Constaints';
 import SelectDropdown from 'react-native-select-dropdown';
 import axios from 'axios';
 import Loader from '../components/Loader';
 import { useNavigation, useRoute } from '@react-navigation/native';
-import { auth } from '../../firebaseConfig';
+import { auth } from '../firebaseConfig';
 import { useFocusEffect } from '@react-navigation/native';
+import { useSelector } from 'react-redux';
 
 
 const AddressScreen = ({ navigation }) => {
@@ -29,7 +30,7 @@ const AddressScreen = ({ navigation }) => {
     const [pickupAddress, setPickupAddress] = useState('');
     const [dropAddress, setDropAddress] = useState('');
 
-
+    const server = useSelector(state => state.path.path);
 
     useFocusEffect(
         React.useCallback(() => {
@@ -46,7 +47,7 @@ const AddressScreen = ({ navigation }) => {
     const getAddresses = () => {
         setLoader(true);
         const uid = auth.currentUser.uid;
-        axios.get(`${api.baseUrl}/${api.addresses}/${uid}`, { headers: { "Content-Type": 'application/json' } })
+        axios.get(`${server.baseUrl}/${api.addresses}/${uid}`, { headers: { "Content-Type": 'application/json' } })
             .then((result, err) => {
                 setLoader(false);
                 // console.log(result.data);

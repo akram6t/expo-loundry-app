@@ -153,7 +153,7 @@ export default ProductItem = ({ item, index, service, setSnackbar, setMessage })
                 </View>
                 <View style={{ marginTop: 8, flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between' }}>
                     <TouchableOpacity activeOpacity={0.7} onPress={() => setServiceDialog(true)}>
-                        <View style={{ flexDirection: 'row', gap: 5, alignItems: 'center', padding: 8, borderRadius: 100, backgroundColor: theme.colors.primaryLight }}>
+                        <View style={{ flexDirection: 'row', gap: 5, alignItems: 'center', padding: 8, borderRadius: 25, backgroundColor: theme.colors.primaryLight }}>
                             <View>
                                 {
                                     servicesData.map((item, index) => (

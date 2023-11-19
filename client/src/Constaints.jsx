@@ -1,3 +1,10 @@
+// import { setPath } from "./src/utils/reducers/PathReducer";
+// import PathReducer from "./src/utils/reducers/PathReducer";
+
+import { useSelector } from "react-redux";
+
+// const path = useSelector(state => state.path.path);
+
 const routes = {
     HomeScreen: 'HomeScreen',
     LoginScreen: 'LoginScreen',
@@ -18,12 +25,7 @@ const routes = {
 }
 
 const api = {
-    // baseUrl: 'http://192.168.98.132:5000',
-    // 192.168.74.132
-    // 192.168.43.132
-    // baseUrl: 'http://192.168.164.132:5000',
-    // 192.168.165.132
-    baseUrl: 'http://192.168.43.132:5000',
+    // baseUrl: '',
     apiKey: 'c2964966ece452dba2b8d4c029c8d73',
     createUser: 'apis/create_user',
     users: 'apis/users',

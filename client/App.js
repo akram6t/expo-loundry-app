@@ -1,11 +1,11 @@
 import { StatusBar } from 'expo-status-bar';
-import StackNavigator from './StackNavigator';
 import { MD2LightTheme as DefaultTheme, PaperProvider } from 'react-native-paper';
 import * as NavigationBar from 'expo-navigation-bar';
-import AuthNavigator from './AuthNavigator';
+import AuthNavigator from './src/navigator/AuthNavigator';
+import StackNavigator from './src/navigator/StackNavigator';
 import { useAuthentication } from './src/utils/useAuthentication';
 import { Provider } from 'react-redux';
-import store from './Store';
+import store from './src/Store';
 
 const myTheme = {
   ...DefaultTheme,

@@ -113,7 +113,7 @@ export default CartItem = ({ item, index }) => {
                             gap: 5,
                             alignItems: "center",
                             padding: 8,
-                            borderRadius: 100,
+                            borderRadius: 25,
                             backgroundColor: theme.colors.primaryLight,
                         }}
                     >
