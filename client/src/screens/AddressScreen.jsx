@@ -1,5 +1,5 @@
 import { View, Text, TouchableOpacity, Image, ScrollView } from 'react-native'
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useCallback } from 'react';
 import { Entypo, MaterialIcons } from '@expo/vector-icons';
 import { useTheme, Button, TextInput, MD2Colors, Divider, Snackbar } from 'react-native-paper';
 import { SafeAreaView } from 'react-native-safe-area-context';
@@ -7,8 +7,9 @@ import { routes, api } from '../../Constaints';
 import SelectDropdown from 'react-native-select-dropdown';
 import axios from 'axios';
 import Loader from '../components/Loader';
-import { useRoute } from '@react-navigation/native';
+import { useNavigation, useRoute } from '@react-navigation/native';
 import { auth } from '../../firebaseConfig';
+import { useFocusEffect } from '@react-navigation/native';
 
 
 const AddressScreen = ({ navigation }) => {
@@ -29,6 +30,19 @@ const AddressScreen = ({ navigation }) => {
     const [dropAddress, setDropAddress] = useState('');
 
 
+
+    useFocusEffect(
+        React.useCallback(() => {
+
+            getAddresses();
+
+          return () => {
+            console.log('ScreenA unfocused');
+          };
+        }, [])
+      );
+
+
     const getAddresses = () => {
         setLoader(true);
         const uid = auth.currentUser.uid;
@@ -41,7 +55,11 @@ const AddressScreen = ({ navigation }) => {
                 console.log(status);
                 if (status) {
                     if (address_list !== null) {
-                        [...address_list].map(item => setAddresses([...addresses, `${item.name}, ${item.city}, ${item.region}, ${item.postalCode}`]));
+                        // console.log(address_list);
+                        const al = [...address_list].map(item => {
+                            return `${item.name}, ${item.city}, ${item.region}, ${item.postalCode}`
+                        })
+                        setAddresses(['add new address' ,...al]);
                     }
                 }
             }).catch(err => {

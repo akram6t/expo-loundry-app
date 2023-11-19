@@ -19,8 +19,10 @@ const routes = {
 const api = {
     // baseUrl: 'http://192.168.98.132:5000',
     // 192.168.74.132
-    baseUrl: 'http://192.168.164.132:5000',
+    // 192.168.43.132
+    // baseUrl: 'http://192.168.164.132:5000',
     // 192.168.165.132
+    baseUrl: 'http://192.168.43.132:5000',
     apiKey: 'c2964966ece452dba2b8d4c029c8d73',
     createUser: 'apis/create_user',
     users: 'apis/users',

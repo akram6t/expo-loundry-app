@@ -17,32 +17,32 @@ import axios from "axios";
 
 const PickupDropScreen = ({ navigation }) => {
     const theme = useTheme();
-    const [ timingData, setTimingData ] = useState([]);
+    const [timingData, setTimingData] = useState([]);
     const [tabIndex, setTabIndex] = useState(0);
-    const [ pickupDateTime, setPickupDateTime ] = useState(null); 
-    const [ dropDateTime, setDropDateTime ] = useState(null);
-    const [ loader, setLoader ] = useState(false);
+    const [pickupDateTime, setPickupDateTime] = useState(null);
+    // const [dropDateTime, setDropDateTime] = useState(null);
+    const [loader, setLoader] = useState(false);
 
-    const [ snackBar, setSnackbar ] = useState(false);
-    const [ message, setMessage ] = useState('');
+    const [snackBar, setSnackbar] = useState(false);
+    const [message, setMessage] = useState('');
 
 
     const getTimingData = () => {
-            setLoader(true);
-            // const uid = auth.currentUser.uid;
-            axios.get(`${api.baseUrl}/${api.ordertiming}`, { headers: { "Content-Type": 'application/json' } })
-              .then((result, err) => {
+        setLoader(true);
+        // const uid = auth.currentUser.uid;
+        axios.get(`${api.baseUrl}/${api.ordertiming}`, { headers: { "Content-Type": 'application/json' } })
+            .then((result, err) => {
                 setLoader(false);
                 const { status, data } = result.data;
                 if (status) {
-                  setTimingData([...data]);
+                    setTimingData([...data]);
                 }
-              }).catch(err => {
+            }).catch(err => {
                 setLoader(false);
                 setMessage(`${err}`);
                 setSnackbar(true);
                 console.log(err);
-              })
+            })
     }
 
     useEffect(() => {
@@ -52,16 +52,15 @@ const PickupDropScreen = ({ navigation }) => {
 
     const handleOnSubmit = (drop_date_time) => {
         // setDropDateTime(dropDateTime);
-        console.log(drop_date_time);
-        if(pickupDateTime !== null){
-            navigation.navigate(routes.AddressScreen, 
-                { 
-                    dateTime:{
-                        pickupDateTime, dropDateTime:drop_date_time
+        if (pickupDateTime !== null) {
+            navigation.navigate(routes.AddressScreen,
+                {
+                    dateTime: {
+                        pickupDateTime: pickupDateTime, dropDateTime: drop_date_time
                     }
                 }
             );
-        }else{
+        } else {
             setMessage('please select pickup time');
             setSnackbar(true);
         }
@@ -89,24 +88,24 @@ const PickupDropScreen = ({ navigation }) => {
             </View>
             {/* Appbat End */}
             <TabsProvider defaultIndex={tabIndex} onChangeIndex={(index) => setTabIndex(index)}>
-                <Tabs style={{ backgroundColor: theme.colors.background }}>
+                <Tabs disableSwipe style={{ backgroundColor: theme.colors.background }}>
                     <TabScreen label="Pickup Date">
-                        <PickupDate setPickupData={(item) => setPickupDateTime({...item})} setMessage={setMessage} setSnackbar={setSnackbar} timingData={timingData}/>
+                        <PickupDate setPickupData={(item) => setPickupDateTime({ ...item })} setMessage={setMessage} setSnackbar={setSnackbar} timingData={timingData} />
                     </TabScreen>
                     <TabScreen label="Drop Date">
-                        <DropDate setDropData={(item) => handleOnSubmit({...item})} setMessage={setMessage} setSnackbar={setSnackbar} timingData={timingData} />
+                        <DropDate setDropData={(item) => handleOnSubmit({ ...item })} setMessage={setMessage} setSnackbar={setSnackbar} timingData={timingData} />
                     </TabScreen>
                 </Tabs>
             </TabsProvider>
 
-            <Loader loader={loader} setLoader={setLoader}/>
+            <Loader loader={loader} setLoader={setLoader} />
 
             <Snackbar
-            style={{ position: 'fixed', bottom: 0, left: 0}}
+                style={{ position: 'fixed', bottom: 0, left: 0 }}
                 visible={snackBar}
                 onDismiss={() => setSnackbar(false)}
                 action={{
-                    
+
                     label: 'X',
                     onPress: () => {
                         setSnackbar(false)
@@ -123,9 +122,9 @@ const PickupDropScreen = ({ navigation }) => {
 const PickupDate = ({ setPickupData, setMessage, setSnackbar, timingData }) => {
     const theme = useTheme();
     const [selectedTime, setSelectedTime] = useState(-1);
-    
+
     const tabNavigation = useTabNavigation();
-    
+
     const today = new Date(); // Get today's date
     const [selectedDate, setSelectedDate] = useState(today);
     const endDate = new Date(today); // Create a copy of today's date
@@ -168,19 +167,19 @@ const PickupDate = ({ setPickupData, setMessage, setSnackbar, timingData }) => {
                 )}
                 keyExtractor={(item, index) => index.toString()} />
             <Button mode="contained" style={{ margin: 8 }} contentStyle={{ padding: 5 }}
-                onPress={() => { 
-                    if(selectedTime !== -1){
+                onPress={() => {
+                    if (selectedTime !== -1) {
                         // getPickupData();
                         tabNavigation(1)
-                        setPickupData({date: selectedDate, time: timingData[selectedTime].time})
+                        setPickupData({ date: selectedDate, time: timingData[selectedTime].time })
                         // console.log(selectedDate);
-                    }else{
+                    } else {
                         setMessage('please select pickup time');
                         setSnackbar(true);
                     }
 
                     // }
-                 }}>Next</Button>
+                }}>Next</Button>
         </View>
     )
 }
@@ -190,9 +189,13 @@ const PickupDate = ({ setPickupData, setMessage, setSnackbar, timingData }) => {
 const DropDate = ({ setDropData, setMessage, setSnackbar, timingData }) => {
     const theme = useTheme();
     const [selectedTime, setSelectedTime] = useState(-1);
-    
+
+    const tabNavigation = useTabNavigation();
+
     const today = new Date(); // Get today's date
     const [selectedDate, setSelectedDate] = useState(today);
+    const startDate = new Date(today);
+    startDate.setDate(today.getDate() + 1);
     const endDate = new Date(today); // Create a copy of today's date
     endDate.setDate(today.getDate() + 7);
     return (
@@ -201,9 +204,9 @@ const DropDate = ({ setDropData, setMessage, setSnackbar, timingData }) => {
             <View>
                 <HorizontalDatepicker
                     mode="gregorian"
-                    startDate={today}
+                    startDate={startDate}
                     endDate={endDate}
-                    initialSelectedDate={today}
+                    initialSelectedDate={startDate}
                     onSelectedDateChange={(date) => setSelectedDate(date)}
                     selectedItemWidth={170}
                     unselectedItemWidth={50}
@@ -230,15 +233,18 @@ const DropDate = ({ setDropData, setMessage, setSnackbar, timingData }) => {
                 keyExtractor={(item, index) => index.toString()} />
 
 
-            <Button mode="contained" style={{ margin: 8 }} contentStyle={{ padding: 5 }}
-                onPress={() => { 
-                    if(selectedTime !== -1){
-                        setDropData({date: selectedDate, time: timingData[selectedTime].time});
-                    }else{
-                        setMessage('please select drop time');
-                        setSnackbar(true);
-                    }
-                 }}>Continue</Button>
+            <View style={{ padding: 8, flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between' }}>
+                <Button onPress={() => tabNavigation(0)} mode="outlined">Back</Button>
+                <Button mode="contained" style={{ margin: 8 }} contentStyle={{ padding: 5 }}
+                    onPress={() => {
+                        if (selectedTime !== -1) {
+                            setDropData({ date: selectedDate, time: timingData[selectedTime].time });
+                        } else {
+                            setMessage('please select drop time');
+                            setSnackbar(true);
+                        }
+                    }}>Continue</Button>
+            </View>
         </View>
     )
 }

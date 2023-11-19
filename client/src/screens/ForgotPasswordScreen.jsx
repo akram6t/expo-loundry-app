@@ -1,13 +1,36 @@
 import { View, Text, ScrollView, StyleSheet, Image, TouchableOpacity } from 'react-native'
-import React from 'react'
+import React, { useState } from 'react'
 import { SafeAreaView } from 'react-native-safe-area-context';
-import { Button, Divider, FAB, MD2Colors, TextInput, useTheme } from 'react-native-paper';
+import { Button, Divider, FAB, MD2Colors, Snackbar, TextInput, useTheme } from 'react-native-paper';
 import PagerView from 'react-native-pager-view';
 import { routes } from '../../Constaints';
 import { Entypo } from '@expo/vector-icons';
+import { auth } from './../../firebaseConfig';
+import { sendPasswordResetEmail } from 'firebase/auth';
+import Loader from '../components/Loader';
 
 const ForgotPasswordScreen = ({navigation}) => {
+    const [ email, setEmail ] = useState('');
     const theme = useTheme();
+    const [ message, setMessage ] = useState('');
+    const [ snackbar, setSnackbar ] = useState(false);
+    const [ loading, setLoading ] = useState(false);
+
+    const resetPassword = () => {
+        setLoading(true);
+        sendPasswordResetEmail(auth, email.trim()).then(() => {
+            setLoading(false);
+            setMessage('link send succussfully please check your mail!');
+            setSnackbar(true);
+            navigation.goBack();
+        }).catch(error => {
+            setLoading(false);
+            setMessage(error.toString());
+            setSnackbar(true);
+            console.log(error);
+        })
+    }
+
     return (
         <SafeAreaView style={{ flex: 1, backgroundColor: theme.colors.background }}>
               <TouchableOpacity
@@ -28,17 +51,20 @@ const ForgotPasswordScreen = ({navigation}) => {
                 <Text>Don't worry! it occurs. Please Enter the email address linked with your account.</Text>
                 <View style={{ marginTop: 20, gap: 5 }}>
                     <Text style={{ fontSize: 16, fontWeight: 'bold' }}>Email</Text>
-                    <TextInput textContentType='emailAddress'
-                        keyboardType='email-address'
+                    <TextInput 
+                        textContentType='emailAddress'
+                        // keyboardType='email-address'
                         autoCapitalize='none'
                         autoCorrect={false}
                         autoCompleteType='email'
+                        value={email}
+                        onChangeText={(text) => setEmail(text)}
                         mode='outlined' theme={{ roundness: 100 }} contentStyle={{ backgroundColor: '#f3f3f3', borderRadius: 100, paddingHorizontal: 15 }} placeholder='enter your email' />
                 </View>
                 {/* <TouchableOpacity onPress={() => {}} style={{ marginTop: 15 }}>
                     <Text style={{fontWeight: 'bold', alignSelf: 'flex-end'}}>Forgot Password ?</Text>
                 </TouchableOpacity> */}
-                <Button mode='contained' onPress={() => navigation.navigate(routes.HomeScreen)} style={{ marginTop: 30 }} contentStyle={{padding: 5}}>Reset Password</Button>
+                <Button mode='contained' onPress={() => resetPassword()} style={{ marginTop: 30 }} contentStyle={{padding: 5}}>Reset Password</Button>
             </View>
 
             {/* <Divider style={{marginTop: 10, height: 2}}/> */}
@@ -57,6 +83,21 @@ const ForgotPasswordScreen = ({navigation}) => {
             </TouchableOpacity> */}
 
             </ScrollView>
+
+            <Loader loader={loading} setLoader={setLoading}/>
+
+            <Snackbar
+                visible={snackbar}
+                onDismiss={() => setSnackbar(false)}
+                action={{
+                    
+                    label: 'X',
+                    onPress: () => {
+                        setSnackbar(false)
+                    },
+                }}>
+                {message}
+            </Snackbar>
         </SafeAreaView>
     )
 }

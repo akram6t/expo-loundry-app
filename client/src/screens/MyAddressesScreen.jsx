@@ -201,7 +201,7 @@ const MyAddressesScreen = ({ navigation }) => {
 
             for (let item of response) {
                 setAddress({
-                    name: `${item.name}, ${item.district}`,
+                    name: '',
                     city: item.city,
                     region: item.region,
                     postalCode: item.postalCode,

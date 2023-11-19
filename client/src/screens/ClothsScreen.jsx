@@ -1,11 +1,10 @@
-import { View, Image, FlatList, TouchableOpacity } from "react-native";
+import { View, AppState, FlatList, TouchableOpacity } from "react-native";
 import React, { useEffect, useRef, useState } from "react";
 import { useRoute } from "@react-navigation/native";
 import {
   Tabs,
   TabScreen,
   TabsProvider,
-  useTabIndex,
 } from "react-native-paper-tabs";
 import { SafeAreaView } from "react-native-safe-area-context";
 import {
@@ -13,9 +12,6 @@ import {
   useTheme,
   Text,
   Button,
-  MD2Colors,
-  IconButton,
-  TouchableRipple,
   Snackbar,
 } from "react-native-paper";
 // import BottomSheet from 'reanimated-bottom-sheet';

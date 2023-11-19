@@ -1,4 +1,4 @@
-import { View, Text, Image, TouchableOpacity } from 'react-native';
+import { View, Text, Image, TouchableOpacity, AppState } from 'react-native';
 import { MD2Colors, useTheme, Button, Portal, Dialog, Checkbox } from "react-native-paper";
 import { MaterialCommunityIcons, Entypo } from "@expo/vector-icons";
 import { useDispatch, useSelector } from "react-redux";
@@ -9,25 +9,21 @@ import {
     addServices
 } from "./../utils/reducers/CartReducer";
 import { decrementQty, incrementQty } from "./../utils/reducers/ProductReducer";
-import { useEffect, useState } from 'react';
+import { useEffect, useState, useRef } from 'react';
+import { useNavigation } from '@react-navigation/native';
 
 export default ProductItem = ({ item, index, service, setSnackbar, setMessage }) => {
     const theme = useTheme();
+    const navigation = useNavigation();
     const dispatch = useDispatch();
     const [servicesData, setServicesData] = useState([]);
     const [serviceDialog, setServiceDialog] = useState(false);
-    // const [services, setServices] = useState([service]);
     const cart = useSelector((state) => state.cart.cart);
 
     const addItemToCart = () => {
         dispatch(addToCart({ ...item, services: servicesData })); // cart
         dispatch(incrementQty({ ...item, services: servicesData })); // product
     };
-
-    // let total = 0;
-    // servicesData.forEach((service) => {
-    //     total += service.price;
-    // });
 
     
     useEffect(() => {
@@ -39,16 +35,27 @@ export default ProductItem = ({ item, index, service, setSnackbar, setMessage })
     }, []);
 
 
-    const [price, setPrice] = useState(0);
-    useEffect(() => {
-        const total = servicesData.reduce((total, service) => total + service.price, 0);
-        setPrice(total);
+    // const [price, setPrice] = useState(0);
+    const price = servicesData.reduce((total, service) => total + service.price, 0);
 
+    useEffect(() => {
         dispatch(
-        addServices({ _id: item._id, services: [...servicesData] })
-        )
+        addServices({ _id: item._id, services: [...servicesData] }))
     },[servicesData]);
 
+
+// on Screen state change
+    // useEffect(() => {
+        // navigation.addListener('focus', () => {
+            // console.log('onfocus');
+            // cart.find(services => {
+                // if (services._id === item._id) {
+                    // console.log(services.services);
+                    // setServicesData([...services.services]);
+                // }
+            // });
+        // })
+    // }, [])
 
      // Set an initial value of 0
 

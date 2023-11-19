@@ -80,8 +80,8 @@ const CartScreen = ({ navigation }) => {
                     <View style={{paddingHorizontal: 18, flexDirection: 'row',justifyContent: 'space-between' }}>
                     <Text style={{ marginTop: 10, color: theme.colors.primary }}>YOUR CLOTHES</Text>
                     <Button onPress={() => {
-                        // dispatch(cleanCart());
-                        // dispatch(quantityReset());
+                        dispatch(cleanCart());
+                        dispatch(quantityReset());
                     }}>clear</Button>
                     </View>
                     <FlatList

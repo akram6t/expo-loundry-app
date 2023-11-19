@@ -111,6 +111,7 @@ const HomeScreen = ({ navigation }) => {
         const { status, data } = result.data;
         if (status) {
           setShops([...data]);
+          console.log(data);
         }
       }).catch(err => {
         setLoader(false);

@@ -11,10 +11,11 @@ const OrderSuccessScreen = ({ navigation }) => {
 
   const resetScreen = () => {
 
-    navigation.reset({
-      index: 0,
-      routes: [{ name: routes.HomeScreen }]
-    })
+    // navigation.reset({
+    //   index: 0,
+    //   routes: [{ name: routes.HomeScreen }]
+    // })
+    navigation.navigate(routes.HomeScreen, { refresh: true });
 
   }
 
