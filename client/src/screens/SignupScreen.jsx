@@ -11,9 +11,6 @@ import { auth } from '../firebaseConfig';
 import { createUserWithEmailAndPassword } from 'firebase/auth';
 import axios from 'axios';
 import { useSelector } from 'react-redux';
-// import { useDispatch, useSelector } from 'react-redux';
-// import { isCreated } from '../utils/reducers/AuthStateReducer';
-// const auth = getAuth();
 
 const SignupScreen = ({ navigation }) => {
     const [isPasswordSecure, setIsPasswordSecure] = useState(true);
@@ -34,6 +31,11 @@ const SignupScreen = ({ navigation }) => {
     const onValueChange = (name, text) => {
         if(name === 'mobile'){
             if(text.length > 10){
+                return;
+            }
+        }
+        if(name === 'name'){
+            if(text.length > 20){
                 return;
             }
         }

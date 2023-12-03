@@ -28,6 +28,7 @@ const api = {
     // baseUrl: '',
     apiKey: 'c2964966ece452dba2b8d4c029c8d73',
     createUser: 'apis/create_user',
+    updateUser: 'apis/update_user',
     users: 'apis/users',
     banners: 'apis/banners',
     services: 'apis/services',

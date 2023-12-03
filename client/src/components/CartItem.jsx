@@ -191,6 +191,7 @@ export default CartItem = ({ item, index }) => {
                                     </View>
                                     <View style={{ flex: 1 }}>
                                         <Checkbox.Item
+                                            color={theme.colors.primary}
                                             label={service.name}
                                             status={c ? 'checked' : 'unchecked'}
                                             onPress={() => handleCheckboxChange(service, productServices)}

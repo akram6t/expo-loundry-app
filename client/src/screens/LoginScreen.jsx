@@ -24,6 +24,15 @@ const LoginScreen = ({ navigation }) => {
         password: ''
     });
 
+    useEffect(() => {
+        const user = auth.currentUser;
+        if(user){
+            console.log('user is already...');
+        }else{
+            console.log('you not signin...');
+        }
+    },[])
+
     const dispatch = useDispatch();
     const server = useSelector(state => state.path.path);
 

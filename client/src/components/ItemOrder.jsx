@@ -31,13 +31,13 @@ const ItemOrder = ({item, index, status}) => {
 
         if (currentMonth === pickMonth && currentYear === pickYear) {
             if (pickDate === currentDate) {
-                dif_day = 'today';
+                dif_day = 'Today';
                 stringDate = `${dif_day} ${pickDate} ${monthNames[pickMonth]} ${pick.getHours()}:${pick.getMinutes()}`;
             } else if (pickDate - 1 === currentDate) {
-                dif_day = 'yesterday';
+                dif_day = 'Yesterday';
                 stringDate = `${dif_day} ${pickDate} ${monthNames[pickMonth]} ${pick.getHours()}:${pick.getMinutes()}`;
             } else if (pickDate + 1 === currentDate) {
-                dif_day = 'tomorrow';
+                dif_day = 'Tomorrow';
                 stringDate = `${dif_day} ${pickDate} ${monthNames[pickMonth]} ${pick.getHours()}:${pick.getMinutes()}`;
             }
 
@@ -70,8 +70,8 @@ const ItemOrder = ({item, index, status}) => {
 
 
     return (
-        <TouchableRipple key={index} style={{ margin: 8 }} onPress={() => navigation.navigate(routes.OrderStatusScreen, { item: item })}>
-            <View key={index} style={{ padding: 8, gap: 8, borderWidth: 1, borderColor: MD2Colors.grey300, borderRadius: 10 }}>
+        <TouchableRipple key={index} style={{backgroundColor: theme.colors.background, margin: 8, borderRadius: 10, borderWidth: 1, borderColor: MD2Colors.grey300}} onPress={() => navigation.navigate(routes.OrderStatusScreen, { item: item })}>
+            <View style={{ padding: 8, gap: 8 }}>
                 <View style={{ flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between' }}>
                     <View style={{ gap: 2 }}>
                         <Text style={{ fontWeight: 'bold', fontSize: 18 }}>LounryApp</Text>
@@ -81,8 +81,8 @@ const ItemOrder = ({item, index, status}) => {
                     <View>
                         <View style={{ alignItems: 'flex-end' }}>
                             <View style={{ flexDirection: 'row', alignItems: 'center' }}>
-                                <MaterialCommunityIcons size={16} name="currency-inr" color={item.order_status === 'Delivered' ? theme.colors.primary : MD2Colors.blue500} />
-                                <Text style={{ fontSize: 16, fontWeight: 'bold', color: item.order_status === 'Delivered' ? theme.colors.primary : MD2Colors.blue500 }}>{totalPrice + item.service_fee}</Text>
+                                <MaterialCommunityIcons size={18} name="currency-inr" />
+                                <Text style={{ fontSize: 18, fontWeight: 'bold' }}>{totalPrice + item.service_fee}</Text>
                             </View>
                             <Text style={{ color: item.order_status === 'Delivered' ? theme.colors.primary : MD2Colors.blue500, fontWeight: 'bold' }}>{item.order_status}</Text>
                         </View>

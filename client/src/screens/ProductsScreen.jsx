@@ -19,12 +19,13 @@ import { Entypo, AntDesign, MaterialCommunityIcons, MaterialIcons, Feather } fro
 import { routes } from "../Constaints";
 import ProductItem from "../components/ProductItem";
 import { useDispatch, useSelector } from "react-redux";
-import { getProducts, cleanProduct } from "./../utils/reducers/ProductReducer";
+import { getProducts, cleanProduct } from "../utils/reducers/ProductReducer";
 import Loader from "../components/Loader";
 import axios from "axios";
 
 import { api } from "../Constaints";
 import { cleanCart } from "../utils/reducers/CartReducer";
+import getDistance from "../utils/getDistance";
 
 const ClothsScreen = ({ navigation }) => {
   const route = useRoute();
@@ -36,16 +37,33 @@ const ClothsScreen = ({ navigation }) => {
   // const total = cart.map((item) => item.quantity * item.price).reduce((curr,prev) => curr + prev,0);
   const [ totalPrice, setTotalPrice ] = useState(0);
   const theme = useTheme();
+  const [ distance, setDistance ] = useState('...');
+  // const [ currentLatLon, setCurrentLatLon ] = useState({});
+  // const [  ]
 
   // const [ shop, setShop ] = useState();
 
   const {shop} = route.params;
+  const currentLatLon = route.params.latlon;
   // const [products, setProducts] = useState(products_data);
 
   const server = useSelector(state => state.path.path);
 
   const products = useSelector((state) => state.product.product);
   const dispatch = useDispatch();
+
+  useEffect(() => {
+    const distanceinMeter = getDistance(currentLatLon, shop.latlon);
+    let distance = '...';
+    if(distanceinMeter > 1){
+      distance = distanceinMeter.toFixed(2) + ' km';
+    }else{
+      distance = (distanceinMeter * 1000).toFixed(0) + ' m';
+    }
+
+    setDistance(distance);
+
+  }, [])
 
   function getCloths(){
     dispatch(cleanProduct());
@@ -59,7 +77,7 @@ const ClothsScreen = ({ navigation }) => {
         const {status, data} = result.data;
         if(status){
             // setShops([...data]);
-            console.log(data);
+            // console.log(data);
             [...data].map(item => dispatch(getProducts(item)));
         }
       }).catch(err => {
@@ -138,13 +156,13 @@ const ClothsScreen = ({ navigation }) => {
           }}
         >
           <Entypo style={{ opacity: 0.5 }} size={16} name="location-pin" />
-          <Text style={{ opacity: 0.5 }}>6.2 km </Text>
+          <Text style={{ opacity: 0.5, fontSize: 16 }}>{distance}</Text>
           <Entypo
             style={{ opacity: 0.5 }}
             color={theme.colors.primary}
             name="flow-line"
           />
-          <Text style={{ opacity: 0.5 }}>Sant Nagar, Indore</Text>
+          <Text style={{ opacity: 0.5, fontSize: 16 }}>{ shop.address }</Text>
         </View>
       </View>
 
@@ -154,7 +172,7 @@ const ClothsScreen = ({ navigation }) => {
           mode="scrollable"
           style={{ backgroundColor: theme.colors.background, marginTop: 10 }}
         >
-          <TabScreen label={"MEN"}>
+          <TabScreen label={"MAN"}>
             <View style={{ flex: 1 }}>
               <FlatList
                 data={products.filter((item) => item.gender === "men")}
@@ -163,7 +181,7 @@ const ClothsScreen = ({ navigation }) => {
               />
             </View>
           </TabScreen>
-          <TabScreen label={"WOMEN"}>
+          <TabScreen label={"WOMAN"}>
             <View style={{ flex: 1 }}>
               <FlatList
                 data={products.filter((item) => item.gender === "women")}

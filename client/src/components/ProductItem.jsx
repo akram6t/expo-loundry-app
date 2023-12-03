@@ -27,11 +27,17 @@ export default ProductItem = ({ item, index, service, setSnackbar, setMessage })
 
     
     useEffect(() => {
+        let servicematch = false;
         item.services.find(item => {
             if (item.name === service) {
-                setServicesData([...servicesData, { ...item }])
+                setServicesData([{ ...item }])
+                servicematch = true;
+                return;
             }
         });
+        if(!servicematch){
+            setServicesData([{...item.services[0]}]);
+        }
     }, []);
 
 
@@ -81,28 +87,11 @@ export default ProductItem = ({ item, index, service, setSnackbar, setMessage })
                 let upService = [...updatedServices, selectedService];
 
                 if (selectedService.name === 'Wash Only') {
-                    // const serviceIndex = prevServices.findIndex((service) => service.name === 'Iron Only');
-                    // if (serviceIndex !== -1) {
-                        // updatedServices = updatedServices.filter(service => service.name !== 'Iron Only');
-
-                        // const ind = allServices.findIndex((service) => service.name === "Wash & Iron");
-                        // upService = [...updatedServices, allServices[ind]];
-                    // } else {
-                        // If 'Wash Only' is selected, remove 'Wash & Iron'
                         updatedServices = updatedServices.filter(service => service.name !== 'Wash & Iron');
                         upService = [...updatedServices, selectedService];
 
-                    // }
-
                 } else if (selectedService.name === 'Iron Only') {
-                    // If 'Iron Only' is selected, remove 'Wash & Iron'
-                    // const serviceIndex = prevServices.findIndex((service) => service.name === 'Wash Only');
-                    // if (serviceIndex !== -1) {
-                        // updatedServices = updatedServices.filter(service => service.name !== 'Wash Only');
-
-                        // const ind = allServices.findIndex((service) => service.name === "Wash & Iron");
-                        // upService = [...updatedServices, allServices[ind]];
-                    // } else {
+                    
                         updatedServices = updatedServices.filter(service => service.name !== 'Wash & Iron');
                         upService = [...updatedServices, selectedService];
                     // }
@@ -205,6 +194,7 @@ export default ProductItem = ({ item, index, service, setSnackbar, setMessage })
                                     </View>
                                     <View style={{ flex: 1 }}>
                                         <Checkbox.Item
+                                        color={theme.colors.primary}
                                             label={service.name}
                                             status={c ? 'checked' : 'unchecked'}
                                             onPress={() => handleCheckboxChange(service, item.services)}

@@ -107,7 +107,7 @@ const CartScreen = ({ navigation }) => {
             )}
                     { totalPrice === 0 ? null
                     :
-            (<View>
+            (<View style={{ paddingTop: 12 }}>
                     <Text style={{ marginStart: 18, marginTop: 10, color: theme.colors.primary }}>PAYMENT INFO</Text>
                         <View
                             style={{
@@ -139,8 +139,8 @@ const CartScreen = ({ navigation }) => {
                 </View>
     )}
 
-            {totalPrice===0?null:<Button
-                style={{ fontSize: 20, padding: 5, margin: 8 }}
+            {totalPrice===0?null:<Button contentStyle={{padding: 5}}
+                style={{ fontSize: 20, margin: 8 }}
                 onPress={() => navigation.navigate(routes.PickupDropScreen)}
                 mode="contained"
             >

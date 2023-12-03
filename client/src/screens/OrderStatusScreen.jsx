@@ -6,7 +6,7 @@ import {
     Image,
     ScrollView
 } from "react-native";
-import { Divider, MD2Colors, TouchableRipple } from 'react-native-paper';
+import { Divider, MD2Colors, MD3Colors, TouchableRipple } from 'react-native-paper';
 import React, { useState, useEffect } from "react";
 import { useTheme } from "react-native-paper";
 import { SafeAreaView } from "react-native-safe-area-context";
@@ -137,7 +137,7 @@ const OrdersScreen = ({ navigation }) => {
                     </View>
                     <View style={{ gap: 5 }}>
                         <Text style={{ opacity: 0.7, fontSize: 16 }}>Order Status</Text>
-                        <Text style={{ fontSize: 18, color: theme.colors.primary, fontWeight: 'bold' }}>Order { item.order_status }</Text>
+                        <Text style={{ fontSize: 18, color: status[status.length-1] === item.tag ? MD2Colors.green600 :theme.colors.secondary , fontWeight: 'bold' }}>Order { item.order_status }</Text>
                         <Text style={{ opacity: 0.6 }}>{readableDate(item.order_date)}</Text>
                     </View>
                 </View>

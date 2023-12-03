@@ -6,6 +6,8 @@ import StackNavigator from './src/navigator/StackNavigator';
 import { useAuthentication } from './src/utils/useAuthentication';
 import { Provider } from 'react-redux';
 import store from './src/Store';
+import { auth } from './src/firebaseConfig';
+import { useEffect, useState } from 'react';
 
 const myTheme = {
   ...DefaultTheme,
@@ -13,8 +15,9 @@ const myTheme = {
   colors: {
     ...DefaultTheme.colors,
     secondary: '#24A6C6',
-    primary: '#1DB000',
-    primaryLight: '#E5ECE4',
+    // primary: '#8700B0',
+    primary: '#6400B0',
+    primaryLight: '#E8E4EC',
     background: 'white',
     
     transparent1: '#E6DFF6',
@@ -28,14 +31,23 @@ export default function App() {
   
   NavigationBar.setBackgroundColorAsync(myTheme.colors.background);
   NavigationBar.setButtonStyleAsync("dark");
-  // const { user } = useAuthentication();
 
   function Main(){
+    // This code for when open app check user and change navigator
+    let [ isUser, setIsUser] = useState(false);
+    useEffect(() => {
+      const user = auth.currentUser;
+      if(user){
+        setIsUser(true);
+      }
+    }, [])
+
+
     const { user } = useAuthentication();
     return (
       <PaperProvider theme={myTheme}>
       <StatusBar backgroundColor={myTheme.colors.background} style='dark' />
-      { user ? <StackNavigator/> : <AuthNavigator/>}
+      { user || isUser ? <StackNavigator/> : <AuthNavigator/>}
     </PaperProvider>
     )
   }

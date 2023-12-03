@@ -8,7 +8,8 @@ import {
 } from "react-native";
 import { Divider, MD2Colors, Snackbar, TouchableRipple } from 'react-native-paper';
 import React, { useState, useEffect } from "react";
-import { useTheme } from "react-native-paper";
+import { useTheme,  } from "react-native-paper";
+import { Tabs, TabScreen, TabsProvider } from "react-native-paper-tabs";
 import { SafeAreaView } from "react-native-safe-area-context";
 import { Entypo, MaterialCommunityIcons } from "@expo/vector-icons";
 
@@ -23,6 +24,7 @@ import { auth } from "../firebaseConfig";
 import axios from "axios";
 import ItemOrder from "../components/ItemOrder";
 import { useSelector } from "react-redux";
+import { StatusBar } from 'expo-status-bar';
 
 const OrdersScreen = ({ navigation }) => {
     const [ordersList, setOrdersList] = useState([]);
@@ -57,8 +59,10 @@ const OrdersScreen = ({ navigation }) => {
         getOrders();
     }, []);
 
-    return (
-        <SafeAreaView style={{ flex: 1, backgroundColor: theme.colors.background }}>
+    return (<View style={{ flex: 1 }}>
+        <StatusBar backgroundColor={MD2Colors.grey200} />
+
+        <SafeAreaView style={{ flex: 1, backgroundColor: MD2Colors.grey200 }}>
             <View
                 style={{
                     // marginTop: 20,
@@ -78,20 +82,45 @@ const OrdersScreen = ({ navigation }) => {
                 <Text style={{ fontSize: 20 }}>My Orders</Text>
             </View>
             {/* Appbat End */}
-            <ScrollView overScrollMode="never">
-                <Text style={{ marginTop: 10, marginStart: 10, color: theme.colors.primary }}>Orders</Text>
-                <FlatList
-                    scrollEnabled={false}
-                    nestedScrollEnabled
-                    overScrollMode="never"
-                    data={ordersList}
-                    renderItem={({ item, index }) => {
-                        return (
-                            <ItemOrder item={item} index={index} status={status}/>
-                        )
-                    }}
-                    keyExtractor={(item, index) => index.toString()} />
-            </ScrollView>
+            {/* <ScrollView overScrollMode="never"> */}
+            <TabsProvider defaultIndex={0}>
+                <Tabs tabLabelStyle={{textTransform: 'none'}}
+                    showLeadingSpace={false}
+                    style={{ backgroundColor: MD2Colors.grey200, marginTop: 10 }}
+                >
+                    <TabScreen label={"OnProgress"}>
+                        <View style={{ flex: 1 }}>
+                            <FlatList
+                                // scrollEnabled={false}
+                                nestedScrollEnabled
+                                overScrollMode="never"
+                                data={ordersList}
+                                renderItem={({ item, index }) => {
+                                    return (
+                                        <ItemOrder item={item} index={index} status={status} />
+                                    )
+                                }}
+                                keyExtractor={(item, index) => index.toString()} />
+                        </View>
+                    </TabScreen>
+                    <TabScreen label={"Completed"}>
+                        <View style={{ flex: 1 }}>
+                            <FlatList
+                                // scrollEnabled={false}
+                                nestedScrollEnabled
+                                overScrollMode="never"
+                                data={ordersList}
+                                renderItem={({ item, index }) => {
+                                    return (
+                                        <ItemOrder item={item} index={index} status={status} />
+                                    )
+                                }}
+                                keyExtractor={(item, index) => index.toString()} />
+                        </View>
+                    </TabScreen>
+                </Tabs>
+            </TabsProvider>
+            {/* </ScrollView> */}
 
             <Loader loader={loading} setLoader={setLoading} />
 
@@ -109,6 +138,7 @@ const OrdersScreen = ({ navigation }) => {
             </Snackbar>
 
         </SafeAreaView>
+    </View>
     );
 };
 
@@ -137,94 +167,94 @@ const status = [
 
 // products data
 // const orders_data = [
-    // {
-    //     "order_id": 1001,
-    //     "customer_id": 1,
-    //     "provider_id": 101,
-    //     "order_date": '19 Jun 10:30 pm',
-    //     "pickup_date": '19 Jun 10:30 pm',
-    //     "delivery_date": '19 Jun 10:30 pm',
-    //     "order_status": 'Shipped',
-    //     "items": [
-    //         {
-    //             "item_id": 201,
-    //             "item_name": "Shirt",
-    //             "quantity": 5,
-    //             "price": 2.99,
-    //         },
-    //         // Other order items
-    //     ]
-    // },
-    // {
-    //     "order_id": 1001,
-    //     "customer_id": 1,
-    //     "provider_id": 101,
-    //     "order_date": '19 Jun 10:30 pm',
-    //     "pickup_date": '19 Jun 10:30 pm',
-    //     "delivery_date": '19 Jun 10:30 pm',
-    //     "order_status": 'Shipped',
-    //     "items": [
-    //         {
-    //             "item_id": 201,
-    //             "item_name": "Shirt",
-    //             "quantity": 5,
-    //             "price": 2.99,
-    //         },
-    //         // Other order items
-    //     ]
-    // },
-    // {
-    //     "order_id": 1001,
-    //     "customer_id": 1,
-    //     "provider_id": 101,
-    //     "order_date": '19 Jun 10:30 pm',
-    //     "pickup_date": '19 Jun 10:30 pm',
-    //     "delivery_date": '19 Jun 10:30 pm',
-    //     "order_status": 'Delivered',
-    //     "items": [
-    //         {
-    //             "item_id": 201,
-    //             "item_name": "Shirt",
-    //             "quantity": 5,
-    //             "price": 2.99,
-    //         },
-    //         // Other order items
-    //     ]
-    // },
-    // {
-    //     "order_id": 1001,
-    //     "customer_id": 1,
-    //     "provider_id": 101,
-    //     "order_date": '19 Jun 10:30 pm',
-    //     "pickup_date": '19 Jun 10:30 pm',
-    //     "delivery_date": '19 Jun 10:30 pm',
-    //     "order_status": 'Delivered',
-    //     "items": [
-    //         {
-    //             "item_id": 201,
-    //             "item_name": "Shirt",
-    //             "quantity": 5,
-    //             "price": 2.99,
-    //         },
-    //     ]
-    // },
-    // {
-    //     "order_id": 1001,
-    //     "customer_id": 1,
-    //     "provider_id": 101,
-    //     "order_date": '19 Jun 10:30 pm',
-    //     "pickup_date": '19 Jun 10:30 pm',
-    //     "delivery_date": '19 Jun 10:30 pm',
-    //     "order_status": 'Pickup',
-    //     "items": [
-    //         {
-    //             "item_id": 201,
-    //             "item_name": "Shirt",
-    //             "quantity": 5,
-    //             "price": 2.99,
-    //         },
-    //     ]
-    // }
+// {
+//     "order_id": 1001,
+//     "customer_id": 1,
+//     "provider_id": 101,
+//     "order_date": '19 Jun 10:30 pm',
+//     "pickup_date": '19 Jun 10:30 pm',
+//     "delivery_date": '19 Jun 10:30 pm',
+//     "order_status": 'Shipped',
+//     "items": [
+//         {
+//             "item_id": 201,
+//             "item_name": "Shirt",
+//             "quantity": 5,
+//             "price": 2.99,
+//         },
+//         // Other order items
+//     ]
+// },
+// {
+//     "order_id": 1001,
+//     "customer_id": 1,
+//     "provider_id": 101,
+//     "order_date": '19 Jun 10:30 pm',
+//     "pickup_date": '19 Jun 10:30 pm',
+//     "delivery_date": '19 Jun 10:30 pm',
+//     "order_status": 'Shipped',
+//     "items": [
+//         {
+//             "item_id": 201,
+//             "item_name": "Shirt",
+//             "quantity": 5,
+//             "price": 2.99,
+//         },
+//         // Other order items
+//     ]
+// },
+// {
+//     "order_id": 1001,
+//     "customer_id": 1,
+//     "provider_id": 101,
+//     "order_date": '19 Jun 10:30 pm',
+//     "pickup_date": '19 Jun 10:30 pm',
+//     "delivery_date": '19 Jun 10:30 pm',
+//     "order_status": 'Delivered',
+//     "items": [
+//         {
+//             "item_id": 201,
+//             "item_name": "Shirt",
+//             "quantity": 5,
+//             "price": 2.99,
+//         },
+//         // Other order items
+//     ]
+// },
+// {
+//     "order_id": 1001,
+//     "customer_id": 1,
+//     "provider_id": 101,
+//     "order_date": '19 Jun 10:30 pm',
+//     "pickup_date": '19 Jun 10:30 pm',
+//     "delivery_date": '19 Jun 10:30 pm',
+//     "order_status": 'Delivered',
+//     "items": [
+//         {
+//             "item_id": 201,
+//             "item_name": "Shirt",
+//             "quantity": 5,
+//             "price": 2.99,
+//         },
+//     ]
+// },
+// {
+//     "order_id": 1001,
+//     "customer_id": 1,
+//     "provider_id": 101,
+//     "order_date": '19 Jun 10:30 pm',
+//     "pickup_date": '19 Jun 10:30 pm',
+//     "delivery_date": '19 Jun 10:30 pm',
+//     "order_status": 'Pickup',
+//     "items": [
+//         {
+//             "item_id": 201,
+//             "item_name": "Shirt",
+//             "quantity": 5,
+//             "price": 2.99,
+//         },
+//     ]
+// }
 // ];
 
 export default OrdersScreen;

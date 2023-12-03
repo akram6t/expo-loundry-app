@@ -3,7 +3,7 @@ import { createNativeStackNavigator } from '@react-navigation/native-stack';
 import { routes } from "../Constaints";
 import HomeScreen from "../screens/HomeScreen";
 import ProfileScreen from "../screens/ProfileScreen";
-import ClothsScreen from "../screens/ClothsScreen";
+import ClothsScreen from "../screens/ProductsScreen";
 import CartScreen from "../screens/CartScreen";
 import PickupDropScreen from "../screens/PickupDropScreen";
 import AddressScreen from "../screens/AddressScreen";

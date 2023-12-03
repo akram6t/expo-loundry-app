@@ -2,17 +2,18 @@ import { StyleSheet, View, Image, FlatList, ScrollView, TouchableOpacity, Refres
 import React, { useEffect, useState } from 'react'
 // import { Asset, useAssets } from 'expo-asset';
 import { SafeAreaView } from 'react-native-safe-area-context'
-import { useTheme, Appbar, Badge, Text, Avatar, TouchableRipple, Snackbar, BottomNavigation, MD2Colors } from 'react-native-paper'
-import { SliderBox } from 'react-native-image-slider-box';
+import { useTheme, Appbar, Badge, Text, Avatar, TouchableRipple, Snackbar, BottomNavigation, MD2Colors, Button, Divider } from 'react-native-paper'
+import Carousel from './../components/Carousel';
 import axios from 'axios';
 import { api, routes } from '../Constaints';
 import { auth } from '../firebaseConfig';
-import { AntDesign, Feather, MaterialCommunityIcons } from '@expo/vector-icons';
+import { Feather, MaterialCommunityIcons } from '@expo/vector-icons';
 import Loader from '../components/Loader';
 import { setPath } from '../utils/reducers/PathReducer';
 import { useDispatch, useSelector } from 'react-redux';
 import { database } from './../firebaseConfig';
 import { onValue, ref } from 'firebase/database';
+import * as Location from 'expo-location';
 
 const HomeScreen = ({ navigation }) => {
   const theme = useTheme();
@@ -28,137 +29,223 @@ const HomeScreen = ({ navigation }) => {
   const [banners, setBanners] = useState([]);
   const [services, setServices] = useState([]);
   const [shops, setShops] = useState([]);
+  const [ locationServicesEnabled, setLocationServicesEnabled ] = useState(false);
+
+  const [currentLatLon, setCurrentLatLon] = useState(null);
+
+  const [ address, setAddress ] = useState('loading ...');
 
   const dispatch = useDispatch();
 
   const server = useSelector(state => state.path.path);
 
   useEffect(() => {
-    if(server.baseUrl === ""){
-        setLoader(true);
-        const dbRef = ref(database, 'utils/path/baseUrl');
-        onValue(dbRef, (snapshot) => {
-            dispatch(setPath(snapshot.val()));
-            setLoader(false);
-        }, (error) => {
-            console.log(error);
-            setLoader(false);
-        })
+    if (server.baseUrl === "") {
+      setLoader(true);
+      const dbRef = ref(database, 'utils/path/baseUrl');
+      onValue(dbRef, (snapshot) => {
+        dispatch(setPath(snapshot.val()));
+        setLoader(false);
+      }, (error) => {
+        console.log(error);
+        setLoader(false);
+      })
     }
-  },[])
+  }, [])
 
 
 
   const onRefresh = React.useCallback(() => {
     setRefreshing(true);
     apiFetch();
+    checkIfLocationEnabled();
+    getCurrentLocation();
     setTimeout(() => {
       setRefreshing(false);
     }, 2000);
   }, []);
   // const [assets, error] = useAssets([require('assets/images/icons_user.png')]);
 
-  function apiFetch (){
+  function apiFetch() {
 
-  function getUser() {
-    setLoader(true);
-    const uid = auth.currentUser.uid;
-    if (auth.currentUser == null) return;
-    axios.get(`${server.baseUrl}/${api.users}/${uid}`, { headers: { "Content-Type": 'application/json' } })
-      .then((result, err) => {
-        setLoader(false);
-        const { status, data } = result.data;
-        if (status) {
-          if (data == null) {
-            getUser();
-          } else {
-            setUser(data);
+    function getUser() {
+      setLoader(true);
+      const uid = auth.currentUser.uid;
+      if (auth.currentUser == null) return;
+      axios.get(`${server.baseUrl}/${api.users}/${uid}`, { headers: { "Content-Type": 'application/json' } })
+        .then((result, err) => {
+          setLoader(false);
+          const { status, data } = result.data;
+          if (status) {
+            if (data == null) {
+              getUser();
+            } else {
+              // remove
+              setUser(data);
+            }
           }
-        }
-      }).catch(err => {
-        setLoader(false);
-        setMessage(`${err}`);
-        setSnackbar(true);
-        console.log(err);
-      })
+        }).catch(err => {
+          setLoader(false);
+          setMessage(`${err}`);
+          setSnackbar(true);
+          console.log(err);
+        })
+    }
+
+
+    function getBanners() {
+      setLoader(true);
+      // const uid = auth.currentUser.uid;
+      if (auth.currentUser == null) return;
+      axios.get(`${server.baseUrl}/${api.banners}`, { headers: { "Content-Type": 'application/json' } })
+        .then((result, err) => {
+          setLoader(false);
+          const { status, data } = result.data;
+          if (status) {
+            const images = data.map(obj => obj.image)
+            setBanners(images);
+          }
+        }).catch(err => {
+          setLoader(false);
+          setMessage(`${err}`);
+          setSnackbar(true);
+          console.log(err);
+        })
+    }
+
+    function getServices() {
+      setLoader(true);
+      // const uid = auth.currentUser.uid;
+      if (auth.currentUser == null) return;
+      axios.get(`${server.baseUrl}/${api.services}`, { headers: { "Content-Type": 'application/json' } })
+        .then((result, err) => {
+          setLoader(false);
+          const { status, data } = result.data;
+          if (status) {
+            setServices([...data]);
+          }
+        }).catch(err => {
+          setLoader(false);
+          setMessage(`${err}`);
+          setSnackbar(true);
+          console.log(err);
+        })
+    }
+
+    function getShops() {
+      setLoader(true);
+      // const uid = auth.currentUser.uid;
+      if (auth.currentUser == null) return;
+      axios.get(`${server.baseUrl}/${api.shops}`, { headers: { "Content-Type": 'application/json' } })
+        .then((result, err) => {
+          setLoader(false);
+          const { status, data } = result.data;
+          if (status) {
+            setShops([...data]);
+            // console.log(data);
+          }
+        }).catch(err => {
+          setLoader(false);
+          setMessage(`${err}`);
+          setSnackbar(true);
+          console.log(err);
+        })
+    }
+
+    Promise.all([getUser(), getBanners(), getServices(), getShops()]);
+
   }
-
-
-  function getBanners() {
-    setLoader(true);
-    // const uid = auth.currentUser.uid;
-    if (auth.currentUser == null) return;
-    axios.get(`${server.baseUrl}/${api.banners}`, { headers: { "Content-Type": 'application/json' } })
-      .then((result, err) => {
-        setLoader(false);
-        const { status, data } = result.data;
-        if (status) {
-          const images = data.map(obj => obj.image)
-          setBanners(images);
-        }
-      }).catch(err => {
-        setLoader(false);
-        setMessage(`${err}`);
-        setSnackbar(true);
-        console.log(err);
-      })
-  }
-
-  function getServices() {
-    setLoader(true);
-    // const uid = auth.currentUser.uid;
-    if (auth.currentUser == null) return;
-    axios.get(`${server.baseUrl}/${api.services}`, { headers: { "Content-Type": 'application/json' } })
-      .then((result, err) => {
-        setLoader(false);
-        const { status, data } = result.data;
-        if (status) {
-          setServices([...data]);
-        }
-      }).catch(err => {
-        setLoader(false);
-        setMessage(`${err}`);
-        setSnackbar(true);
-        console.log(err);
-      })
-  }
-
-  function getShops() {
-    setLoader(true);
-    // const uid = auth.currentUser.uid;
-    if (auth.currentUser == null) return;
-    axios.get(`${server.baseUrl}/${api.shops}`, { headers: { "Content-Type": 'application/json' } })
-      .then((result, err) => {
-        setLoader(false);
-        const { status, data } = result.data;
-        if (status) {
-          setShops([...data]);
-          console.log(data);
-        }
-      }).catch(err => {
-        setLoader(false);
-        setMessage(`${err}`);
-        setSnackbar(true);
-        console.log(err);
-      })
-  }
-
-      Promise.all([getUser(), getBanners(), getServices(), getShops()]);
-
-}
 
   useEffect(() => {
     apiFetch();
+    checkIfLocationEnabled();
+    getCurrentLocation();
   }, []);
+
+
+
+  // Location service enable
+  const checkIfLocationEnabled = async () => {
+    let enabled = await Location.hasServicesEnabledAsync();
+    if (!enabled) {
+        Alert.alert(
+            "Location services not enabled",
+            "Please enable the location services",
+            [
+                {
+                    text: "Cancel",
+                    onPress: () => console.log("Cancel Pressed"),
+                    style: "cancel",
+                },
+                { text: "OK", onPress: () => console.log("OK Pressed") },
+            ],
+            { cancelable: false }
+        );
+    } else {
+        setLocationServicesEnabled(enabled);
+    }
+};
+
+// get location
+const getCurrentLocation = async () => {
+  let { status } = await Location.requestForegroundPermissionsAsync();
+
+  if (status !== "granted") {
+      Alert.alert(
+          "Permission denied",
+          "allow the app to use the location services",
+          [
+              {
+                  text: "Cancel",
+                  onPress: () => console.log("Cancel Pressed"),
+                  style: "cancel",
+              },
+              { text: "OK", onPress: () => console.log("OK Pressed") },
+          ],
+          { cancelable: false }
+      );
+  }
+
+  setLoader(true);
+
+  const { coords } = await Location.getCurrentPositionAsync();
+  // console.log(coords)
+  if (coords) {
+      const { latitude, longitude } = coords;
+      setCurrentLatLon({
+          latitude: latitude,
+          longitude: longitude
+      })
+
+      let res = await Location.reverseGeocodeAsync({
+          latitude,
+          longitude,
+      });
+
+      setLoader(false);
+
+      // setAddress('gita nagar');
+
+      const response = res[0];
+
+      setAddress(`${response.name ? response.name + ', ' : ''}${response.street ? response.street + ', ' : ''}${response.district ? response.district + ', ' : ''}${response.city ? response.city + ', ' : ''}${response.region ? response.region + ', ' : ''}${response.postalCode ? response.postalCode : ''} `);
+  }
+};
+
+useState(() => {
+  checkIfLocationEnabled();
+  getCurrentLocation();
+}, []);
+
 
   return (
     <SafeAreaView style={{ backgroundColor: theme.colors.background, flex: 1 }}>
-      <View style={{ padding: 8, flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between' }}>
-        <View style={{ marginLeft: 10 }}>
-          <Text style={{ fontSize: 16 }}>hello</Text>
-          <Text style={{ fontSize: 22, fontWeight: 'bold' }} numberOfLines={1}>{user.name.length > 15 ? user.name.slice(0, 15) : user.name}</Text>
+      <View style={{ paddingHorizontal: 8, paddingVertical: 10, flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between' }}>
+        <View style={{flex: 1, marginLeft: 10 }}>
+          <Text style={{ fontSize: 22, fontWeight: 'bold' }} numberOfLines={1}>{user.name}</Text>
+          <Text numberOfLines={1} style={{fontSize: 16 }}>{address}</Text>
         </View>
-        <View style={{ flexDirection: 'row' }}>
+        <View style={{ flexDirection: 'row', alignItems:'center' }}>
           <TouchableOpacity onPress={() => navigation.navigate(routes.NotificationsScreen)}>
             <Badge
               visible={unread && unread > 0}
@@ -175,32 +262,19 @@ const HomeScreen = ({ navigation }) => {
             />
           </TouchableOpacity>
           <TouchableOpacity activeOpacity={0.8} onPress={() => navigation.navigate(routes.ProfileScreen)}>
-            {user.profile ? (<Avatar.Image style={{ marginStart: 8, marginEnd: 8 }} size={40} source={{ uri: user.profile }} />)
-              : (<Avatar.Image style={{ marginStart: 8, marginEnd: 8 }} size={40} source={require('../../assets/images/icon_user.png')} />)}
+            <Avatar.Image style={{ marginStart: 8, marginEnd: 8 }} size={40} source={ user.profile ? { uri: server.baseUrl + user.profile } : require('../../assets/images/icon_user.png')} />
           </TouchableOpacity>
         </View>
       </View>
       {/* appbar end */}
 
+      {/* <Button onPress={() => getAddFromLatLon()}>getlatlon</Button> */}
+
       <ScrollView refreshControl={<RefreshControl refreshing={refreshing} onRefresh={onRefresh} />} overScrollMode='never' style={{ flex: 1 }}>
 
-        <View style={{ marginTop: 20 }}>
-          <SliderBox
-            images={banners}
-            autoPlay
-            circleLoop
-            dotColor={theme.colors.primary}
-            inactiveDotColor={theme.colors.background}
-            ImageComponentStyle={{
-              borderRadius: 6,
-              width: "94%",
-            }}
-          />
-        </View>
-
         {/* Services */}
-        <View style={{ marginTop: 20 }}>
-          <Text style={{ marginStart: 12, fontSize: 18 }}>Services</Text>
+        <View style={{ marginTop: 20, flex: 1 }}>
+          <Text style={{ marginStart: 12, fontSize: 18 }}>SERVICES</Text>
           <FlatList scrollEnabled={false}
             contentContainerStyle={{ padding: 10 }}
             data={services}
@@ -215,12 +289,12 @@ const HomeScreen = ({ navigation }) => {
                 paddingVertical: 20,
                 elevation: 5,
                 borderRadius: 8
-              }} key={index} onPress={() => navigation.navigate(routes.ClothsScreen, { service: item.name, shop: shops[0] })}>
+              }} key={index} onPress={() => navigation.navigate(routes.ClothsScreen, { service: item.name, shop: shops[0], latlon: currentLatLon })}>
                 <View style={{
                   alignItems: 'center',
                   gap: 10,
                 }} >
-                  <Image style={{ width: 70, height: 70 }} source={{ uri: item.image }} />
+                  <Image style={{ width: 70, height: 70 }} source={{ uri: server.baseUrl + item.image }} />
                   <Text style={{ fontSize: 16 }}>{item.name}</Text>
                 </View>
               </TouchableRipple>
@@ -230,6 +304,10 @@ const HomeScreen = ({ navigation }) => {
             keyExtractor={(item, index) => index.toString()}
           />
         </View>
+
+        <Divider/>
+      {/* Carousel */}
+      <Carousel images={banners}/>
 
       </ScrollView>
 
