@@ -5,12 +5,24 @@ import { useNavigation } from '@react-navigation/native'
 import { monthNames, routes } from '../Constaints'
 import { MaterialCommunityIcons } from '@expo/vector-icons'
 
-const ItemOrder = ({item, index, status}) => {
+const ItemOrder = ({item, index, status, server}) => {
     const theme = useTheme();
+    const [ statusColor, setStatusColor ] = useState(theme.colors.primary);
     const navigation = useNavigation();
     const [ totalPrice, setTotalPrice ] = useState(0);
     let opacity = 1;
     isStatusOver = false;
+
+    const getStatusColorCode = () => {
+        status.map((status, index) => {
+            if(status.tag === item.order_status){
+                // console.log(status.color);
+                setStatusColor(status.color);
+            }
+        })
+    }
+
+    useEffect(() => getStatusColorCode(), []);
 
     const dateFormated = (pick_date) => {
         let stringDate = '';
@@ -70,12 +82,13 @@ const ItemOrder = ({item, index, status}) => {
 
 
     return (
-        <TouchableRipple key={index} style={{backgroundColor: theme.colors.background, margin: 8, borderRadius: 10, borderWidth: 1, borderColor: MD2Colors.grey300}} onPress={() => navigation.navigate(routes.OrderStatusScreen, { item: item })}>
+        <TouchableRipple key={index} style={{backgroundColor: theme.colors.background, margin: 8, borderRadius: 10, borderWidth: 1, borderColor: MD2Colors.grey300}} 
+            onPress={() => navigation.navigate(routes.OrderStatusScreen, { item: item, status: status })}>
             <View style={{ padding: 8, gap: 8 }}>
                 <View style={{ flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between' }}>
                     <View style={{ gap: 2 }}>
                         <Text style={{ fontWeight: 'bold', fontSize: 18 }}>LounryApp</Text>
-                        <Text style={{ fontSize: 14 }}>order no. - {item._id}</Text>
+                        <Text style={{ fontSize: 14 }}>order no. - {item.order_id}</Text>
                         <Text style={{ fontSize: 12, opacity: 0.6 }}>{dateFormated(item.order_date)}</Text>
                     </View>
                     <View>
@@ -84,7 +97,7 @@ const ItemOrder = ({item, index, status}) => {
                                 <MaterialCommunityIcons size={18} name="currency-inr" />
                                 <Text style={{ fontSize: 18, fontWeight: 'bold' }}>{totalPrice + item.service_fee}</Text>
                             </View>
-                            <Text style={{ color: item.order_status === 'Delivered' ? theme.colors.primary : MD2Colors.blue500, fontWeight: 'bold' }}>{item.order_status}</Text>
+                            <Text style={{ color: 'white', backgroundColor: statusColor, fontWeight: 'bold', paddingHorizontal: 5, paddingVertical: 2, borderRadius: 100 }}>{item.order_status}</Text>
                         </View>
                     </View>
                 </View>
@@ -100,7 +113,7 @@ const ItemOrder = ({item, index, status}) => {
                             }
                             return (
                                 <View key={index} style={{ flex: 1, alignItems: 'center', gap: 5, opacity: opacity }}>
-                                    <Image style={{ width: 25, height: 25 }} source={status.icon} />
+                                    <Image style={{ width: 25, height: 25 }} source={{ uri: server.baseUrl+status.icon}} />
                                     <Text style={{ fontSize: 11 }}>{status.tag}</Text>
                                 </View>
                             )

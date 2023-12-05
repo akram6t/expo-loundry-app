@@ -44,10 +44,10 @@ export default CartItem = ({ item, index }) => {
             // return updatedServices;
         } else {  // ADD ITEM
 
-            let updatedServices = [...prevServices];
-            let upService = [...updatedServices, selectedService];
+            // let updatedServices = [...prevServices];
+            // let upService = [...updatedServices, selectedService];
 
-            if (selectedService.name === 'Wash Only') {
+            // if (selectedService.name === 'Wash Only') {
                 // const serviceIndex = prevServices.findIndex((service) => service.name === 'Iron Only');
                 // if (serviceIndex !== -1) {
                 // updatedServices = updatedServices.filter(service => service.name !== 'Iron Only');
@@ -56,12 +56,12 @@ export default CartItem = ({ item, index }) => {
                 // upService = [...updatedServices, allServices[ind]];
                 // } else {
                 // If 'Wash Only' is selected, remove 'Wash & Iron'
-                updatedServices = updatedServices.filter(service => service.name !== 'Wash & Iron');
-                upService = [...updatedServices, selectedService];
+                // updatedServices = updatedServices.filter(service => service.name !== 'Wash & Iron');
+                // upService = [...updatedServices, selectedService];
 
                 // }
 
-            } else if (selectedService.name === 'Iron Only') {
+            // } else if (selectedService.name === 'Iron Only') {
                 // If 'Iron Only' is selected, remove 'Wash & Iron'
                 // const serviceIndex = prevServices.findIndex((service) => service.name === 'Wash Only');
                 // if (serviceIndex !== -1) {
@@ -70,20 +70,20 @@ export default CartItem = ({ item, index }) => {
                 // const ind = allServices.findIndex((service) => service.name === "Wash & Iron");
                 // upService = [...updatedServices, allServices[ind]];
                 // } else {
-                updatedServices = updatedServices.filter(service => service.name !== 'Wash & Iron');
-                upService = [...updatedServices, selectedService];
+                // updatedServices = updatedServices.filter(service => service.name !== 'Wash & Iron');
+                // upService = [...updatedServices, selectedService];
                 // }
 
-            } else if (selectedService.name === 'Wash & Iron') {
+            // } else if (selectedService.name === 'Wash & Iron') {
                 // If 'Wash & Iron' is selected, remove 'Wash Only' and 'Iron Only'
-                updatedServices = updatedServices.filter(service => service.name !== 'Wash Only' && service.name !== 'Iron Only');
-                upService = [...updatedServices, selectedService];
-            }
+                // updatedServices = updatedServices.filter(service => service.name !== 'Wash Only' && service.name !== 'Iron Only');
+                // upService = [...updatedServices, selectedService];
+            // }
 
             // If the service is not in the state, add it
             // return upService;
             dispatch(
-                addServices({ _id: item._id, services: [...upService] })
+                addServices({ _id: item._id, services: [...prevServices, selectedService] })
             )
         }
         // });

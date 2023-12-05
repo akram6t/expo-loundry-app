@@ -9,7 +9,7 @@ import { auth } from '../firebaseConfig';
 import Loader from '../components/Loader';
 import { KeyboardAwareScrollView } from 'react-native-keyboard-aware-scroll-view';
 import { useDispatch, useSelector } from 'react-redux';
-import { setPath } from '../utils/reducers/PathReducer';
+import { setDatabaseData, setPath } from '../utils/reducers/DatabaseReducer';
 import { database } from '../firebaseConfig';
 import { onValue, ref } from 'firebase/database';
 
@@ -27,9 +27,11 @@ const LoginScreen = ({ navigation }) => {
     useEffect(() => {
         const user = auth.currentUser;
         if(user){
-            console.log('user is already...');
+            setMessage('user hai...');
+            setSnackbar(true);
         }else{
-            console.log('you not signin...');
+            setMessage('user nahi hai...');
+            setSnackbar(true);
         }
     },[])
 
@@ -37,10 +39,11 @@ const LoginScreen = ({ navigation }) => {
     const server = useSelector(state => state.path.path);
 
     useEffect(() => {
-        if(server.baseUrl === ""){
+        if(server.baseUrl === ''){
             setLoading(true);
-            const dbRef = ref(database, 'utils/path/baseUrl');
+            const dbRef = ref(database, 'utils/path');
             onValue(dbRef, (snapshot) => {
+                console.log(snapshot.val());
                 dispatch(setPath(snapshot.val()));
                 setLoading(false);
             }, (error) => {

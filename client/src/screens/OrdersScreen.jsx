@@ -4,21 +4,22 @@ import {
     TouchableOpacity,
     FlatList,
     Image,
+    RefreshControl,
     ScrollView
 } from "react-native";
 import { Divider, MD2Colors, Snackbar, TouchableRipple } from 'react-native-paper';
 import React, { useState, useEffect } from "react";
-import { useTheme,  } from "react-native-paper";
+import { useTheme, } from "react-native-paper";
 import { Tabs, TabScreen, TabsProvider } from "react-native-paper-tabs";
 import { SafeAreaView } from "react-native-safe-area-context";
 import { Entypo, MaterialCommunityIcons } from "@expo/vector-icons";
 
-import IconOrderConfirmed from '../../assets/images/icon_order_confirmed.png';
-import IconOrderPickup from '../../assets/images/icon_order_pickup.png';
-import IconOrderProcess from '../../assets/images/icon_order_process.png';
-import IconOrderShipped from '../../assets/images/icon_order_shipped.png';
-import IconOrderDelivered from '../../assets/images/icon_order_delivered.png';
-import { api, monthNames, routes } from '../Constaints';
+// import IconOrderConfirmed from '../../assets/images/icon_order_confirmed.png';
+// import IconOrderPickup from '../../assets/images/icon_order_pickup.png';
+// import IconOrderProcess from '../../assets/images/icon_order_process.png';
+// import IconOrderShipped from '../../assets/images/icon_order_shipped.png';
+// import IconOrderDelivered from '../../assets/images/icon_order_delivered.png';
+import { api } from '../Constaints';
 import Loader from "../components/Loader";
 import { auth } from "../firebaseConfig";
 import axios from "axios";
@@ -31,6 +32,8 @@ const OrdersScreen = ({ navigation }) => {
     const [loading, setLoading] = useState(false);
     const [message, setMessage] = useState('');
     const [snackbar, setSnackbar] = useState(false);
+    const [refreshing, setRefreshing] = useState(false);
+    const [ status, setStatus ] = useState([]);
 
     const theme = useTheme();
 
@@ -39,7 +42,7 @@ const OrdersScreen = ({ navigation }) => {
     function getOrders() {
         setLoading(true);
         const uid = auth.currentUser.uid;
-        axios.get(`${server.baseUrl}/${api.orders}/${uid}`, { headers: { "Content-Type": 'application/json' } })
+        axios.get(`${server.baseUrl}/${api.orders}/${uid}`, { headers: { "Content-Type": 'application/json', apikey: server.apikey } })
             .then((result, err) => {
                 setLoading(false);
                 const { status, data } = result.data;
@@ -54,9 +57,37 @@ const OrdersScreen = ({ navigation }) => {
             })
     }
 
+    function getorderstatus() {
+        setLoading(true);
+        axios.get(`${server.baseUrl}/${api.orders_status}`, { headers: { "Content-Type": 'application/json', apikey: server.apikey } })
+            .then((result, err) => {
+                setLoading(false);
+                const { status, data } = result.data;
+                if (status) {
+                    setStatus([...data]);
+                }
+            }).catch(err => {
+                setLoading(false);
+                setMessage(`${err}`);
+                setSnackbar(true);
+                console.log(err);
+            })
+    }
+
 
     useEffect(() => {
         getOrders();
+        getorderstatus();
+    }, []);
+
+
+    const onRefresh = React.useCallback(() => {
+        setRefreshing(true);
+        getOrders();
+        getorderstatus();
+        setTimeout(() => {
+            setRefreshing(false);
+        }, 2000);
     }, []);
 
     return (<View style={{ flex: 1 }}>
@@ -81,47 +112,19 @@ const OrdersScreen = ({ navigation }) => {
                 </TouchableOpacity>
                 <Text style={{ fontSize: 20 }}>My Orders</Text>
             </View>
-            {/* Appbat End */}
-            {/* <ScrollView overScrollMode="never"> */}
-            <TabsProvider defaultIndex={0}>
-                <Tabs tabLabelStyle={{textTransform: 'none'}}
-                    showLeadingSpace={false}
-                    style={{ backgroundColor: MD2Colors.grey200, marginTop: 10 }}
-                >
-                    <TabScreen label={"OnProgress"}>
-                        <View style={{ flex: 1 }}>
-                            <FlatList
-                                // scrollEnabled={false}
-                                nestedScrollEnabled
-                                overScrollMode="never"
-                                data={ordersList}
-                                renderItem={({ item, index }) => {
-                                    return (
-                                        <ItemOrder item={item} index={index} status={status} />
-                                    )
-                                }}
-                                keyExtractor={(item, index) => index.toString()} />
-                        </View>
-                    </TabScreen>
-                    <TabScreen label={"Completed"}>
-                        <View style={{ flex: 1 }}>
-                            <FlatList
-                                // scrollEnabled={false}
-                                nestedScrollEnabled
-                                overScrollMode="never"
-                                data={ordersList}
-                                renderItem={({ item, index }) => {
-                                    return (
-                                        <ItemOrder item={item} index={index} status={status} />
-                                    )
-                                }}
-                                keyExtractor={(item, index) => index.toString()} />
-                        </View>
-                    </TabScreen>
-                </Tabs>
-            </TabsProvider>
-            {/* </ScrollView> */}
 
+            <FlatList
+                refreshControl={<RefreshControl refreshing={refreshing} onRefresh={onRefresh} />}
+                nestedScrollEnabled
+                overScrollMode="never"
+                data={ordersList}
+                renderItem={({ item, index }) => {
+                    
+                    return (
+                        <ItemOrder  server={server} item={item} index={index} status={status} />
+                    )
+                }}
+                keyExtractor={(item, index) => index.toString()} />
             <Loader loader={loading} setLoader={setLoading} />
 
             <Snackbar
@@ -142,119 +145,33 @@ const OrdersScreen = ({ navigation }) => {
     );
 };
 
-const status = [
-    {
-        icon: IconOrderConfirmed,
-        tag: 'Confirmed'
-    },
-    {
-        icon: IconOrderPickup,
-        tag: 'Pickup'
-    },
-    {
-        icon: IconOrderProcess,
-        tag: 'InProgress'
-    },
-    {
-        icon: IconOrderShipped,
-        tag: 'Shipped'
-    },
-    {
-        icon: IconOrderDelivered,
-        tag: 'Delivered'
-    }
-]
+// const status = [
+//     {
+//         icon: IconOrderConfirmed,
+//         tag: 'Confirmed',
+//         color: '#688080'
+//     },
+//     {
+//         icon: IconOrderPickup,
+//         tag: 'Pickup',
+//         color: '#FFA500'
+//     },
+//     {
+//         icon: IconOrderProcess,
+//         tag: 'InProgress',
+//         color: '#FFD700'
+//     },
+//     {
+//         icon: IconOrderShipped,
+//         tag: 'Shipped',
+//         color: '#1E0080'
+//     },
+//     {
+//         icon: IconOrderDelivered,
+//         tag: 'Delivered',
+//         color: 'green'
+//     },
+// ]
 
-// products data
-// const orders_data = [
-// {
-//     "order_id": 1001,
-//     "customer_id": 1,
-//     "provider_id": 101,
-//     "order_date": '19 Jun 10:30 pm',
-//     "pickup_date": '19 Jun 10:30 pm',
-//     "delivery_date": '19 Jun 10:30 pm',
-//     "order_status": 'Shipped',
-//     "items": [
-//         {
-//             "item_id": 201,
-//             "item_name": "Shirt",
-//             "quantity": 5,
-//             "price": 2.99,
-//         },
-//         // Other order items
-//     ]
-// },
-// {
-//     "order_id": 1001,
-//     "customer_id": 1,
-//     "provider_id": 101,
-//     "order_date": '19 Jun 10:30 pm',
-//     "pickup_date": '19 Jun 10:30 pm',
-//     "delivery_date": '19 Jun 10:30 pm',
-//     "order_status": 'Shipped',
-//     "items": [
-//         {
-//             "item_id": 201,
-//             "item_name": "Shirt",
-//             "quantity": 5,
-//             "price": 2.99,
-//         },
-//         // Other order items
-//     ]
-// },
-// {
-//     "order_id": 1001,
-//     "customer_id": 1,
-//     "provider_id": 101,
-//     "order_date": '19 Jun 10:30 pm',
-//     "pickup_date": '19 Jun 10:30 pm',
-//     "delivery_date": '19 Jun 10:30 pm',
-//     "order_status": 'Delivered',
-//     "items": [
-//         {
-//             "item_id": 201,
-//             "item_name": "Shirt",
-//             "quantity": 5,
-//             "price": 2.99,
-//         },
-//         // Other order items
-//     ]
-// },
-// {
-//     "order_id": 1001,
-//     "customer_id": 1,
-//     "provider_id": 101,
-//     "order_date": '19 Jun 10:30 pm',
-//     "pickup_date": '19 Jun 10:30 pm',
-//     "delivery_date": '19 Jun 10:30 pm',
-//     "order_status": 'Delivered',
-//     "items": [
-//         {
-//             "item_id": 201,
-//             "item_name": "Shirt",
-//             "quantity": 5,
-//             "price": 2.99,
-//         },
-//     ]
-// },
-// {
-//     "order_id": 1001,
-//     "customer_id": 1,
-//     "provider_id": 101,
-//     "order_date": '19 Jun 10:30 pm',
-//     "pickup_date": '19 Jun 10:30 pm',
-//     "delivery_date": '19 Jun 10:30 pm',
-//     "order_status": 'Pickup',
-//     "items": [
-//         {
-//             "item_id": 201,
-//             "item_name": "Shirt",
-//             "quantity": 5,
-//             "price": 2.99,
-//         },
-//     ]
-// }
-// ];
 
 export default OrdersScreen;

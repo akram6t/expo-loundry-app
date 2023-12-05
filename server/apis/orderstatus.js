@@ -1,28 +1,29 @@
 const express = require('express');
 const router = express.Router();
 require('dotenv').config();
-const { Collections, Messages } = require('./../Constaints');
+const { Collections, Messages } = require('../Constaints');
 const { MongoClient } = require('mongodb');
 const { ApiAuthentication } = require('../utils/ApiAuthentication');
+
 
 const DB_URL = process.env.DB_URL;
 
 
-router.get('/shops', (req, res) => {
+router.get('/orders_status', (req, res) => {
     if(!ApiAuthentication(req, res)){
         return res.json({ status: false, message: Messages.wrongApi});
     }
     const run = async () => {
         const client = new MongoClient(DB_URL);
         await client.connect();
-        console.log('connect...');
+        console.log('get order status');
         const db = client.db();
-        const collection = db.collection(Collections.SHOPS);
-        collection.find({}).sort({ default: -1 }).toArray().then((result, err) => {
+        const collection = db.collection(Collections.ORDERSTATUS);
+        collection.find().toArray().then((result, err) => {
             if(err) throw err;
             res.send({
                 status: true,
-                message: 'get shops',
+                message: 'get status',
                 data: result
             })
             client.close();
@@ -35,9 +36,12 @@ router.get('/shops', (req, res) => {
             console.log(err);
             client.close();
         })
-    }
-    run();
-});
 
+
+    }
+
+    run();
+
+});
 
 module.exports = router;

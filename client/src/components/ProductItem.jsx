@@ -14,7 +14,6 @@ import { useNavigation } from '@react-navigation/native';
 
 export default ProductItem = ({ item, index, service, setSnackbar, setMessage }) => {
     const theme = useTheme();
-    const navigation = useNavigation();
     const dispatch = useDispatch();
     const [servicesData, setServicesData] = useState([]);
     const [serviceDialog, setServiceDialog] = useState(false);
@@ -83,27 +82,26 @@ export default ProductItem = ({ item, index, service, setSnackbar, setMessage })
                 return updatedServices;
             } else {  // ADD OR REMOVE ITEM
 
-                let updatedServices = [...prevServices];
-                let upService = [...updatedServices, selectedService];
+                // let updatedServices = [...prevServices];
 
-                if (selectedService.name === 'Wash Only') {
-                        updatedServices = updatedServices.filter(service => service.name !== 'Wash & Iron');
-                        upService = [...updatedServices, selectedService];
+                // if (selectedService.name === 'Wash Only') {
+                //         updatedServices = updatedServices.filter(service => service.name !== 'Wash & Iron');
+                //         upService = [...updatedServices, selectedService];
 
-                } else if (selectedService.name === 'Iron Only') {
+                // } else if (selectedService.name === 'Iron Only') {
                     
-                        updatedServices = updatedServices.filter(service => service.name !== 'Wash & Iron');
-                        upService = [...updatedServices, selectedService];
-                    // }
+                //         updatedServices = updatedServices.filter(service => service.name !== 'Wash & Iron');
+                //         upService = [...updatedServices, selectedService];
+                //     // }
 
-                } else if (selectedService.name === 'Wash & Iron') {
-                    // If 'Wash & Iron' is selected, remove 'Wash Only' and 'Iron Only'
-                    updatedServices = updatedServices.filter(service => service.name !== 'Wash Only' && service.name !== 'Iron Only');
-                    upService = [...updatedServices, selectedService];
-                }
+                // } else if (selectedService.name === 'Wash & Iron') {
+                //     // If 'Wash & Iron' is selected, remove 'Wash Only' and 'Iron Only'
+                //     updatedServices = updatedServices.filter(service => service.name !== 'Wash Only' && service.name !== 'Iron Only');
+                //     upService = [...updatedServices, selectedService];
+                // }
 
                 // If the service is not in the state, add it
-                return upService;
+                return [...prevServices, selectedService];
             }
         });
     };

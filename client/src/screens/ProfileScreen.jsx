@@ -26,10 +26,10 @@ const ProfileScreen = ({ navigation }) => {
     mobile: ''
   });
   const [ user, setUser ] = useState({
-    name: '',
-    email: '',
-    mobile: '',
-    password: ''
+    name: '...',
+    email: '...',
+    mobile: '...',
+    password: '...'
   });
 
   const handleUpdateUser = (name, value) => {
@@ -60,7 +60,7 @@ const ProfileScreen = ({ navigation }) => {
     axios.post(`${server.baseUrl}/${api.updateUser}`, {
       uid:uid,
       ...data
-    }, {headers: {"Content-Type": 'application/json'}})
+    }, {headers: {"Content-Type": 'application/json', apikey: server.apikey}})
     .then((result, err) => {
       setLoader(false);
       const {status, message} = result.data;
@@ -133,7 +133,7 @@ const ProfileScreen = ({ navigation }) => {
   function getUser(){
     setLoader(true);
     const uid = auth.currentUser.uid;
-    axios.get(`${server.baseUrl}/${api.users}/${uid}`, {headers: {"Content-Type": 'application/json'}})
+    axios.get(`${server.baseUrl}/${api.users}/${uid}`, {headers: {"Content-Type": 'application/json', apikey: server.apikey}})
     .then((result, err) => {
       setLoader(false);
       const {status, data} = result.data;

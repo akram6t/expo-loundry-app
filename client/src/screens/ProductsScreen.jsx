@@ -71,7 +71,7 @@ const ClothsScreen = ({ navigation }) => {
       setLoader(true);
       // const uid = auth.currentUser.uid;
       // if(auth.currentUser == null) return;
-      axios.get(`${server.baseUrl}/${api.products}/${shop._id}`, {headers: {"Content-Type": 'application/json'}})
+      axios.get(`${server.baseUrl}/${api.products}/${shop._id}`, {headers: {"Content-Type": 'application/json', apikey: server.apikey}})
       .then((result, err) => {
         setLoader(false);
         const {status, data} = result.data;

@@ -2,8 +2,9 @@
 const express = require('express');
 const router = express.Router();
 require('dotenv').config();
-const { Collections } = require('./../Constaints');
+const { Collections, Messages } = require('./../Constaints');
 const { MongoClient } = require('mongodb');
+const { ApiAuthentication } = require('../utils/ApiAuthentication');
 
 
 const DB_URL = process.env.DB_URL;
@@ -11,6 +12,9 @@ const DB_URL = process.env.DB_URL;
 
 
 router.get('/addresses/:uid', (req, res) => {
+  if(!ApiAuthentication(req, res)){
+    return res.json({ status: false, message: Messages.wrongApi});
+}
     const { uid } = req.params;
     const run = async () => {
         const client = new MongoClient(DB_URL);
@@ -49,6 +53,9 @@ router.get('/addresses/:uid', (req, res) => {
 
 
 router.post('/add_address', (req, res) => {
+  if(!ApiAuthentication(req, res)){
+    return res.json({ status: false, message: Messages.wrongApi});
+}
     const client = new MongoClient(DB_URL);
     const db = client.db();
     const collection = db.collection(Collections.ADDRESSES);
@@ -109,6 +116,9 @@ router.post('/add_address', (req, res) => {
 
   // API endpoint to remove an address object
   router.post('/remove_address', (req, res) => {
+    if(!ApiAuthentication(req, res)){
+      return res.json({ status: false, message: Messages.wrongApi});
+  }
     console.log('remove address');
     const uid = req.body.uid;
     const addressToRemove = req.body.addressToRemove;

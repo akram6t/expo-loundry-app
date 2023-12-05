@@ -1,17 +1,21 @@
 const express = require('express');
 const router = express.Router();
 require('dotenv').config();
-const { Collections } = require('./../Constaints');
+const { Collections, Messages } = require('./../Constaints');
 const { MongoClient } = require('mongodb');
 const fs = require('fs');
 const uuid = require('uuid');
 const path = require('path');
+const { ApiAuthentication } = require('../utils/ApiAuthentication');
 
 
 const DB_URL = process.env.DB_URL;
 
-
 router.get('/users', (req, res) => {
+    if(!ApiAuthentication(req, res)){
+        return res.json({ status: false, message: Messages.wrongApi});
+    }
+
     async function run() {
         const client = new MongoClient(DB_URL);
         await client.connect();
@@ -38,6 +42,9 @@ router.get('/users', (req, res) => {
 })
 
 router.get('/users/:uid', (req, res) => {
+    if(!ApiAuthentication(req, res)){
+        return res.json({ status: false, message: Messages.wrongApi});
+    }
     const { uid } = req.params;
     const run = async () => {
         const client = new MongoClient(DB_URL);
@@ -66,6 +73,9 @@ router.get('/users/:uid', (req, res) => {
 })
 
 router.post('/create_user', (req, res) => {
+    if(!ApiAuthentication(req, res)){
+        return res.json({ status: false, message: Messages.wrongApi});
+    }
     const data = req.body;
 
     const run = async () => {
@@ -74,7 +84,7 @@ router.post('/create_user', (req, res) => {
         console.log('connect...')
         const db = client.db();
         const collection = db.collection(Collections.USERS);
-        const insertData = { _id: data.uid, ...data, createdAt: new Date().toString() }
+        const insertData = { _id: data.uid, ...data, createdAt: new Date().toISOString() }
         const result = await collection.insertOne(insertData);
 
         if (result.insertedId) {
@@ -102,6 +112,9 @@ router.post('/create_user', (req, res) => {
 
 
 router.post('/update_user', (req, res) => {
+    if(!ApiAuthentication(req, res)){
+        return res.json({ status: false, message: Messages.wrongApi});
+    }
     let data = req.body;
     // console.log(data);
 
@@ -114,7 +127,7 @@ router.post('/update_user', (req, res) => {
         // const insertData = {_id:data.uid ,    ...data, createdAt: new Date().toString()}
         const result = await collection.updateOne(
             { uid: data.uid },
-            { $set: { ...data, updatedAt: new Date().toString()} }
+            { $set: { ...data, updatedAt: new Date().toISOString()} }
         );
 
         if (result.modifiedCount === 1) {

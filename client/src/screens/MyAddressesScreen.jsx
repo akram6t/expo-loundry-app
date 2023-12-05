@@ -43,7 +43,7 @@ const MyAddressesScreen = ({ navigation }) => {
                 addressToRemove: address
             };
 
-            axios.post(apiUrl, { ...data }, { headers: { "Content-Type": 'application/json' } })
+            axios.post(apiUrl, { ...data }, { headers: {"Content-Type": 'application/json', apikey: server.apikey} })
                 .then(response => {
                     setLoader(false);
                     setMessage('address removed successfully...');
@@ -218,7 +218,7 @@ const MyAddressesScreen = ({ navigation }) => {
     const getAddresses = () => {
         setLoader(true);
         const uid = auth.currentUser.uid;
-        axios.get(`${server.baseUrl}/${api.addresses}/${uid}`, { headers: { "Content-Type": 'application/json' } })
+        axios.get(`${server.baseUrl}/${api.addresses}/${uid}`, { headers: {"Content-Type": 'application/json', apikey: server.apikey} })
             .then((result, err) => {
                 setLoader(false);
                 // console.log(result.data);

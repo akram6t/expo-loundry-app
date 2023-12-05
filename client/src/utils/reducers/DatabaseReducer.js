@@ -9,7 +9,7 @@ export const PathSlice = createSlice({
     },
     reducers:{
        setPath:(state, action) => {
-        state.path.baseUrl = action.payload
+        state.path = action.payload
        }
     }
 });

@@ -26,7 +26,7 @@ const routes = {
 
 const api = {
     // baseUrl: '',
-    apiKey: 'c2964966ece452dba2b8d4c029c8d73',
+    // apiKey: '',
     createUser: 'apis/create_user',
     updateUser: 'apis/update_user',
     users: 'apis/users',
@@ -39,7 +39,8 @@ const api = {
     add_address: 'apis/add_address',
     remove_address: 'apis/remove_address',
     addorder: 'apis/add_order',
-    orders: 'apis/orders'
+    orders: 'apis/orders',
+    orders_status: 'apis/orders_status',
 }
 
 const monthNames = [

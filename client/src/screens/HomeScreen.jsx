@@ -9,7 +9,7 @@ import { api, routes } from '../Constaints';
 import { auth } from '../firebaseConfig';
 import { Feather, MaterialCommunityIcons } from '@expo/vector-icons';
 import Loader from '../components/Loader';
-import { setPath } from '../utils/reducers/PathReducer';
+import { setDatabaseData, setPath } from '../utils/reducers/DatabaseReducer';
 import { useDispatch, useSelector } from 'react-redux';
 import { database } from './../firebaseConfig';
 import { onValue, ref } from 'firebase/database';
@@ -37,21 +37,25 @@ const HomeScreen = ({ navigation }) => {
 
   const dispatch = useDispatch();
 
+
   const server = useSelector(state => state.path.path);
 
-  useEffect(() => {
-    if (server.baseUrl === "") {
-      setLoader(true);
-      const dbRef = ref(database, 'utils/path/baseUrl');
-      onValue(dbRef, (snapshot) => {
-        dispatch(setPath(snapshot.val()));
-        setLoader(false);
-      }, (error) => {
-        console.log(error);
-        setLoader(false);
-      })
-    }
-  }, [])
+  // console.log(server.baseUrl);
+
+    useEffect(() => {
+        if(server.baseUrl === ''){
+            setLoader(true);
+            const dbRef = ref(database, 'utils/path');
+            onValue(dbRef, (snapshot) => {
+                console.log(snapshot.val());
+                dispatch(setPath(snapshot.val()));
+                setLoader(false);
+            }, (error) => {
+                console.log(error);
+                setLoader(false);
+            })
+        }
+      },[])
 
 
 
@@ -72,7 +76,7 @@ const HomeScreen = ({ navigation }) => {
       setLoader(true);
       const uid = auth.currentUser.uid;
       if (auth.currentUser == null) return;
-      axios.get(`${server.baseUrl}/${api.users}/${uid}`, { headers: { "Content-Type": 'application/json' } })
+      axios.get(`${server.baseUrl}/${api.users}/${uid}`, { headers: { "Content-Type": 'application/json', apikey: server.apikey } })
         .then((result, err) => {
           setLoader(false);
           const { status, data } = result.data;
@@ -97,7 +101,7 @@ const HomeScreen = ({ navigation }) => {
       setLoader(true);
       // const uid = auth.currentUser.uid;
       if (auth.currentUser == null) return;
-      axios.get(`${server.baseUrl}/${api.banners}`, { headers: { "Content-Type": 'application/json' } })
+      axios.get(`${server.baseUrl}/${api.banners}`, { headers: { "Content-Type": 'application/json', apikey: server.apikey } })
         .then((result, err) => {
           setLoader(false);
           const { status, data } = result.data;
@@ -117,7 +121,7 @@ const HomeScreen = ({ navigation }) => {
       setLoader(true);
       // const uid = auth.currentUser.uid;
       if (auth.currentUser == null) return;
-      axios.get(`${server.baseUrl}/${api.services}`, { headers: { "Content-Type": 'application/json' } })
+      axios.get(`${server.baseUrl}/${api.services}`, { headers: { "Content-Type": 'application/json', apikey: server.apikey } })
         .then((result, err) => {
           setLoader(false);
           const { status, data } = result.data;
@@ -136,7 +140,7 @@ const HomeScreen = ({ navigation }) => {
       setLoader(true);
       // const uid = auth.currentUser.uid;
       if (auth.currentUser == null) return;
-      axios.get(`${server.baseUrl}/${api.shops}`, { headers: { "Content-Type": 'application/json' } })
+      axios.get(`${server.baseUrl}/${api.shops}`, { headers: { "Content-Type": 'application/json', apikey: server.apikey } })
         .then((result, err) => {
           setLoader(false);
           const { status, data } = result.data;

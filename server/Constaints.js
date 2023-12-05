@@ -5,8 +5,15 @@ const Collections = {
     ORDERS: 'orders',
     SERVICES: 'services',
     SHOPS: 'shop',
+    ORDERSTATUS: 'orderstatus',
     ORDERTIMING: 'ordertiming',
     ADDRESSES: 'addresses',
 }
 
-module.exports = { Collections };
+const Messages = {
+    wrongApi: 'Api Key is Wrong',
+    emptyApi: 'Api key is not available',
+    userCreated: 'User created Successfully'
+}
+
+module.exports = { Collections, Messages };

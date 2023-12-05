@@ -33,7 +33,7 @@ const PickupDropScreen = ({ navigation }) => {
     const getTimingData = () => {
         setLoader(true);
         // const uid = auth.currentUser.uid;
-        axios.get(`${server.baseUrl}/${api.ordertiming}`, { headers: { "Content-Type": 'application/json' } })
+        axios.get(`${server.baseUrl}/${api.ordertiming}`, { headers: { "Content-Type": 'application/json', apikey: server.apikey } })
             .then((result, err) => {
                 setLoader(false);
                 const { status, data } = result.data;

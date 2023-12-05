@@ -6,30 +6,31 @@ import {
     Image,
     ScrollView
 } from "react-native";
-import { Divider, MD2Colors, MD3Colors, TouchableRipple } from 'react-native-paper';
+import { Button, Dialog, Divider, MD2Colors, MD3Colors, Modal, Portal, TouchableRipple } from 'react-native-paper';
 import React, { useState, useEffect } from "react";
 import { useTheme } from "react-native-paper";
 import { SafeAreaView } from "react-native-safe-area-context";
 import { Entypo, MaterialCommunityIcons } from "@expo/vector-icons";
-
-import IconOrderConfirmed from '../../assets/images/icon_order_confirmed.png';
-import IconOrderPickup from '../../assets/images/icon_order_pickup.png';
-import IconOrderProcess from '../../assets/images/icon_order_process.png';
-import IconOrderShipped from '../../assets/images/icon_order_shipped.png';
-import IconOrderDelivered from '../../assets/images/icon_order_delivered.png';
 import { useRoute } from "@react-navigation/native";
 import { monthNames } from "../Constaints";
+import { useSelector } from "react-redux";
 
 const OrdersScreen = ({ navigation }) => {
+    const theme = useTheme();
+    const [ openCancelDialog, setOpenCancelDialog ] = useState(false);
     const route = useRoute();
-    const { item } = route.params;
+    const [ statusColor, setStatusColor ] = useState(theme.colors.primary);
+    const { item, status } = route.params;
     // const [OrdersList, setOrdersList] = useState(orders_data);
     const [totalPrice, setTotalPrice] = useState(0);
+    const [cancelledStep, setCancelledStep] = useState(1);
 
     const [addresses, setAddresses] = useState({
         dropAddress: item.delivery_address,
         pickupAddress: item.pickup_address
     })
+
+    const server = useSelector(state => state.path.path);
 
     const [dateTime, setDateTime] = useState({
         dropDateTime: item.delivery_date,
@@ -39,11 +40,24 @@ const OrdersScreen = ({ navigation }) => {
     const iconPutting = () => {
         let icon = status[0].icon;
         status.forEach(status => {
-            if(status.tag === item.order_status){
+            if (status.tag === item.order_status) {
                 icon = status.icon;
             }
         })
         return icon;
+    }
+
+    const checkforCancelOrder = () => {
+        let co = false;
+        status.forEach((status, index) => {
+            if(status.tag === item.order_status){
+                console.log(index);
+                if(index < cancelledStep){
+                    co = true;
+                }
+            }
+        })
+        return co;
     }
 
 
@@ -103,7 +117,23 @@ const OrdersScreen = ({ navigation }) => {
         setTotalPrice(calculateTotalPrice(item.items));
     }, []);
 
-    const theme = useTheme();
+    const handleCancelOrder = () => {
+
+    }
+
+    const getStatusColorCode = () => {
+        status.map((status, index) => {
+            if(status.tag === item.order_status){
+                setStatusColor(status.color);
+            }
+        })
+    }
+
+    useEffect(() => {
+        getStatusColorCode()
+    }, [])
+
+
     return (
         <SafeAreaView style={{ flex: 1, backgroundColor: theme.colors.background }}>
             <View
@@ -122,7 +152,7 @@ const OrdersScreen = ({ navigation }) => {
                 >
                     <Entypo name="chevron-thin-left" size={24} />
                 </TouchableOpacity>
-                <Text numberOfLines={1} style={{ fontSize: 20 }}>OrderID - {item._id.slice(0,10)}...</Text>
+                <Text numberOfLines={1} style={{ fontSize: 20 }}>order no - {item.order_id}</Text>
             </View>
             {/* Appbat End */}
 
@@ -132,12 +162,12 @@ const OrdersScreen = ({ navigation }) => {
                 <View style={{ flexDirection: 'row', alignItems: 'center', justifyContent: 'space-around', marginTop: 10 }}>
                     <View style={{ padding: 25, borderWidth: 1, borderRadius: 100, borderColor: MD2Colors.grey400 }}>
                         <Image style={{ width: 50, height: 50 }} source={
-                           iconPutting() 
+                            { uri: server.baseUrl+iconPutting()}
                         } />
                     </View>
                     <View style={{ gap: 5 }}>
                         <Text style={{ opacity: 0.7, fontSize: 16 }}>Order Status</Text>
-                        <Text style={{ fontSize: 18, color: status[status.length-1] === item.tag ? MD2Colors.green600 :theme.colors.secondary , fontWeight: 'bold' }}>Order { item.order_status }</Text>
+                        <Text style={{ fontSize: 18, color: statusColor, fontWeight: 'bold' }}>Order {item.order_status}</Text>
                         <Text style={{ opacity: 0.6 }}>{readableDate(item.order_date)}</Text>
                     </View>
                 </View>
@@ -151,14 +181,9 @@ const OrdersScreen = ({ navigation }) => {
                         <Text style={{ opacity: 0.9, fontWeight: 'bold' }}>{dateTime.pickupDateTime.time}</Text>
                     </View>
                     <View style={{ gap: 5 }}>
-                        <Text style={{ color: MD2Colors.grey500, fontWeight: 'bold' }}>Delivery</Text
-                        
-                        
-                        
-                        
-                        >
+                        <Text style={{ color: MD2Colors.grey500, fontWeight: 'bold' }}>Delivery</Text>
                         <Text style={{ fontSize: 16, fontWeight: 'bold' }}>{readableDate(dateTime.dropDateTime.date)}</Text>
-                        <Text style={{ opacity: 0.9,fontWeight: 'bold' }}>{dateTime.dropDateTime.time}</Text>
+                        <Text style={{ opacity: 0.9, fontWeight: 'bold' }}>{dateTime.dropDateTime.time}</Text>
                     </View>
                 </View>
 
@@ -183,14 +208,26 @@ const OrdersScreen = ({ navigation }) => {
 
                     {
                         item.items.map((item, index) => {
+                            const servicesLength = item.services.length;
                             const total = item.services.reduce((total, next) => total + next.price, 0);
-                            return<View key={index} style={{ flexDirection: 'row', gap: 5, padding: 3, justifyContent: 'space-between' }}>
+                            return <View key={index} style={{ flexDirection: 'row', gap: 5, padding: 3, justifyContent: 'space-between' }}>
                                 <View>
                                     <Text style={{ fontSize: 15, fontWeight: 'bold' }}>{item.quantity} x {item.name} ({item.gender})</Text>
                                     <View style={{ flexDirection: 'row', gap: 5 }}>
-                                        {item.services.map((service, index) => (
-                                            <Text key={index} style={{ fontSize: 11,color: MD2Colors.grey600 }}>{service.name}</Text>
-                                        ))}
+                                        {/* {item.services.map((service, index) => ( */}
+                                        {/* <Text key={index} style={{ fontSize: 11,color: MD2Colors.grey600 }}>{service.name}</Text> */}
+                                        {/* ))} */}
+                                        <FlatList
+                                            scrollEnabled={false}
+                                            numColumns={4}
+                                            data={item.services}
+                                            keyExtractor={(item) => item.toString()}
+                                            renderItem={({ item, index }) => {
+                                                return (
+                                                    <Text key={index} style={{ fontSize: 11, color: MD2Colors.grey600 }}>{item.name}{index == servicesLength - 1 ? '' : ', '}</Text>
+                                                )
+                                            }}
+                                        />
                                     </View>
                                 </View>
                                 <View style={{ flexDirection: 'row', alignItems: 'center' }}>
@@ -198,7 +235,7 @@ const OrdersScreen = ({ navigation }) => {
                                     <Text style={{ fontSize: 15, fontWeight: 'bold' }}>{total * item.quantity}</Text>
                                 </View>
                             </View>
-                            })
+                        })
                     }
 
                 </View>
@@ -210,7 +247,7 @@ const OrdersScreen = ({ navigation }) => {
                         <Text style={{ fontWeight: 'bold' }}>Sub Total</Text>
                         <View style={{ flexDirection: 'row', alignItems: 'center' }}>
                             <MaterialCommunityIcons name='currency-inr' size={15} style={{ fontWeight: 'bold' }} />
-                            <Text style={{ fontSize: 18, fontWeight: 'bold' }}>{ totalPrice }</Text>
+                            <Text style={{ fontSize: 18, fontWeight: 'bold' }}>{totalPrice}</Text>
                         </View>
                     </View>
                     <View style={{ flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between' }}>
@@ -221,42 +258,70 @@ const OrdersScreen = ({ navigation }) => {
                         </View>
                     </View>
                     <View style={{ flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between' }}>
-                        <Text style={{ color: theme.colors.primary, fontWeight: 'bold', fontSize: 18 }}>{ item.payment_type }</Text>
+                        <Text style={{ color: theme.colors.primary, fontWeight: 'bold', fontSize: 18 }}>{item.payment_type}</Text>
                         <View style={{ flexDirection: 'row', alignItems: 'center' }}>
                             <MaterialCommunityIcons name='currency-inr' color={theme.colors.primary} size={18} style={{ fontWeight: 'bold' }} />
-                            <Text style={{ fontSize: 20, fontWeight: 'bold', color: theme.colors.primary }}>{ totalPrice + item.service_fee }</Text>
+                            <Text style={{ fontSize: 20, fontWeight: 'bold', color: theme.colors.primary }}>{totalPrice + item.service_fee}</Text>
                         </View>
                     </View>
                 </View>
 
+                <Divider/>
+
+                { checkforCancelOrder() ? 
+
+                <View style={ { padding: 8, marginBottom: 30 } }>
+                    <Text style={{ color: MD2Colors.grey500, fontWeight: 'bold' }}>Actions</Text>
+                    <TouchableOpacity style={{ marginTop: 10 }} onPress={() => setOpenCancelDialog(true)}>
+                        <Text style={{ alignSelf: 'center', color: 'red', fontWeight: 'bold' }}>Cancel Order</Text>
+                    </TouchableOpacity>
+                </View>
+
+                : null
+
+}
 
             </ScrollView>
+
+
+            <Portal>
+                <Dialog visible={openCancelDialog} onDismiss={() => setOpenCancelDialog(false)}>
+                <Dialog.Title>Cancel Order</Dialog.Title>
+                    <Dialog.Content>
+                        <Text variant="bodyMedium">Are you sure want to cancel order.</Text>
+                    </Dialog.Content>
+                    <Dialog.Actions>
+                        <Button onPress={() => setOpenCancelDialog(false)}>Cancel</Button>
+                        <Button onPress={() => handleCancelOrder()}>Confirm</Button>
+                    </Dialog.Actions>
+                </Dialog>
+            </Portal>
 
         </SafeAreaView>
     );
 };
 
-const status = [
-    {
-        icon: IconOrderConfirmed,
-        tag: 'Confirmed'
-    },
-    {
-        icon: IconOrderPickup,
-        tag: 'Pickup'
-    },
-    {
-        icon: IconOrderProcess,
-        tag: 'InProgress'
-    },
-    {
-        icon: IconOrderShipped,
-        tag: 'Shipped'
-    },
-    {
-        icon: IconOrderDelivered,
-        tag: 'Delivered'
-    }
-]
+// const status = [
+//     {
+//         icon: IconOrderConfirmed,
+//         tag: 'Confirmed'
+//     },
+//     {
+//         icon: IconOrderPickup,
+//         tag: 'Pickup'
+//     },
+//     {
+//         icon: IconOrderProcess,
+//         tag: 'InProgress'
+//     },
+//     {
+//         icon: IconOrderShipped,
+//         tag: 'Shipped'
+//     },
+//     {
+//         icon: IconOrderDelivered,
+//         tag: 'Delivered'
+//     }
+// ]
 
 export default OrdersScreen;

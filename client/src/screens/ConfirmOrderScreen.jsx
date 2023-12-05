@@ -68,7 +68,7 @@ const CartScreen = ({ navigation }) => {
             {
                ...insertData
             },
-            { headers: { "Content-Type": 'application/json' } })
+            { headers: {"Content-Type": 'application/json', apikey: server.apikey} })
             .then(response => {
                 const { status, message } = response.data;
                 if (status) {
@@ -191,6 +191,7 @@ const CartScreen = ({ navigation }) => {
                         renderItem={({ item, index }) => {
 
                             const total = item.services.reduce((total, next) => total + next.price, 0);
+                            const servicesLength = item.services.length;
 
                             return (
                                 <View
@@ -209,22 +210,17 @@ const CartScreen = ({ navigation }) => {
                                             justifyContent: "space-between",
                                         }}
                                     >
-                                        <View
-                                            style={{
-                                                flexDirection: "row",
-                                                gap: 5,
-                                                alignItems: "center",
+                                        <FlatList
+                                        numColumns={3}
+                                            data={item.services}
+                                            keyExtractor={(item) => item.toString()}
+                                            renderItem={({item, index}) =>   {
+                                                return (
+                                                    <Text key={index}>{item.name}{index==servicesLength-1 ? '' : ', '}</Text>
+                                                )
                                             }}
-                                        >
-                                            {
-                                                item.services.map((item, index) => {
-                                                    return (
-                                                        <Text key={index}>{item.name} </Text>
-                                                    )
-                                                })
-                                            }
-                                            <Text style={{ fontWeight: 'bold' }}>X {item.quantity}</Text>
-                                        </View>
+                                        />
+                                            <Text style={{ fontWeight: 'bold' }}>  X {item.quantity}</Text>
 
                                         <View
                                             style={{
@@ -367,55 +363,5 @@ const CartScreen = ({ navigation }) => {
         </SafeAreaView>
     );
 };
-
-// products data
-// const products_data = [
-
-//     {
-//         id: "13",
-//         image: "https://cdn-icons-png.flaticon.com/128/599/599388.png",
-//         name: "jeans",
-//         quantity: 5,
-//         for: "Dry Cleaning",
-//         gender: "Man",
-//         price: 90,
-//     },
-//     {
-//         id: "13",
-//         image: "https://cdn-icons-png.flaticon.com/128/599/599388.png",
-//         name: "jeans",
-//         quantity: 5,
-//         for: "Dry Cleaning",
-//         gender: "Man",
-//         price: 90,
-//     },
-//     {
-//         id: "13",
-//         image: "https://cdn-icons-png.flaticon.com/128/599/599388.png",
-//         name: "jeans",
-//         quantity: 5,
-//         for: "Dry Cleaning",
-//         gender: "Man",
-//         price: 90,
-//     },
-//     {
-//         id: "13",
-//         image: "https://cdn-icons-png.flaticon.com/128/599/599388.png",
-//         name: "jeans",
-//         quantity: 5,
-//         for: "Dry Cleaning",
-//         gender: "Man",
-//         price: 90,
-//     },
-//     {
-//         id: "13",
-//         image: "https://cdn-icons-png.flaticon.com/128/599/599388.png",
-//         name: "jeans",
-//         quantity: 5,
-//         for: "Dry Cleaning",
-//         gender: "Man",
-//         price: 0,
-//     },
-// ];
 
 export default CartScreen;

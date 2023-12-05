@@ -19,6 +19,7 @@ const SignupScreen = ({ navigation }) => {
     const [message, setMessage ] = useState('');
     const theme = useTheme();
     const server = useSelector(state => state.path.path);
+    // console.log(server.baseUrl);
     // const dispatch = useDispatch();
     // const authState = useSelector(state => state.auth.userCreated)
     const [user, setUser] = useState({
