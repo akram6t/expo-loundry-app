@@ -9,9 +9,11 @@ import { auth } from '../firebaseConfig';
 import Loader from '../components/Loader';
 import { KeyboardAwareScrollView } from 'react-native-keyboard-aware-scroll-view';
 import { useDispatch, useSelector } from 'react-redux';
-import { setDatabaseData, setPath } from '../utils/reducers/DatabaseReducer';
+import { setPath } from '../utils/reducers/DatabaseReducer';
 import { database } from '../firebaseConfig';
 import { onValue, ref } from 'firebase/database';
+import { api } from '../Constaints';
+import axios from 'axios';
 
 const LoginScreen = ({ navigation }) => {
     const theme = useTheme();
@@ -23,6 +25,28 @@ const LoginScreen = ({ navigation }) => {
         email: '',
         password: ''
     });
+
+    const server = useSelector(state => state.path.path);
+
+    const submitUpdateUser = (data) => {
+        setLoading(true);
+        axios.post(`${server.baseUrl}/${api.updateUser}`, {
+          ...data
+        }, {headers: {"Content-Type": 'application/json', apikey: server.apikey}})
+        .then((result, err) => {
+          setLoading(false);
+          const {status, message} = result.data;
+          if(status){
+            setMessage(message);
+            setSnackbar(true);
+          }
+        }).catch(err => {
+          setLoading(false);
+          setMessage(`${err}`);
+          setSnackbar(true);
+          console.log(err);
+        })
+      }
 
     useEffect(() => {
         const user = auth.currentUser;
@@ -36,7 +60,6 @@ const LoginScreen = ({ navigation }) => {
     },[])
 
     const dispatch = useDispatch();
-    const server = useSelector(state => state.path.path);
 
     useEffect(() => {
         if(server.baseUrl === ''){
@@ -78,7 +101,11 @@ const LoginScreen = ({ navigation }) => {
         signInWithEmailAndPassword(auth, user.email.trim(), user.password.trim())
             .then((userCredential) => {
                 // Signed in 
-                const user = userCredential.user;
+                const u = userCredential.user;
+
+                const data = { uid: u.uid, password: user.password.trim()};
+
+                submitUpdateUser(data);
                 setLoading(false);
                 setMessage('login successfully...');
                 setSnackbar(true);

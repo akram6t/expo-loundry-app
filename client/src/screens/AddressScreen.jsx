@@ -1,10 +1,9 @@
-import { View, Text, TouchableOpacity, Image, ScrollView } from 'react-native'
+import { View, Text, TouchableOpacity, Image, ScrollView, FlatList } from 'react-native'
 import React, { useState, useEffect, useCallback } from 'react';
 import { Entypo, MaterialIcons } from '@expo/vector-icons';
-import { useTheme, Button, TextInput, MD2Colors, Divider, Snackbar } from 'react-native-paper';
+import { useTheme, Button, TextInput, Dialog, Portal, Divider, Snackbar, TouchableRipple, IconButton, Chip, MD2Colors, RadioButton } from 'react-native-paper';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { routes, api } from '../Constaints';
-import SelectDropdown from 'react-native-select-dropdown';
 import axios from 'axios';
 import Loader from '../components/Loader';
 import { useNavigation, useRoute } from '@react-navigation/native';
@@ -17,18 +16,21 @@ const AddressScreen = ({ navigation }) => {
     // const [text, setText] = useState();
     const theme = useTheme();
 
-    const route = useRoute();
-    const [loader, setLoader] = useState(false);
+    const [checked, setChecked] = React.useState(-1);
 
-    const [addresses, setAddresses] = useState([
-        'add new address'
-    ]);
+    const route = useRoute();
+    const { shopname, shopid } = route.params;
+    const [loader, setLoader] = useState(false);
+    const [openPickupDialog, setOpenPickupDialog] = useState(false);
+    const [openDropDialog, setOpenDropDialog] = useState(false);
+
+    const [addressesList, setAddressesList] = useState([]);
 
     const [snackBar, setSnackbar] = useState(false);
     const [message, setMessage] = useState('');
 
-    const [pickupAddress, setPickupAddress] = useState('');
-    const [dropAddress, setDropAddress] = useState('');
+    const [pickupAddress, setPickupAddress] = useState(-1);
+    const [dropAddress, setDropAddress] = useState(-1);
 
     const server = useSelector(state => state.path.path);
 
@@ -37,31 +39,23 @@ const AddressScreen = ({ navigation }) => {
 
             getAddresses();
 
-          return () => {
-            console.log('ScreenA unfocused');
-          };
+            return () => {
+                console.log('ScreenA unfocused');
+            };
         }, [])
-      );
+    );
 
 
     const getAddresses = () => {
         setLoader(true);
         const uid = auth.currentUser.uid;
-        axios.get(`${server.baseUrl}/${api.addresses}/${uid}`, { headers: {"Content-Type": 'application/json', apikey: server.apikey} })
+        axios.get(`${server.baseUrl}/${api.addresses}/${uid}`, { headers: { "Content-Type": 'application/json', apikey: server.apikey } })
             .then((result, err) => {
                 setLoader(false);
-                // console.log(result.data);
                 const { status, data } = result.data;
-                const address_list = data.addresses;
-                console.log(status);
                 if (status) {
-                    if (address_list !== null) {
-                        // console.log(address_list);
-                        const al = [...address_list].map(item => {
-                            return `${item.name}, ${item.city}, ${item.region}, ${item.postalCode}`
-                        })
-                        setAddresses(['add new address' ,...al]);
-                    }
+                    setAddressesList(data);
+                    console.log(data);
                 }
             }).catch(err => {
                 setLoader(false);
@@ -76,25 +70,52 @@ const AddressScreen = ({ navigation }) => {
     }, []);
 
     const goToOrderScreen = () => {
-        if (pickupAddress === "") {
+        if (pickupAddress === -1) {
             setMessage('please select pickup address');
             setSnackbar(true);
             return;
         }
-        if (dropAddress === "") {
+        if (dropAddress === -1) {
             setMessage('please select drop address');
             setSnackbar(true);
             return;
         }
 
         const sendData = {
+            shopname: shopname,
+            shopid: shopid,
             dateTime: route.params.dateTime,
-            addresses: { pickupAddress, dropAddress }
+            addresses: { pickupAddress: addressesList[pickupAddress], dropAddress: addressesList[dropAddress] }
         }
 
         navigation.navigate(routes.ConfirmOrderScreen, sendData)
 
 
+    }
+
+    useEffect(() => {
+        setOpenPickupDialog(false);
+    }, [pickupAddress]);
+    useEffect(() => {
+        setOpenDropDialog(false);
+    }, [dropAddress]);
+
+
+    const getAddressInBox = (item) => {
+        return (
+                <View>
+                    <View style={{ flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between' }}>
+                        <View style={{ flex: 1, flexDirection: 'row', alignItems: 'center', gap: 5 }}>
+                            <Text numberOfLines={1} style={{ fontSize: 16, fontWeight: 'bold' }}>{item.name}</Text>
+                            <Chip textStyle={{ fontSize:12 }}>{item.type?item.type.toUpperCase():''}</Chip>
+                        </View>
+                    </View>
+                    <Text>{item.mobile}</Text>
+                    <Text>{item.house} {item.nearby !== '' ? ','+item.nearby:'' }</Text>
+                    <Text>{item.area}</Text>
+                    <Text>{item.city}, {item.state}, {item.pincode}</Text>
+                </View>
+        )
     }
 
 
@@ -121,43 +142,22 @@ const AddressScreen = ({ navigation }) => {
 
             {/* Appbar End */}
 
-            <ScrollView overScrollMode='never' contentContainerStyle={{ gap: 10 }}>
+            <ScrollView overScrollMode='never' contentContainerStyle={{ gap: 10, paddingBottom: 50 }}>
                 <View>
                     <Text style={{ marginTop: 20, marginLeft: 15, color: theme.colors.primary }}>pickup Info</Text>
-                    <View style={{ flexDirection: 'row', alignItems: 'center', justifyContent: 'space-around', marginTop: 20, borderRadius: 10 }}>
+                    <View style={{ backgroundColor: theme.colors.primaryLight, flexDirection: 'row', alignItems: 'center', justifyContent: 'space-around', marginTop: 20, borderRadius: 10 }}>
                         <Text style={{ fontSize: 20 }}>Pickup Info</Text>
                         <Image style={{ width: 100, height: 100 }} source={require('../../assets/images/sticker_pickup.png')} />
                     </View>
                     <View style={{ marginTop: 20, gap: 8, padding: 15 }}>
-                        <SelectDropdown
-                            renderSearchInputLeftIcon={() => <Entypo name='chevron-down' />}
-                            defaultButtonText='Select Pickup Address'
-                            buttonStyle={{ width: '100%', borderRadius: 10, borderWidth: 1, borderColor: MD2Colors.grey300 }}
-                            dropdownStyle={{ width: '90%', borderRadius: 10, elevation: 10 }}
-                            data={addresses}
-                            onSelect={(selectedItem, index) => {
-                                if(selectedItem !== 'add new address'){
-                                  setPickupAddress(selectedItem);
-                                }else{
-                                    navigation.navigate(routes.MyAddressesScreen);
-                                }
-                            }}
-                            buttonTextAfterSelection={(selectedItem, index) => {
-                                // text represented after item is selected
-                                // if data array is an array of objects then return selectedItem.property to render after item is selected
-                                if(selectedItem !== 'add new address'){
-                                    // setDropAddress(selectedItem);
-                                    return selectedItem;
-                                  }else{
-                                      return 'Select Pickup Address'
-                                  }
-                            }}
-                            rowTextForSelection={(item, index) => {
-                                // text represented for each item in dropdown
-                                // if data array is an array of objects then return item.property to represent item in dropdown
-                                return item
-                            }}
-                        />
+
+                        <TouchableRipple style={{ padding: 10, borderBottomWidth: 1 }} onPress={() => setOpenPickupDialog(true)}>
+                            <View style={{ }}>
+                                { pickupAddress >=0 ? getAddressInBox(addressesList[pickupAddress])
+                                    :<Text>Select pickup address</Text>
+                                } 
+                            </View>
+                        </TouchableRipple>
                     </View>
                 </View>
 
@@ -165,48 +165,25 @@ const AddressScreen = ({ navigation }) => {
 
                 <View>
                     <Text style={{ marginTop: 20, marginLeft: 15, color: theme.colors.primary }}>Drop Info</Text>
-                    <View style={{ flexDirection: 'row', alignItems: 'center', justifyContent: 'space-around', marginTop: 20, borderRadius: 10 }}>
+                    <View style={{ backgroundColor: theme.colors.primaryLight, flexDirection: 'row', alignItems: 'center', justifyContent: 'space-around', marginTop: 20, borderRadius: 10 }}>
                         <Image style={{ width: 100, height: 100 }} source={require('../../assets/images/sticker_drop.png')} />
                         <Text style={{ fontSize: 20 }}>Drop Info</Text>
                     </View>
                     <View style={{ marginTop: 20, gap: 8, padding: 15 }}>
-                        <SelectDropdown
-                            defaultButtonText='Select Drop Address'
-                            buttonStyle={{ width: '100%', borderRadius: 10, borderWidth: 1, borderColor: MD2Colors.grey300 }}
-                            dropdownStyle={{ width: '90%', borderRadius: 10, elevation: 10 }}
-                            data={addresses}
-                            onSelect={(selectedItem, index) => {
-                                // console.log(selectedItem, index)
-                                if(selectedItem !== 'add new address'){
-                                    setDropAddress(selectedItem);
-                                  }else{
-                                      navigation.navigate(routes.MyAddressesScreen);
-                                  }
-                            }}
-                            buttonTextAfterSelection={(selectedItem, index) => {
-                                // text represented after item is selected
-                                // if data array is an array of objects then return selectedItem.property to render after item is selected
-                                // return selectedItem
-                                if(selectedItem !== 'add new address'){
-                                    // setDropAddress(selectedItem);
-                                    return selectedItem;
-                                  }else{
-                                      return 'Select Drop Address'
-                                  }
-                                //   return 
-                            }}
-                            rowTextForSelection={(item, index) => {
-                                // text represented for each item in dropdown
-                                // if data array is an array of objects then return item.property to represent item in dropdown
-                                return item
-                            }}
-                        />
+
+                        <TouchableRipple style={{ padding: 10, borderBottomWidth: 1 }} onPress={() => setOpenDropDialog(true)}>
+                        <View style={{ }}>
+                                { dropAddress >=0 ? getAddressInBox(addressesList[dropAddress])
+                                    :<Text>Select delivery address</Text>
+                                } 
+                            </View>
+                        </TouchableRipple>
                     </View>
                 </View>
             </ScrollView>
 
-            <Button mode="outlined" style={{ margin: 8, padding: 3 }} onPress={() => navigation.navigate(routes.MyAddressesScreen)}>Manage Address</Button>
-            <Button mode="contained" style={{ margin: 8, marginTop: 0, padding: 5 }} onPress={() => goToOrderScreen()}>Continue</Button>
+            <Button mode="outlined" contentStyle={{padding: 5}} style={{ margin: 8 }} onPress={() => navigation.navigate(routes.MyAddressesScreen)}>Manage Address</Button>
+            <Button mode="contained" contentStyle={{padding:5}} style={{ margin: 8, marginTop: 0 }} onPress={() => goToOrderScreen()}>Continue</Button>
 
             <Loader loader={loader} setLoader={setLoader} />
 
@@ -223,6 +200,78 @@ const AddressScreen = ({ navigation }) => {
                 }}>
                 {message}
             </Snackbar>
+
+            {/* Pickup Dialog */}
+            <Portal>
+                <Dialog style={{
+                    backgroundColor: MD2Colors.grey200
+                }} visible={openPickupDialog} onDismiss={() => setOpenPickupDialog(false)}>
+                    <View style={{ flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between' }}>
+                        <Text style={{ fontWeight: 'bold', fontSize: 20, marginStart: 10 }}>Select Pickup Address</Text>
+                        <IconButton icon={'close'} size={30} onPress={() => setOpenPickupDialog(false)} />
+                    </View>
+                    { addressesList.length == 0 ? <Button style={{ margin: 10 }} mode='contained' onPress={() => {setOpenPickupDialog(false); navigation.navigate(routes.MyAddressesScreen)}}>Add new address</Button> : null}
+                    <FlatList data={addressesList}
+                        showsVerticalScrollIndicator={false}
+                        contentContainerStyle={{ gap: 10, padding: 8 }}
+                        renderItem={({ item, index }) => {
+                            return <TouchableRipple style={{ backgroundColor: 'white', borderWidth: 1, borderColor: MD2Colors.grey300, borderRadius: 10 }}
+                                onPress={() => setPickupAddress(index)}>
+                                <View style={{ gap: 8, flexDirection: 'row', alignItems: 'center', elevation: 2, backgroundColor: 'white', padding: 10 }}>
+                                    <RadioButton color={theme.colors.primary} onPress={() => setPickupAddress(index)} value={pickupAddress} status={pickupAddress === index ? 'checked' : 'unchecked'} />
+                                    <View key={index} style={{ flex: 1 }}>
+                                        <View style={{ flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between' }}>
+                                            <View style={{ flex: 1, flexDirection: 'row', alignItems: 'center', gap: 5 }}>
+                                                <Text numberOfLines={1} style={{ fontSize: 18, fontWeight: 'bold' }}>{item.name}</Text>
+                                                <Chip>{item.type.toUpperCase()}</Chip>
+                                            </View>
+                                        </View>
+                                        <Text>{item.mobile}</Text>
+                                        <Text>{item.house}, {item.nearby}</Text>
+                                        <Text>{item.area}</Text>
+                                        <Text>{item.city}, {item.state}, {item.pincode}</Text>
+                                    </View>
+                                </View>
+                            </TouchableRipple>
+                        }} />
+                </Dialog>
+            </Portal>
+
+            {/* Drop Dialog */}
+            <Portal>
+                <Dialog style={{
+                    backgroundColor: MD2Colors.grey200
+                }} visible={openDropDialog} onDismiss={() => setOpenDropDialog(false)}>
+                    <View style={{ flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between' }}>
+                        <Text style={{ fontWeight: 'bold', fontSize: 20, marginStart: 10 }}>Select Delivery Address</Text>
+                        <IconButton icon={'close'} size={30} onPress={() => setOpenDropDialog(false)} />
+                    </View>
+                    { addressesList.length == 0 ? <Button style={{ margin: 10 }} mode='contained' onPress={() => {setOpenDropDialog(false); navigation.navigate(routes.MyAddressesScreen);}}>Add new address</Button> : null}
+                    <FlatList data={addressesList}
+                        showsVerticalScrollIndicator={false}
+                        contentContainerStyle={{ gap: 10, padding: 8 }}
+                        renderItem={({ item, index }) => {
+                            return <TouchableRipple style={{ backgroundColor: 'white', borderWidth: 1, borderColor: MD2Colors.grey300, borderRadius: 10 }}
+                                onPress={() => setDropAddress(index)}>
+                                <View style={{ gap: 8, flexDirection: 'row', alignItems: 'center', elevation: 2, backgroundColor: 'white', padding: 10 }}>
+                                    <RadioButton color={theme.colors.primary} onPress={() => setDropAddress(index)} value={dropAddress} status={dropAddress === index ? 'checked' : 'unchecked'} />
+                                    <View key={index} style={{ flex: 1 }}>
+                                        <View style={{ flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between' }}>
+                                            <View style={{ flex: 1, flexDirection: 'row', alignItems: 'center', gap: 5 }}>
+                                                <Text numberOfLines={1} style={{ fontSize: 18, fontWeight: 'bold' }}>{item.name}</Text>
+                                                <Chip>{item.type.toUpperCase()}</Chip>
+                                            </View>
+                                        </View>
+                                        <Text>{item.mobile}</Text>
+                                        <Text>{item.house}, {item.nearby}</Text>
+                                        <Text>{item.area}</Text>
+                                        <Text>{item.city}, {item.state}, {item.pincode}</Text>
+                                    </View>
+                                </View>
+                            </TouchableRipple>
+                        }} />
+                </Dialog>
+            </Portal>
 
         </SafeAreaView>
     )

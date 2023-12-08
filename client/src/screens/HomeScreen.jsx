@@ -166,6 +166,18 @@ const HomeScreen = ({ navigation }) => {
     getCurrentLocation();
   }, []);
 
+  // useEffect(() => {
+  //   const unsubscribe = navigation.addListener('focus', () => {
+  //     // Reset the stack when HomeScreen is focused
+  //     navigation.reset({
+  //       index: 0,
+  //       routes: [{ name: routes.HomeScreen }],
+  //     });
+  //   });
+
+  //   return unsubscribe;
+  // }, [navigation]);
+
 
 
   // Location service enable
@@ -232,7 +244,7 @@ const getCurrentLocation = async () => {
 
       const response = res[0];
 
-      setAddress(`${response.name ? response.name + ', ' : ''}${response.street ? response.street + ', ' : ''}${response.district ? response.district + ', ' : ''}${response.city ? response.city + ', ' : ''}${response.region ? response.region + ', ' : ''}${response.postalCode ? response.postalCode : ''} `);
+      setAddress(`${response.name ? response.name + ', ' : ''}${response.streetNumber ? response.streetNumber + ', ' : ''}${response.street ? response.street + ', ' : ''}${response.district ? response.district + ', ' : ''}${response.city ? response.city + ', ' : ''}${response.region ? response.region + ', ' : ''}${response.postalCode ? response.postalCode : ''} `);
   }
 };
 
@@ -278,7 +290,7 @@ useState(() => {
 
         {/* Services */}
         <View style={{ marginTop: 20, flex: 1 }}>
-          <Text style={{ marginStart: 12, fontSize: 18 }}>SERVICES</Text>
+          <Text style={{ marginStart: 12, fontSize: 16, color: theme.colors.primary }}>SERVICES</Text>
           <FlatList scrollEnabled={false}
             contentContainerStyle={{ padding: 10 }}
             data={services}

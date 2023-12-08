@@ -76,15 +76,13 @@ const OrdersScreen = ({ navigation }) => {
 
 
     useEffect(() => {
-        getOrders();
-        getorderstatus();
+        Promise.all([ getorderstatus(), getOrders() ]);
     }, []);
 
 
     const onRefresh = React.useCallback(() => {
         setRefreshing(true);
-        getOrders();
-        getorderstatus();
+        Promise.all([ getorderstatus(), getOrders() ]);
         setTimeout(() => {
             setRefreshing(false);
         }, 2000);

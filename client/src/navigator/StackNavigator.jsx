@@ -13,6 +13,8 @@ import OrderSuccessScreen from "../screens/OrderSuccessScreen";
 import OrderStatusScreen from "../screens/OrderStatusScreen";
 import MyAddressesScreen from "../screens/MyAddressesScreen";
 import NotificationsScreen from '../screens/NotificationScreen';
+import TermsAndConditionsScreen from "../screens/TermsAndConditionsScreen";
+import SupportScreen from "../screens/SupportScreen";
 
 const StackNavigator = () => {
     const Stack =  createNativeStackNavigator();
@@ -34,6 +36,8 @@ const StackNavigator = () => {
                 <Stack.Screen name={routes.OrderSuccessScreen} component={OrderSuccessScreen} options={{headerShown: false}}/>
                 <Stack.Screen name={routes.OrderStatusScreen} component={OrderStatusScreen} options={{headerShown: false}}/>
                 <Stack.Screen name={routes.MyAddressesScreen} component={MyAddressesScreen} options={{headerShown: false}}/>
+                <Stack.Screen name={routes.TermsAndConditionsScreen} component={TermsAndConditionsScreen} options={{headerShown: false}}/>
+                <Stack.Screen name={routes.SupportScreen} component={SupportScreen} options={{headerShown: false}}/>
                 <Stack.Screen name={routes.NotificationsScreen} component={NotificationsScreen} options={{headerShown: false}}/>
             </Stack.Navigator>
         </NavigationContainer>

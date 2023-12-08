@@ -21,6 +21,8 @@ const routes = {
     OrdersScreen: 'OrdersScreen',
     OrderStatusScreen: 'OrderStatusScreen',
     MyAddressesScreen: 'MyAddressesScreen',
+    TermsAndConditionsScreen: 'TermsAndConditionsScreen',
+    SupportScreen: 'SupportScreen',
     NotificationsScreen: 'NotificationsScreen',
 }
 
@@ -41,6 +43,7 @@ const api = {
     addorder: 'apis/add_order',
     orders: 'apis/orders',
     orders_status: 'apis/orders_status',
+    tc: 'apis/tc',
 }
 
 const monthNames = [

@@ -53,6 +53,10 @@ const ClothsScreen = ({ navigation }) => {
   const dispatch = useDispatch();
 
   useEffect(() => {
+    if(!currentLatLon){
+      setDistance('please enable location');
+      return;
+    }
     const distanceinMeter = getDistance(currentLatLon, shop.latlon);
     let distance = '...';
     if(distanceinMeter > 1){
@@ -149,6 +153,8 @@ const ClothsScreen = ({ navigation }) => {
         <Text style={{ fontSize: 22, fontWeight: "bold" }}>{ shop.name }</Text>
         <View
           style={{
+            // backgroundColor: 'red'
+            marginEnd: 70,
             marginTop: 5,
             flexDirection: "row",
             alignItems: "center",
@@ -162,7 +168,7 @@ const ClothsScreen = ({ navigation }) => {
             color={theme.colors.primary}
             name="flow-line"
           />
-          <Text style={{ opacity: 0.5, fontSize: 16 }}>{ shop.address }</Text>
+          <Text style={{ opacity: 0.5, fontSize: 16 }}>{shop.address}</Text>
         </View>
       </View>
 
@@ -176,7 +182,7 @@ const ClothsScreen = ({ navigation }) => {
             <View style={{ flex: 1 }}>
               <FlatList
                 data={products.filter((item) => item.gender === "men")}
-                renderItem={({ item, index }) => <ProductItem item={item} index={index} service={service} setSnackbar={setSnackbar} setMessage={setMessage}/>}
+                renderItem={({ item, index }) => <ProductItem item={item} cart={cart} index={index} service={service} setSnackbar={setSnackbar} setMessage={setMessage}/>}
                 keyExtractor={(item, index) => index.toString()}
               />
             </View>
@@ -185,7 +191,7 @@ const ClothsScreen = ({ navigation }) => {
             <View style={{ flex: 1 }}>
               <FlatList
                 data={products.filter((item) => item.gender === "women")}
-                renderItem={({ item, index }) =><ProductItem item={item} index={index} service={service} setSnackbar={setSnackbar} setMessage={setMessage}/>}
+                renderItem={({ item, index }) =><ProductItem item={item} cart={cart} index={index} service={service} setSnackbar={setSnackbar} setMessage={setMessage}/>}
                 keyExtractor={(item, index) => index.toString()}
               />
             </View>
@@ -194,7 +200,7 @@ const ClothsScreen = ({ navigation }) => {
             <View style={{ flex: 1 }}>
               <FlatList
                 data={products.filter((item) => item.gender === "kids")}
-                renderItem={({ item, index }) =><ProductItem item={item} index={index} service={service} setSnackbar={setSnackbar} setMessage={setMessage}/>}
+                renderItem={({ item, index }) =><ProductItem cart={cart} item={item} index={index} service={service} setSnackbar={setSnackbar} setMessage={setMessage}/>}
                 keyExtractor={(item, index) => index.toString()}
               />
             </View>
@@ -203,7 +209,7 @@ const ClothsScreen = ({ navigation }) => {
             <View style={{ flex: 1 }}>
               <FlatList
                 data={products.filter((item) => item.gender === "other")}
-                renderItem={({ item, index }) => <ProductItem item={item} index={index} service={service} setSnackbar={setSnackbar} setMessage={setMessage}/>}
+                renderItem={({ item, index }) => <ProductItem cart={cart} item={item} index={index} service={service} setSnackbar={setSnackbar} setMessage={setMessage}/>}
                 keyExtractor={(item, index) => index.toString()}
               />
             </View>
@@ -223,7 +229,7 @@ const ClothsScreen = ({ navigation }) => {
           <MaterialCommunityIcons color={'white'} size={18} name="currency-inr" />
             <Text style={{color: 'white', fontSize: 18}}>{totalPrice}</Text>
         </View>
-        <Button onPress={() => navigation.navigate(routes.CartScreen)} mode="elevated" buttonColor="white" style={{borderRadius: 100}}>View Cart</Button>
+        <Button onPress={() => navigation.navigate(routes.CartScreen, { shopname: shop.name, shopid: shop._id })} mode="elevated" buttonColor="white" style={{borderRadius: 100}}>View Cart</Button>
       </View>}
 
 

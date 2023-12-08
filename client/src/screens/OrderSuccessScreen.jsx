@@ -1,5 +1,5 @@
 import { Text, View } from "react-native";
-import React from "react";
+import React, { useEffect } from "react";
 import { Image, TouchableOpacity } from "react-native";
 import { Button } from "react-native-paper";
 import { Entypo } from "@expo/vector-icons";
@@ -9,19 +9,21 @@ import { BackHandler } from "react-native";
 
 const OrderSuccessScreen = ({ navigation }) => {
 
-  const resetScreen = () => {
+  function resetScreen(){
 
-    // navigation.reset({
-    //   index: 0,
-    //   routes: [{ name: routes.HomeScreen }]
-    // })
-    navigation.navigate(routes.HomeScreen, { refresh: true });
-
+    navigation.reset({
+      index: 0,
+      routes: [{ name: routes.HomeScreen }]
+    })
+    return true;
   }
 
-  BackHandler.addEventListener('hardwareBackPress', () => {
-    resetScreen();
-  });
+  useEffect(() => {
+    BackHandler.addEventListener("hardwareBackPress", resetScreen);
+    return () => {
+      BackHandler.removeEventListener("hardwareBackPress", resetScreen);
+    };
+  }, []);
 
 
   return (

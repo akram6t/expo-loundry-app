@@ -5,7 +5,7 @@ import {
     ScrollView,
     FlatList,
 } from "react-native";
-import React, { useEffect, useState } from "react";
+import React, { useEffect, useLayoutEffect, useState } from "react";
 import { Button, Divider, MD2Colors, useTheme, Snackbar } from "react-native-paper";
 import { SafeAreaView } from "react-native-safe-area-context";
 import { MaterialCommunityIcons, Entypo } from "@expo/vector-icons";
@@ -15,9 +15,12 @@ import { routes, api } from "../Constaints";
 import Loader from "../components/Loader";
 import axios from "axios";
 import { useSelector } from "react-redux";
+import { useRoute } from "@react-navigation/native";
 
 const PickupDropScreen = ({ navigation }) => {
     const theme = useTheme();
+    const route = useRoute();
+    const { shopname, shopid } = route.params;
     const [timingData, setTimingData] = useState([]);
     const [tabIndex, setTabIndex] = useState(0);
     const [pickupDateTime, setPickupDateTime] = useState(null);
@@ -58,6 +61,8 @@ const PickupDropScreen = ({ navigation }) => {
         if (pickupDateTime !== null) {
             navigation.navigate(routes.AddressScreen,
                 {
+                    shopname: shopname,
+                    shopid: shopid,
                     dateTime: {
                         pickupDateTime: pickupDateTime, dropDateTime: drop_date_time
                     }

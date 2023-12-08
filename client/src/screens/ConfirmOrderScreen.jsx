@@ -7,7 +7,7 @@ import {
     Dimensions,
 } from "react-native";
 import React, { useState, useEffect } from "react";
-import { Button, MD2Colors, Portal, Dialog, useTheme, Divider, Snackbar } from "react-native-paper";
+import { Button, MD2Colors, Portal, Dialog, useTheme, Divider, Snackbar, Chip } from "react-native-paper";
 import { SafeAreaView } from "react-native-safe-area-context";
 import { MaterialCommunityIcons, Entypo } from "@expo/vector-icons";
 import { monthNames, routes, api } from "../Constaints";
@@ -19,11 +19,14 @@ import Loader from "../components/Loader";
 
 const CartScreen = ({ navigation }) => {
     const route = useRoute();
+    const { shopname, shopid } = route.params;
     const [visible, setVisible] = React.useState(false);
     const [totalPrice, setTotalPrice] = useState(0);
     const [snackbar, setSnackbar] = useState(false);
     const [message, setMessage] = useState('');
     const [loading, setLoading] = useState(false);
+
+    const [ statuses, setStatuses ] = useState([]);
 
     const [addresses, setAddresses] = useState({
         dropAddress: '...',
@@ -49,12 +52,36 @@ const CartScreen = ({ navigation }) => {
 
     const cart = useSelector(state => state.cart.cart);
 
+    const getorderstatus = () => {
+    setLoading(true);
+    axios.get(`${server.baseUrl}/${api.orders_status}`, { headers: { "Content-Type": 'application/json', apikey: server.apikey } })
+        .then((result, err) => {
+            setLoading(false);
+            const { status, data } = result.data;
+            if (status) {
+                console.log(data);
+                setStatuses([...data]);
+            }
+        }).catch(err => {
+            setLoading(false);
+            setMessage(`${err}`);
+            setSnackbar(true);
+            console.log(err);
+        })
+}
+
+useEffect(() => {
+    getorderstatus();
+}, []);
+
     const onOrderPlaced = () => {
         hideDialog();
         setLoading(true);
         const uid = auth.currentUser.uid;
         const insertData = {
             uid: uid,
+            storename: shopname,
+            storeid: shopid,
             items: [...cart],
             pickup_date: dateTime.pickupDateTime,
             delivery_date: dateTime.dropDateTime,
@@ -62,7 +89,8 @@ const CartScreen = ({ navigation }) => {
             delivery_address: addresses.dropAddress,
             payment_type: 'Cash on Delivery',
             service_fee: serviceFee,
-            order_status: 'Confirmed'
+            order_status: statuses[0].tag,
+            amount: totalPrice
         } 
         axios.post(`${server.baseUrl}/${api.addorder}`,
             {
@@ -147,8 +175,22 @@ const CartScreen = ({ navigation }) => {
         setTotalPrice(calculateTotalPrice(cart));
     }, [cart]);
 
-
-
+    const getAddressInBox = (item) => {
+        return (
+                <View>
+                    <View style={{ flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between' }}>
+                        <View style={{ flex: 1, flexDirection: 'row', alignItems: 'center', gap: 5 }}>
+                            <Text numberOfLines={1} style={{ fontSize: 16, fontWeight: 'bold' }}>{item.name}</Text>
+                            <Chip textStyle={{fontSize: 12}}>{item.type ? item.type.toUpperCase(): ''}</Chip>
+                        </View>
+                    </View>
+                    <Text>{item.mobile}</Text>
+                    <Text>{item.house} {item.nearby !== '' ? ','+item.nearby:'' }</Text>
+                    <Text>{item.area}</Text>
+                    <Text>{item.city}, {item.state}, {item.pincode}</Text>
+                </View>
+        )
+    }
 
 
     return (
@@ -208,8 +250,10 @@ const CartScreen = ({ navigation }) => {
                                             flexDirection: "row",
                                             alignItems: "center",
                                             justifyContent: "space-between",
+                                            // backgroundColor: 'red'
                                         }}
                                     >
+                                        
                                         <FlatList
                                         numColumns={3}
                                             data={item.services}
@@ -217,10 +261,10 @@ const CartScreen = ({ navigation }) => {
                                             renderItem={({item, index}) =>   {
                                                 return (
                                                     <Text key={index}>{item.name}{index==servicesLength-1 ? '' : ', '}</Text>
-                                                )
-                                            }}
+                                                    )
+                                                }}
                                         />
-                                            <Text style={{ fontWeight: 'bold' }}>  X {item.quantity}</Text>
+                                        <Text style={{ fontWeight: 'bold' }}> X {item.quantity}</Text>
 
                                         <View
                                             style={{
@@ -233,6 +277,8 @@ const CartScreen = ({ navigation }) => {
                                             <MaterialCommunityIcons size={20} name="currency-inr" />
                                             <Text style={{ fontSize: 16 }}>{total * item.quantity}</Text>
                                         </View>
+
+                                        
                                     </View>
                                 </View>)
                         }}
@@ -264,14 +310,14 @@ const CartScreen = ({ navigation }) => {
 
                     <View style={{ paddingHorizontal: 5, gap: 5 }}>
                         <Text style={{ color: MD2Colors.grey500, fontWeight: 'bold' }}>Pickup Address</Text>
-                        <Text style={{ fontSize: 17 }}>{addresses.pickupAddress}</Text>
+                        { getAddressInBox(addresses.pickupAddress) }
                     </View>
 
                     <Divider />
 
                     <View style={{ paddingHorizontal: 5, gap: 5 }}>
                         <Text style={{ color: MD2Colors.grey500, fontWeight: 'bold' }}>Delivery Address</Text>
-                        <Text style={{ fontSize: 17 }}>{addresses.dropAddress}</Text>
+                        { getAddressInBox(addresses.dropAddress) }
                     </View>
 
                 </View>

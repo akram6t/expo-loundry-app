@@ -6,7 +6,7 @@ import {
     Image,
     ScrollView
 } from "react-native";
-import { Button, Dialog, Divider, MD2Colors, MD3Colors, Modal, Portal, TouchableRipple } from 'react-native-paper';
+import { Button, Chip, Dialog, Divider, IconButton, MD2Colors, MD3Colors, Modal, Portal, Snackbar, TouchableRipple } from 'react-native-paper';
 import React, { useState, useEffect } from "react";
 import { useTheme } from "react-native-paper";
 import { SafeAreaView } from "react-native-safe-area-context";
@@ -14,21 +14,33 @@ import { Entypo, MaterialCommunityIcons } from "@expo/vector-icons";
 import { useRoute } from "@react-navigation/native";
 import { monthNames } from "../Constaints";
 import { useSelector } from "react-redux";
+import * as Clipboard from 'expo-clipboard';
+// import * as Linking from 'expo-linking';
+// import * as Call from 'expo-call';
 
 const OrdersScreen = ({ navigation }) => {
     const theme = useTheme();
-    const [ openCancelDialog, setOpenCancelDialog ] = useState(false);
+    const [openCancelDialog, setOpenCancelDialog] = useState(false);
     const route = useRoute();
-    const [ statusColor, setStatusColor ] = useState(theme.colors.primary);
+    const [statusColor, setStatusColor] = useState(theme.colors.primary);
     const { item, status } = route.params;
     // const [OrdersList, setOrdersList] = useState(orders_data);
     const [totalPrice, setTotalPrice] = useState(0);
     const [cancelledStep, setCancelledStep] = useState(1);
 
+    const [ message, setMessage ] = useState('');
+    const [ snackbar, setSnackbar ] = useState(false);
+
     const [addresses, setAddresses] = useState({
         dropAddress: item.delivery_address,
         pickupAddress: item.pickup_address
     })
+
+    const copyToClipboard = async () => {
+        await Clipboard.setStringAsync(item.order_id);
+        setMessage('copied...');
+        setSnackbar(true);
+      };
 
     const server = useSelector(state => state.path.path);
 
@@ -50,9 +62,9 @@ const OrdersScreen = ({ navigation }) => {
     const checkforCancelOrder = () => {
         let co = false;
         status.forEach((status, index) => {
-            if(status.tag === item.order_status){
+            if (status.tag === item.order_status) {
                 console.log(index);
-                if(index < cancelledStep){
+                if (index < cancelledStep) {
                     co = true;
                 }
             }
@@ -123,7 +135,7 @@ const OrdersScreen = ({ navigation }) => {
 
     const getStatusColorCode = () => {
         status.map((status, index) => {
-            if(status.tag === item.order_status){
+            if (status.tag === item.order_status) {
                 setStatusColor(status.color);
             }
         })
@@ -132,6 +144,24 @@ const OrdersScreen = ({ navigation }) => {
     useEffect(() => {
         getStatusColorCode()
     }, [])
+    
+
+    const getAddressInBox = (item) => {
+        return (
+                <View>
+                    <View style={{ flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between' }}>
+                        <View style={{ flex: 1, flexDirection: 'row', alignItems: 'center', gap: 5 }}>
+                            <Text numberOfLines={1} style={{ fontSize: 16, fontWeight: 'bold' }}>{item.name}</Text>
+                            <Chip textStyle={{fontSize: 12}}>{item.type?item.type.toUpperCase():''}</Chip>
+                        </View>
+                    </View>
+                    <Text>{item.mobile}</Text>
+                    <Text>{item.house} {item.nearby !== '' ? ','+item.nearby:'' }</Text>
+                    <Text>{item.area}</Text>
+                    <Text>{item.city}, {item.state}, {item.pincode}</Text>
+                </View>
+        )
+    }
 
 
     return (
@@ -153,16 +183,33 @@ const OrdersScreen = ({ navigation }) => {
                     <Entypo name="chevron-thin-left" size={24} />
                 </TouchableOpacity>
                 <Text numberOfLines={1} style={{ fontSize: 20 }}>order no - {item.order_id}</Text>
+                <IconButton icon={'content-copy'} onPress={() => copyToClipboard()}/>
             </View>
             {/* Appbat End */}
 
 
             <ScrollView overScrollMode="never" showsVerticalScrollIndicator={false} contentContainerStyle={{ padding: 10, gap: 20 }}>
+                {/* Delivery partner */}
+                <View style={{ flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between', padding: 8, borderRadius: 10, backgroundColor: theme.colors.primaryLight, borderWidth: 1, borderColor: theme.colors.primary }}>
+                    <View style={{flexDirection: 'row', alignItems: 'center', gap: 5}}>
+                        <Image style={{ width: 50, height: 50 }} source={require('./../../assets/images/icon_user.png')} />
+                        <View>
+                        <Text style={{ fontSize: 18 }}>Delivery Boy Name</Text>
+                        <Text style={{ fontSize: 14, opacity: 0.5 }}>Delivery Partner</Text>
+                        </View>
+                    </View>
+                    <View style={{ flexDirection: 'row', alignItems: 'center' }}>
+                        <IconButton icon="whatsapp" onPress={() => {}} />
+                        <IconButton icon="phone" onPress={() => {}} />
+                    </View>
+                </View>
+
+                {/* <Divider /> */}
 
                 <View style={{ flexDirection: 'row', alignItems: 'center', justifyContent: 'space-around', marginTop: 10 }}>
                     <View style={{ padding: 25, borderWidth: 1, borderRadius: 100, borderColor: MD2Colors.grey400 }}>
                         <Image style={{ width: 50, height: 50 }} source={
-                            { uri: server.baseUrl+iconPutting()}
+                            { uri: server.baseUrl + iconPutting() }
                         } />
                     </View>
                     <View style={{ gap: 5 }}>
@@ -191,14 +238,14 @@ const OrdersScreen = ({ navigation }) => {
 
                 <View style={{ paddingHorizontal: 5, gap: 5 }}>
                     <Text style={{ color: MD2Colors.grey500, fontWeight: 'bold' }}>Pickup Address</Text>
-                    <Text style={{ fontSize: 17 }}>{addresses.pickupAddress}</Text>
+                    { getAddressInBox(addresses.pickupAddress) }
                 </View>
 
                 <Divider />
 
                 <View style={{ paddingHorizontal: 5, gap: 5 }}>
                     <Text style={{ color: MD2Colors.grey500, fontWeight: 'bold' }}>Delivery Address</Text>
-                    <Text style={{ fontSize: 17 }}>{addresses.dropAddress}</Text>
+                    { getAddressInBox(addresses.dropAddress) }
                 </View>
 
                 <Divider />
@@ -266,27 +313,33 @@ const OrdersScreen = ({ navigation }) => {
                     </View>
                 </View>
 
-                <Divider/>
+                <Divider />
 
-                { checkforCancelOrder() ? 
+                {checkforCancelOrder() ?
 
-                <View style={ { padding: 8, marginBottom: 30 } }>
-                    <Text style={{ color: MD2Colors.grey500, fontWeight: 'bold' }}>Actions</Text>
-                    <TouchableOpacity style={{ marginTop: 10 }} onPress={() => setOpenCancelDialog(true)}>
-                        <Text style={{ alignSelf: 'center', color: 'red', fontWeight: 'bold' }}>Cancel Order</Text>
-                    </TouchableOpacity>
-                </View>
+                    <View style={{ padding: 8, marginBottom: 30 }}>
+                        <Text style={{ color: MD2Colors.grey500, fontWeight: 'bold' }}>Actions</Text>
+                        <TouchableOpacity style={{ marginTop: 10 }} onPress={() => setOpenCancelDialog(true)}>
+                            <Text style={{ alignSelf: 'center', color: 'red', fontWeight: 'bold' }}>Cancel Order</Text>
+                        </TouchableOpacity>
+                    </View>
 
-                : null
+                    : null
 
-}
+                }
 
             </ScrollView>
 
 
+            {/* Snackbar */}
+            <Snackbar visible={ snackbar } onDismiss={() => setSnackbar(false)}>
+                {message}
+            </Snackbar>
+
+
             <Portal>
                 <Dialog visible={openCancelDialog} onDismiss={() => setOpenCancelDialog(false)}>
-                <Dialog.Title>Cancel Order</Dialog.Title>
+                    <Dialog.Title>Cancel Order</Dialog.Title>
                     <Dialog.Content>
                         <Text variant="bodyMedium">Are you sure want to cancel order.</Text>
                     </Dialog.Content>

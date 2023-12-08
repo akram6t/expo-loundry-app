@@ -12,12 +12,13 @@ import { decrementQty, incrementQty } from "./../utils/reducers/ProductReducer";
 import { useEffect, useState, useRef } from 'react';
 import { useNavigation } from '@react-navigation/native';
 
-export default ProductItem = ({ item, index, service, setSnackbar, setMessage }) => {
+export default ProductItem = ({ item, index, service, setSnackbar, setMessage, cart }) => {
     const theme = useTheme();
     const dispatch = useDispatch();
     const [servicesData, setServicesData] = useState([]);
     const [serviceDialog, setServiceDialog] = useState(false);
-    const cart = useSelector((state) => state.cart.cart);
+
+
 
     const addItemToCart = () => {
         dispatch(addToCart({ ...item, services: servicesData })); // cart
@@ -51,16 +52,14 @@ export default ProductItem = ({ item, index, service, setSnackbar, setMessage })
 
 // on Screen state change
     // useEffect(() => {
-        // navigation.addListener('focus', () => {
-            // console.log('onfocus');
             // cart.find(services => {
                 // if (services._id === item._id) {
+                    // console.log(services);
                     // console.log(services.services);
-                    // setServicesData([...services.services]);
+                    // setServicesData([services]);
                 // }
             // });
-        // })
-    // }, [])
+    // }, [cart]);
 
      // Set an initial value of 0
 

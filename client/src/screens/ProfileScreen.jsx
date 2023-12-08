@@ -212,12 +212,12 @@ const ProfileScreen = ({ navigation }) => {
             left={props => <List.Icon {...props} icon="google-maps" />}
           // description="Item description"
           />
-          <List.Item onPress={() => { }}
+          <List.Item onPress={() => navigation.navigate(routes.TermsAndConditionsScreen)}
             title="Terms & Conditions"
             left={props => <List.Icon {...props} icon="book-check" />}
           // description="Item description"
           />
-          <List.Item onPress={() => { }}
+          <List.Item onPress={() => navigation.navigate(routes.SupportScreen)}
             title="Support"
             left={props => <List.Icon {...props} icon="chat-question" />}
           // description="Item description"

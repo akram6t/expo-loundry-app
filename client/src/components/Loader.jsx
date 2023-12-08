@@ -9,7 +9,7 @@ const Loader = ({ loader, setLoader }) => {
   return (
   
         <Portal>
-          <Dialog dismissable={false} visible={loader}  style={{backgroundColor: 'transparent', elevation: 0}} onDismiss={() => setLoader(false)}>
+          <Dialog dismissable={false} visible={loader}  style={{backgroundColor: 'transparent', elevation: 0 }} onDismiss={() => setLoader(false)}>
             {/* <Dialog.Title>Alert</Dialog.Title> */}
             {/* <Dialog.Content> */}
             <View style={{padding: 10, backgroundColor: 'white', alignSelf: 'center', borderRadius: 20}}>

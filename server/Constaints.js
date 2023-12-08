@@ -8,6 +8,7 @@ const Collections = {
     ORDERSTATUS: 'orderstatus',
     ORDERTIMING: 'ordertiming',
     ADDRESSES: 'addresses',
+    TC: 'tc'
 }
 
 const Messages = {

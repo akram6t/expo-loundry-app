@@ -87,7 +87,7 @@ const ItemOrder = ({item, index, status, server}) => {
             <View style={{ padding: 8, gap: 8 }}>
                 <View style={{ flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between' }}>
                     <View style={{ gap: 2 }}>
-                        <Text style={{ fontWeight: 'bold', fontSize: 18 }}>LounryApp</Text>
+                        <Text style={{ fontWeight: 'bold', fontSize: 18 }}>{item.storename}</Text>
                         <Text style={{ fontSize: 14 }}>order no. - {item.order_id}</Text>
                         <Text style={{ fontSize: 12, opacity: 0.6 }}>{dateFormated(item.order_date)}</Text>
                     </View>
