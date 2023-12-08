@@ -161,8 +161,8 @@ const ClothsScreen = ({ navigation }) => {
             gap: 5,
           }}
         >
-          <Entypo style={{ opacity: 0.5 }} size={16} name="location-pin" />
-          <Text style={{ opacity: 0.5, fontSize: 16 }}>{distance}</Text>
+          <Entypo style={{ opacity: 0.5 }} size={18} name="location-pin" />
+          <Text style={{ opacity: 0.5, fontSize: 18 }}>{distance}</Text>
           <Entypo
             style={{ opacity: 0.5 }}
             color={theme.colors.primary}

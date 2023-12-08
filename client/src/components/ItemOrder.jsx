@@ -22,7 +22,7 @@ const ItemOrder = ({item, index, status, server}) => {
         })
     }
 
-    useEffect(() => getStatusColorCode(), []);
+    useEffect(() => getStatusColorCode(), [status]);
 
     const dateFormated = (pick_date) => {
         let stringDate = '';

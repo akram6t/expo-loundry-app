@@ -42,11 +42,11 @@ const SupportScreen = ({ navigation }) => {
 
             <ScrollView contentContainerStyle={{ padding: 10 }}>
 
-                <Image style={{ width: '100%', borderRadius: 10, objectFit: 'cover' }} source={require('./../../assets/images/banner_support.jpeg')} />
+                {/* <Image style={{ width: '100%', borderRadius: 10, objectFit: 'cover' }} source={require('./../../assets/images/banner_support.jpeg')} /> */}
 
                 <Text style={{ marginTop: 20, opacity: 0.5, fontWeight: 'bold' }}>CUSTOMER SUPPORT</Text>
                <TouchableRipple style={{ margin: 10}} onPress={() => setIsSupportOpen(!isSupportOpen)}>
-               <View style={{gap: 5, flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between', padding: 8,  borderRadius: 10, borderWidth: 1, borderColor: MD2Colors.grey300}}>
+               <View style={{gap: 5, flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between', padding: 8,}}>
                     <View style={{ flex: 1, gap: 2 }}>
                         <Text style={{ fontWeight: 'bold', fontSize: 20 }}>Customer support</Text>
                         <Text>Looking for assistance? please get in touch and we'll be happy to guide you.</Text>
@@ -59,15 +59,8 @@ const SupportScreen = ({ navigation }) => {
                {
                 isSupportOpen ? (
                     <View style={{ gap: 15, margin: 10 }}>
-                        <TextInput value={query} onChangeText={(value) => setQuery(value)} multiline={true} numberOfLines={5} mode='outlined' label={'describe your problem...'} placeholder='Tell us more...' />
+                        <TextInput value={query} onChangeText={(value) => setQuery(value)} multiline={true} numberOfLines={5} mode='outlined' label={'describe your concern...'} placeholder='Tell us more...' />
                         <Button onPress={() => {
-                            // setMessage('submited your problem...');
-                            // if(query === ''){
-                                // setMessage('please enter your query...');
-                            // }
-                            // setMessage('submit...');
-                            // setSnackbar(true);
-                            // setIsSupportOpen(false);
                         }} contentStyle={{padding: 5}} mode='contained'>Submit</Button>
                     </View>
                 ):null

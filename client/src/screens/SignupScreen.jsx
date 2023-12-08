@@ -89,16 +89,16 @@ const SignupScreen = ({ navigation }) => {
                         mobile: user.mobile,
                         password: user.password
                     }, 
-                    {headers: {"Content-Type": 'application/json'}})
+                    {headers: {"Content-Type": 'application/json', apikey: server.apikey}})
                 .then(response => {
                     const { status } = response.data;
                     if(status){
                         setMessage('user create successfully...');
                         setLoading(false);
                         setSnackbar(true);
-                        // dispatch(isCreated(true));
-                        auth.authStateReady();
+                        console.log('user created successfully...');
                     }
+
                 }).catch(err => {
                     console.log(err);
                     setMessage(err);

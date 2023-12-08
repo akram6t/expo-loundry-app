@@ -49,7 +49,7 @@ router.get('/users/:uid', (req, res) => {
     const run = async () => {
         const client = new MongoClient(DB_URL);
         await client.connect();
-        console.log('connect...')
+        console.log('get user...')
         const db = client.db();
         const collection = db.collection(Collections.USERS);
         const query = { _id: uid };
@@ -81,7 +81,7 @@ router.post('/create_user', (req, res) => {
     const run = async () => {
         const client = new MongoClient(DB_URL);
         await client.connect();
-        console.log('connect...')
+        console.log('create user...')
         const db = client.db();
         const collection = db.collection(Collections.USERS);
         const insertData = { _id: data.uid, ...data, createdAt: new Date().toISOString() }

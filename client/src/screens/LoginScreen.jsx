@@ -51,10 +51,11 @@ const LoginScreen = ({ navigation }) => {
     useEffect(() => {
         const user = auth.currentUser;
         if(user){
-            setMessage('user hai...');
+
+            setMessage('user ...');
             setSnackbar(true);
         }else{
-            setMessage('user nahi hai...');
+            setMessage('!user...');
             setSnackbar(true);
         }
     },[])

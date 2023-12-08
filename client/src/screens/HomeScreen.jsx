@@ -1,4 +1,4 @@
-import { StyleSheet, View, Image, FlatList, ScrollView, TouchableOpacity, RefreshControl } from 'react-native'
+import { StyleSheet, View, Image, FlatList, ScrollView, TouchableOpacity, RefreshControl, Alert } from 'react-native'
 import React, { useEffect, useState } from 'react'
 // import { Asset, useAssets } from 'expo-asset';
 import { SafeAreaView } from 'react-native-safe-area-context'
@@ -61,9 +61,9 @@ const HomeScreen = ({ navigation }) => {
 
   const onRefresh = React.useCallback(() => {
     setRefreshing(true);
-    apiFetch();
     checkIfLocationEnabled();
     getCurrentLocation();
+    apiFetch();
     setTimeout(() => {
       setRefreshing(false);
     }, 2000);
@@ -84,7 +84,6 @@ const HomeScreen = ({ navigation }) => {
             if (data == null) {
               getUser();
             } else {
-              // remove
               setUser(data);
             }
           }
@@ -161,23 +160,10 @@ const HomeScreen = ({ navigation }) => {
   }
 
   useEffect(() => {
-    apiFetch();
     checkIfLocationEnabled();
     getCurrentLocation();
+    apiFetch();
   }, []);
-
-  // useEffect(() => {
-  //   const unsubscribe = navigation.addListener('focus', () => {
-  //     // Reset the stack when HomeScreen is focused
-  //     navigation.reset({
-  //       index: 0,
-  //       routes: [{ name: routes.HomeScreen }],
-  //     });
-  //   });
-
-  //   return unsubscribe;
-  // }, [navigation]);
-
 
 
   // Location service enable
@@ -207,23 +193,10 @@ const getCurrentLocation = async () => {
   let { status } = await Location.requestForegroundPermissionsAsync();
 
   if (status !== "granted") {
-      Alert.alert(
-          "Permission denied",
-          "allow the app to use the location services",
-          [
-              {
-                  text: "Cancel",
-                  onPress: () => console.log("Cancel Pressed"),
-                  style: "cancel",
-              },
-              { text: "OK", onPress: () => console.log("OK Pressed") },
-          ],
-          { cancelable: false }
-      );
+    setLocationServicesEnabled(false);
   }
 
   setLoader(true);
-
   const { coords } = await Location.getCurrentPositionAsync();
   // console.log(coords)
   if (coords) {
@@ -326,6 +299,19 @@ useState(() => {
       <Carousel images={banners}/>
 
       </ScrollView>
+
+      {/* check Location enabled */}
+      {/* {
+        !locationServicesEnabled ? (
+          <View style={{ padding: 5, elevation: 3, margin: 8, borderRadius: 20, backgroundColor: theme.colors.primaryLight, flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between' }}>
+            <Text style={{marginStart: 8, fontSize: 16, fontWeight: 'bold' }}>Please enable the location</Text>
+            <Button onPress={() => { checkIfLocationEnabled(); getCurrentLocation(); }}>enable</Button>
+          </View>
+        ) : null
+      } */}
+      <View>
+
+      </View>
 
       {/* Bottom Navigation View */}
       <View style={{ flexDirection: 'row', borderTopColor: MD2Colors.grey300, borderTopWidth: 1 }}>

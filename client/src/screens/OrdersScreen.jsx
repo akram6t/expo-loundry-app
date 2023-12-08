@@ -76,13 +76,13 @@ const OrdersScreen = ({ navigation }) => {
 
 
     useEffect(() => {
-        Promise.all([ getorderstatus(), getOrders() ]);
+        Promise.all([ getOrders(), getorderstatus() ]);
     }, []);
 
 
     const onRefresh = React.useCallback(() => {
         setRefreshing(true);
-        Promise.all([ getorderstatus(), getOrders() ]);
+        Promise.all([ getOrders(), getorderstatus() ]);
         setTimeout(() => {
             setRefreshing(false);
         }, 2000);
@@ -110,6 +110,13 @@ const OrdersScreen = ({ navigation }) => {
                 </TouchableOpacity>
                 <Text style={{ fontSize: 20 }}>My Orders</Text>
             </View>
+
+            {/* checkOrders */}
+            {
+                ordersList.length===0?
+                    <Text style={{ marginTop: 20, textAlign: 'center' }}>orders not found</Text>
+                :null
+            }
 
             <FlatList
                 refreshControl={<RefreshControl refreshing={refreshing} onRefresh={onRefresh} />}
