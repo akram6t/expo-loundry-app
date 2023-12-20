@@ -59,7 +59,7 @@ router.post('/add_order', (req, res) => {
         console.log('add order...')
         const db = client.db();
         const collection = db.collection(Collections.ORDERS);
-        const insertData = {...data, order_id: `ORD_${uidSubString}${truncatedRandomString}`, order_date: new Date().toISOString()}
+        const insertData = {...data, order_id: `ORD_${uidSubString}${truncatedRandomString}`, date: new Date().toISOString()}
         const result = await collection.insertOne(insertData);
 
         if (result.insertedId) {

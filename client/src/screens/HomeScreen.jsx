@@ -126,6 +126,7 @@ const HomeScreen = ({ navigation }) => {
           const { status, data } = result.data;
           if (status) {
             setServices([...data]);
+            console.log('get services...');
           }
         }).catch(err => {
           setLoader(false);
@@ -170,19 +171,19 @@ const HomeScreen = ({ navigation }) => {
   const checkIfLocationEnabled = async () => {
     let enabled = await Location.hasServicesEnabledAsync();
     if (!enabled) {
-        Alert.alert(
-            "Location services not enabled",
-            "Please enable the location services",
-            [
-                {
-                    text: "Cancel",
-                    onPress: () => console.log("Cancel Pressed"),
-                    style: "cancel",
-                },
-                { text: "OK", onPress: () => console.log("OK Pressed") },
-            ],
-            { cancelable: false }
-        );
+        // Alert.alert(
+        //     "Location services not enabled",
+        //     "Please enable the location services",
+        //     [
+        //         {
+        //             text: "Cancel",
+        //             onPress: () => console.log("Cancel Pressed"),
+        //             style: "cancel",
+        //         },
+        //         { text: "OK", onPress: () => console.log("OK Pressed") },
+        //     ],
+        //     { cancelable: false }
+        // );
     } else {
         setLocationServicesEnabled(enabled);
     }
@@ -220,11 +221,6 @@ const getCurrentLocation = async () => {
       setAddress(`${response.name ? response.name + ', ' : ''}${response.streetNumber ? response.streetNumber + ', ' : ''}${response.street ? response.street + ', ' : ''}${response.district ? response.district + ', ' : ''}${response.city ? response.city + ', ' : ''}${response.region ? response.region + ', ' : ''}${response.postalCode ? response.postalCode : ''} `);
   }
 };
-
-useState(() => {
-  checkIfLocationEnabled();
-  getCurrentLocation();
-}, []);
 
 
   return (

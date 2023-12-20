@@ -14,6 +14,7 @@ import { database } from '../firebaseConfig';
 import { onValue, ref } from 'firebase/database';
 import { api } from '../Constaints';
 import axios from 'axios';
+import { setData } from '../utils/AsynStorageData';
 
 const LoginScreen = ({ navigation }) => {
     const theme = useTheme();
@@ -48,17 +49,15 @@ const LoginScreen = ({ navigation }) => {
         })
       }
 
-    useEffect(() => {
-        const user = auth.currentUser;
-        if(user){
-
-            setMessage('user ...');
-            setSnackbar(true);
-        }else{
-            setMessage('!user...');
-            setSnackbar(true);
-        }
-    },[])
+    // useEffect(() => {
+        // auth.authStateReady((user) => {
+            // if(user){
+                // console.log(user)
+            // }else{
+                // console.log('not user');
+            // }
+        // })
+    // },[])
 
     const dispatch = useDispatch();
 

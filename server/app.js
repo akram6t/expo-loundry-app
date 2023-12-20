@@ -16,6 +16,8 @@ const shopsApiRouter = require('./apis/shops');
 const orderStatusApiRouter = require('./apis/orderstatus');
 const tcApiRouter = require('./apis/tc');
 
+const adminApisRouter = require('./admin/api');
+
 app.use(cors());
 app.use(
 bodyParser.urlencoded({extended: true}));
@@ -37,5 +39,13 @@ app.use('/apis', ordersApiRouter);
 app.use('/apis', orderStatusApiRouter);
 app.use('/apis', tcApiRouter);
 
+app.use('/admin/apis', adminApisRouter);
+
 // start server
 server.listen(PORT, () => console.log("Server running in PORT: " + PORT));
+
+
+
+
+
+

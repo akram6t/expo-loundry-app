@@ -8,6 +8,7 @@ import { Provider } from 'react-redux';
 import store from './src/Store';
 import { auth } from './src/firebaseConfig';
 import { useEffect, useState } from 'react';
+import { getData } from './src/utils/AsynStorageData';
 
 const myTheme = {
   ...DefaultTheme,
@@ -34,20 +35,20 @@ export default function App() {
 
   function Main(){
     // This code for when open app check user and change navigator
-    let [ isUser, setIsUser] = useState(false);
+
     useEffect(() => {
-      const user = auth.currentUser;
+      const user = getData('user');
       if(user){
-        setIsUser(true);
+        auth.updateCurrentUser(user);
       }
-    }, [])
+    }, []);
 
 
     const { user } = useAuthentication();
     return (
       <PaperProvider theme={myTheme}>
       <StatusBar backgroundColor={myTheme.colors.background} style='dark' />
-      { user || isUser ? <StackNavigator/> : <AuthNavigator/>}
+      { user ? <StackNavigator/> : <AuthNavigator/>}
     </PaperProvider>
     )
   }

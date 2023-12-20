@@ -84,10 +84,10 @@ const SignupScreen = ({ navigation }) => {
                 axios.post(`${server.baseUrl}/${api.createUser}`,
                     {
                         uid: currentUser.uid, 
-                        name: user.name, 
-                        email:user.email, 
-                        mobile: user.mobile,
-                        password: user.password
+                        name: user.name.trim(), 
+                        email:user.email.trim(), 
+                        mobile: user.mobile.trim(),
+                        password: user.password.trim()
                     }, 
                     {headers: {"Content-Type": 'application/json', apikey: server.apikey}})
                 .then(response => {
