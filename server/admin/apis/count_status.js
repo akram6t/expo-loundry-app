@@ -3,7 +3,6 @@ const { MongoClient } = require('mongodb');
 const { Collections } = require('../../Constaints');
 
 async function countOrdersByStatus(req, res) {
-  const data = req.data;
   try {
     const client = new MongoClient(url); // Replace with your MongoDB connection URI
     await client.connect();

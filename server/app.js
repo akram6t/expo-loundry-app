@@ -16,7 +16,7 @@ const shopsApiRouter = require('./apis/shops');
 const orderStatusApiRouter = require('./apis/orderstatus');
 const tcApiRouter = require('./apis/tc');
 
-const adminApisRouter = require('./admin/api');
+const adminApisRouter = require('./admin/adminApis');
 
 app.use(cors());
 app.use(
