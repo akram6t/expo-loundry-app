@@ -14,11 +14,35 @@ const SupportScreen = ({ navigation }) => {
     const [message, setMessage] = useState();
     const [loader, setLoader] = useState(false);
     const [snackbar, setSnackbar] = useState(false);
+    const [ shop, setShop ] = useState(null);
 
     const [ query, setQuery ] = useState('');
     const [ isSupportOpen, setIsSupportOpen ] = useState(false); 
 
     const server = useSelector(state => state.path.path);
+
+    
+    function getShops() {
+        setLoader(true);
+        // const uid = auth.currentUser.uid;
+        axios.get(`${server.baseUrl}/${api.shops}`, { headers: { "Content-Type": 'application/json', apikey: server.apikey } })
+            .then((result, err) => {
+                setLoader(false);
+                const { status, data } = result.data;
+                if (status) {
+                    setShop(data[0]);
+                }
+            }).catch(err => {
+                setLoader(false);
+                setMessage(`${err}`);
+                setSnackbar(true);
+                console.log(err);
+            })
+    }
+
+    useEffect(() => {
+        getShops()
+    }, [])
 
     return (
         <SafeAreaView style={{ flex: 1, backgroundColor: theme.colors.background }}>
@@ -74,14 +98,14 @@ const SupportScreen = ({ navigation }) => {
                         <View style={{ width: 50, height: 50, backgroundColor: theme.colors.primaryLight, borderRadius: 100 }}></View>
                         <View>
                             <Text style={{ fontSize: 17 }}>EMAIL CUSTOMER SERVICE</Text>
-                            <Text onPress={() => Linking.openURL(`mailto:ourloundry@loundry.com`)} style={{ fontSize: 16, color: theme.colors.primary }}>ourloundry@loundry.com</Text>
+                            <Text onPress={() => Linking.openURL(shop?.email)} style={{ fontSize: 16, color: theme.colors.primary }}>{shop?.email}</Text>
                         </View>
                     </View>
                     <View style={{ flexDirection: 'row', gap: 8 }}>
                         <View style={{ width: 50, height: 50, backgroundColor: theme.colors.primaryLight, borderRadius: 100 }}></View>
                         <View>
                             <Text style={{ fontSize: 17 }}>CALL CUSTOMER SERVICE</Text>
-                            <Text onPress={() => Linking.openURL(`tel:+919143663456`)} style={{ fontSize: 16, color: theme.colors.primary }}>+919143663456</Text>
+                            <Text onPress={() => Linking.openURL(`tel:+91${shop?.phone_number}`)} style={{ fontSize: 16, color: theme.colors.primary }}>+91-{shop?.phone_number}</Text>
                         </View>
                     </View>
                  

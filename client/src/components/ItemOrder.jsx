@@ -37,20 +37,23 @@ const ItemOrder = ({item, index, status, server}) => {
         const currentMonth = current.getMonth();
         const currentYear = current.getFullYear();
 
+        const pickHour = pick.getHours() < 10 ? '0' + pick.getHours() : pick.getHours();
+        const pickMinute = pick.getMinutes() < 10 ? '0' + pick.getMinutes() : pick.getMinutes();
+
         let dif_day = '';
 
-        stringDate = `${pickDate} ${monthNames[pickMonth]} ${pick.getHours()}:${pick.getMinutes()} ${pickYear}`;
+        stringDate = `${pickDate} ${monthNames[pickMonth]} ${pickHour}:${pickMinute} ${pickYear}`;
 
         if (currentMonth === pickMonth && currentYear === pickYear) {
             if (pickDate === currentDate) {
                 dif_day = 'Today';
-                stringDate = `${dif_day} ${pickDate} ${monthNames[pickMonth]} ${pick.getHours()}:${pick.getMinutes()}`;
-            } else if (pickDate - 1 === currentDate) {
+                stringDate = `${dif_day}`;
+            } else if (pickDate === currentDate - 1) {
                 dif_day = 'Yesterday';
-                stringDate = `${dif_day} ${pickDate} ${monthNames[pickMonth]} ${pick.getHours()}:${pick.getMinutes()}`;
-            } else if (pickDate + 1 === currentDate) {
+                stringDate = `${dif_day}`;
+            } else if (pickDate  === currentDate + 1) {
                 dif_day = 'Tomorrow';
-                stringDate = `${dif_day} ${pickDate} ${monthNames[pickMonth]} ${pick.getHours()}:${pick.getMinutes()}`;
+                stringDate = `${dif_day}`;
             }
 
         }
@@ -76,6 +79,19 @@ const ItemOrder = ({item, index, status, server}) => {
         return totalPrice;
     }
 
+    const checkItemisCancelled = () => {
+        let bool = false;
+        status.find((s) => {
+            if(s.tag === item.order_status){
+                if(s.type === 'cancelled'){
+                    bool = true;
+                }
+            }
+        })
+
+        return bool;
+    }
+
     useEffect(() => {
         setTotalPrice(calculateTotalPrice(item.items));
     }, []);
@@ -88,8 +104,8 @@ const ItemOrder = ({item, index, status, server}) => {
                 <View style={{ flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between' }}>
                     <View style={{ gap: 2 }}>
                         <Text style={{ fontWeight: 'bold', fontSize: 18 }}>{item.storename}</Text>
-                        <Text style={{ fontSize: 14 }}>order no. - {item.order_id}</Text>
-                        <Text style={{ fontSize: 12, opacity: 0.6 }}>{dateFormated(item.order_date)}</Text>
+                        <Text style={{ fontSize: 16 }}>Order id - {item.order_id}</Text>
+                        <Text style={{ fontSize: 14, opacity: 0.8 }}>{dateFormated(item.order_date)}</Text>
                     </View>
                     <View>
                         <View style={{ alignItems: 'flex-end' }}>
@@ -102,9 +118,11 @@ const ItemOrder = ({item, index, status, server}) => {
                     </View>
                 </View>
                 <Divider />
+                {
+                    !checkItemisCancelled() &&
                 <View style={{ flexDirection: 'row', marginTop: 5 }}>
                     {
-                        status.map((status, index) => {
+                        status.filter(item => item.type !== 'cancelled').map((status, index) => {
                             if (isStatusOver) {
                                 opacity = 0.2;
                             }
@@ -120,6 +138,7 @@ const ItemOrder = ({item, index, status, server}) => {
                         })
                     }
                 </View>
+                }
             </View>
         </TouchableRipple>
     )

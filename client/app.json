@@ -6,14 +6,14 @@
     "orientation": "portrait",
     "icon": "./assets/icon.png",
     "userInterfaceStyle": "light",
-    "splash": {
-      "image": "./assets/images/sticker_drop.png",
-      "resizeMode": "contain",
-      "backgroundColor": "#00BA3E"
-    },
     "assetBundlePatterns": [
       "**/*"
     ],
+    "splash": {
+      "image": "./assets/images/sticker_drop.png",
+      "backgroundColor": "#6400B0",
+      "resizeMode": "contain"
+    },
     "ios": {
       "supportsTablet": true
     },

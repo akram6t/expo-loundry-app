@@ -49,13 +49,17 @@ const HomeScreen = ({ navigation }) => {
             onValue(dbRef, (snapshot) => {
                 console.log(snapshot.val());
                 dispatch(setPath(snapshot.val()));
-                setLoader(false);
+                console.log(server);
+                // setTimeout(() => onRefresh(), 300);
             }, (error) => {
                 console.log(error);
                 setLoader(false);
             })
+        }else{
+          setLoader(false);
+          apiFetch();
         }
-      },[])
+      },[server])
 
 
 
@@ -89,8 +93,8 @@ const HomeScreen = ({ navigation }) => {
           }
         }).catch(err => {
           setLoader(false);
-          setMessage(`${err}`);
-          setSnackbar(true);
+          // setMessage(`${err}`);
+          // setSnackbar(true);
           console.log(err);
         })
     }
@@ -110,8 +114,8 @@ const HomeScreen = ({ navigation }) => {
           }
         }).catch(err => {
           setLoader(false);
-          setMessage(`${err}`);
-          setSnackbar(true);
+          // setMessage(`${err}`);
+          // setSnackbar(true);
           console.log(err);
         })
     }
@@ -130,8 +134,8 @@ const HomeScreen = ({ navigation }) => {
           }
         }).catch(err => {
           setLoader(false);
-          setMessage(`${err}`);
-          setSnackbar(true);
+          // setMessage(`${err}`);
+          // setSnackbar(true);
           console.log(err);
         })
     }
@@ -150,8 +154,8 @@ const HomeScreen = ({ navigation }) => {
           }
         }).catch(err => {
           setLoader(false);
-          setMessage(`${err}`);
-          setSnackbar(true);
+          // setMessage(`${err}`);
+          // setSnackbar(true);
           console.log(err);
         })
     }
@@ -163,7 +167,8 @@ const HomeScreen = ({ navigation }) => {
   useEffect(() => {
     checkIfLocationEnabled();
     getCurrentLocation();
-    apiFetch();
+    // if(server.baseUrl !== ''){
+    // }
   }, []);
 
 
@@ -186,6 +191,7 @@ const HomeScreen = ({ navigation }) => {
         // );
     } else {
         setLocationServicesEnabled(enabled);
+        getCurrentLocation();
     }
 };
 
@@ -197,7 +203,7 @@ const getCurrentLocation = async () => {
     setLocationServicesEnabled(false);
   }
 
-  setLoader(true);
+  // setLoader(true);
   const { coords } = await Location.getCurrentPositionAsync();
   // console.log(coords)
   if (coords) {
@@ -212,7 +218,7 @@ const getCurrentLocation = async () => {
           longitude,
       });
 
-      setLoader(false);
+      // setLoader(false);
 
       // setAddress('gita nagar');
 
@@ -222,6 +228,10 @@ const getCurrentLocation = async () => {
   }
 };
 
+useEffect(() => {
+  checkIfLocationEnabled();
+  getCurrentLocation();
+}, []);
 
   return (
     <SafeAreaView style={{ backgroundColor: theme.colors.background, flex: 1 }}>
@@ -263,12 +273,12 @@ const getCurrentLocation = async () => {
           <FlatList scrollEnabled={false}
             contentContainerStyle={{ padding: 10 }}
             data={services}
-            renderItem={({ item, index }) => (
-              <TouchableRipple style={{
+            renderItem={({ item, index }) => {
+              return <TouchableRipple style={{
                 width: 130,
                 flex: 1,
                 // backgroundColor: 'white',
-                backgroundColor: item.bgColor,
+                backgroundColor: item.color,
                 margin: 8,
                 paddingHorizontal: 10,
                 paddingVertical: 20,
@@ -283,7 +293,7 @@ const getCurrentLocation = async () => {
                   <Text style={{ fontSize: 16 }}>{item.name}</Text>
                 </View>
               </TouchableRipple>
-            )}
+            }}
             //Setting the number of column
             numColumns={2}
             keyExtractor={(item, index) => index.toString()}

@@ -1,0 +1,44 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Document</title>
+</head>
+
+<body>
+
+    <button onclick="post()">post apis</button>
+
+</body>
+
+</html>
+
+<script>
+
+    async function post() {
+        const url = "http://localhost:5000/admin/apis/post_data";
+        const req = await fetch(
+            url, {
+            method: 'POST',
+            headers: {
+                "Content-Type": "application/json"
+            },
+            body: JSON.stringify({
+                collection: "api_test_collection",
+                data: {
+                    _id: "658c411d9fdc68c667b1ac29",
+                    name: "Norplay 2 kasdmflk",
+                    email: "email@gmail.com"
+                }
+            })
+        }
+        )
+
+        console.log(await req.json());
+    }
+
+    // post();
+
+</script>

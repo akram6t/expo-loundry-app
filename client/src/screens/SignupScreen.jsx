@@ -111,6 +111,9 @@ const SignupScreen = ({ navigation }) => {
             .catch((error) => {
                 const errorMessage = error.message;
                 setMessage(errorMessage);
+                if(errorMessage.includes('email-already-in-use')){
+                    setMessage('This email is already in use. If you already have an account, please try signing in.');
+                }
                 setSnackbar(true);
                 setLoading(false);
                 // ..
@@ -136,13 +139,13 @@ const SignupScreen = ({ navigation }) => {
 
                 <View style={{ marginHorizontal: 15, marginTop: 20 }}>
                     <Text style={{ fontSize: 20, fontWeight: 'bold' }}>Signup</Text>
-                    <Text>enter your personal information</Text>
+                    <Text>Enter your personal information</Text>
                     <View style={{ marginTop: 20, gap: 5 }}>
                         <Text style={{ fontSize: 16, fontWeight: 'bold' }}>Name</Text>
                         <TextInput onChangeText={(text) => onValueChange('name', text)} value={user.name}
                             mode='outlined' theme={{ roundness: 100 }} 
                             contentStyle={{ backgroundColor: '#f3f3f3', borderRadius: 100, paddingHorizontal: 15 }} 
-                            placeholder='enter your name' />
+                            placeholder='Enter your name' />
                         <Text style={{ marginTop: 10, fontSize: 16, fontWeight: 'bold' }}>Email</Text>
                         <TextInput onChangeText={(text) => onValueChange('email', text)} value={user.email}
                             textContentType='emailAddress'
@@ -153,7 +156,7 @@ const SignupScreen = ({ navigation }) => {
                             mode='outlined' 
                             theme={{ roundness: 100 }} 
                             contentStyle={{ backgroundColor: '#f3f3f3', borderRadius: 100, paddingHorizontal: 15 }} 
-                            placeholder='enter your email' />
+                            placeholder='Enter your email' />
                         <Text style={{ marginTop: 10, fontSize: 16, fontWeight: 'bold' }}>Mobile</Text>
                         <View style={{position: 'relative'}}>
                             <Text style={{position: 'absolute', top: 21.5, left: 10, zIndex: 5, fontSize: 16}}>+91</Text>
@@ -163,7 +166,7 @@ const SignupScreen = ({ navigation }) => {
                             autoCorrect={false}
                             mode='outlined' theme={{ roundness: 100 }}
                             contentStyle={{ backgroundColor: '#f3f3f3', borderRadius: 100, paddingHorizontal: 15, paddingStart: 45 }}
-                            placeholder='enter mobile' />
+                            placeholder='Enter mobile' />
                         </View>
 
                         <Text style={{ marginTop: 10, fontSize: 16, fontWeight: 'bold' }}>Password</Text>
@@ -188,7 +191,7 @@ const SignupScreen = ({ navigation }) => {
                                 secureTextEntry={isPasswordSecure}
                                 mode='outlined' theme={{ roundness: 100 }}
                                 contentStyle={{ backgroundColor: '#f3f3f3', borderRadius: 100, paddingHorizontal: 15 }}
-                                placeholder='enter password' />
+                                placeholder='Enter password' />
                         </View>
                     </View>
                     {/* <TouchableOpacity onPress={() => {}} style={{ marginTop: 15 }}>

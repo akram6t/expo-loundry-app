@@ -3,11 +3,20 @@ const { MongoClient } = require('mongodb');
 const { Collections } = require('../../Constaints');
 
 async function countOrdersByStatus(req, res) {
+  let statusList = [];
   try {
     const client = new MongoClient(url); // Replace with your MongoDB connection URI
     await client.connect();
 
     const db = client.db(); // Replace with your database name
+
+    const statusesCollection = db.collection(Collections.ORDERSTATUS);
+
+    await statusesCollection.find({}).project({ tag: 1 }).toArray()
+    .then((result, err) => {
+      statusList = result.map(item => item.tag);
+    })
+
     const ordersCollection = db.collection(Collections.ORDERS);
 
     const allowedStatuses = [...statusList];
@@ -42,6 +51,3 @@ async function countOrdersByStatus(req, res) {
 }
 
 module.exports = countOrdersByStatus;
-
-
-const statusList = ['Confirmed', 'Pickup', 'InProgress', 'Shipped', 'Delivered',];

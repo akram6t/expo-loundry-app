@@ -19,7 +19,7 @@ router.get('/orders_status', (req, res) => {
         console.log('get order status');
         const db = client.db();
         const collection = db.collection(Collections.ORDERSTATUS);
-        collection.find().toArray().then((result, err) => {
+        collection.find().sort({position: 1}).toArray().then((result, err) => {
             if(err) throw err;
             res.send({
                 status: true,

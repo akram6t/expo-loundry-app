@@ -1,11 +1,10 @@
 import React, { useState } from 'react';
 import { auth } from '../firebaseConfig';
 import { onAuthStateChanged } from 'firebase/auth';
-import { setData } from './AsynStorageData';
 // import { isCreated } from './reducers/AuthStateReducer';
 // import { useSelector } from 'react-redux';
 export function useAuthentication() {
-  const [user, setUser] = useState(undefined);
+  const [liveUser, setUser] = useState(undefined);
 
   // const userCreated = useSelector(state => state.auth.userCreated);
 
@@ -18,7 +17,7 @@ export function useAuthentication() {
 
         // if(userCreated){
           setUser(user);
-          setData('user', user);
+          // setData('user', user);
           // console.log('upar' + userCreated);
         }else{
           setUser(null);
@@ -35,5 +34,5 @@ export function useAuthentication() {
     return unsubscribeFromAuthStatuChanged;
   }, []);
 
-  return { user };
+  return { liveUser };
 }

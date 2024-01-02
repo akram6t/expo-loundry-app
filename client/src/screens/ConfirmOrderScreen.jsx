@@ -7,7 +7,7 @@ import {
     Dimensions,
 } from "react-native";
 import React, { useState, useEffect } from "react";
-import { Button, MD2Colors, Portal, Dialog, useTheme, Divider, Snackbar, Chip } from "react-native-paper";
+import { Button, MD2Colors, Portal, Dialog, useTheme, Divider, Snackbar, Chip, Checkbox } from "react-native-paper";
 import { SafeAreaView } from "react-native-safe-area-context";
 import { MaterialCommunityIcons, Entypo } from "@expo/vector-icons";
 import { monthNames, routes, api } from "../Constaints";
@@ -26,7 +26,44 @@ const CartScreen = ({ navigation }) => {
     const [message, setMessage] = useState('');
     const [loading, setLoading] = useState(false);
 
-    const [ statuses, setStatuses ] = useState([]);
+    const [addonsList, setAddonsList] = useState([]);
+    const [totalAddonPrice, setTotalAddonPrice] = useState(0);
+    const server = useSelector(state => state.path.path);
+
+    function getAddons() {
+        setLoading(true);
+        axios.get(`${server.baseUrl}/${api.addons}`, { headers: { "Content-Type": 'application/json', apikey: server.apikey } })
+            .then((result, err) => {
+                setLoading(false);
+                const { status, data } = result.data;
+                if (status) {
+                    setAddonsList([...data]);
+                }
+            }).catch(err => {
+                setLoading(false);
+                setMessage(`${err}`);
+                setSnackbar(true);
+                console.log(err);
+            })
+    }
+
+    useEffect(() => getAddons(), []);
+
+    const handleChangeAddons = (item) => {
+        const index = addonsList.findIndex(addon => addon._id === item._id);
+        const updatedStatusList = [...addonsList];
+        updatedStatusList[index].active = !updatedStatusList[index].active;
+        setAddonsList(updatedStatusList);
+        const totalPrice = addonsList.reduce((acc, obj) => {
+            if (obj.active === true) {
+                return acc + obj.price;
+            }
+            return acc;
+        }, 0);
+        setTotalAddonPrice(totalPrice);
+    }
+
+    const [statuses, setStatuses] = useState([]);
 
     const [addresses, setAddresses] = useState({
         dropAddress: '...',
@@ -48,55 +85,56 @@ const CartScreen = ({ navigation }) => {
     const showDialog = () => setVisible(true);
     const hideDialog = () => setVisible(false);
 
-    const server = useSelector(state => state.path.path);
-
     const cart = useSelector(state => state.cart.cart);
 
     const getorderstatus = () => {
-    setLoading(true);
-    axios.get(`${server.baseUrl}/${api.orders_status}`, { headers: { "Content-Type": 'application/json', apikey: server.apikey } })
-        .then((result, err) => {
-            setLoading(false);
-            const { status, data } = result.data;
-            if (status) {
-                console.log(data);
-                setStatuses([...data]);
-            }
-        }).catch(err => {
-            setLoading(false);
-            setMessage(`${err}`);
-            setSnackbar(true);
-            console.log(err);
-        })
-}
+        setLoading(true);
+        axios.get(`${server.baseUrl}/${api.orders_status}`, { headers: { "Content-Type": 'application/json', apikey: server.apikey } })
+            .then((result, err) => {
+                setLoading(false);
+                const { status, data } = result.data;
+                if (status) {
+                    console.log(data);
+                    setStatuses([...data]);
+                }
+            }).catch(err => {
+                setLoading(false);
+                setMessage(`${err}`);
+                setSnackbar(true);
+                console.log(err);
+            })
+    }
 
-useEffect(() => {
-    getorderstatus();
-}, []);
+    useEffect(() => {
+        getorderstatus();
+    }, []);
 
     const onOrderPlaced = () => {
         hideDialog();
         setLoading(true);
         const uid = auth.currentUser.uid;
+        const addonsFilter = addonsList.filter(item => item.active);
         const insertData = {
             uid: uid,
             storename: shopname,
             storeid: shopid,
+            order_status: statuses[0],
+            addons: addonsFilter,
             items: [...cart],
             pickup_date: dateTime.pickupDateTime,
             delivery_date: dateTime.dropDateTime,
             pickup_address: addresses.pickupAddress,
             delivery_address: addresses.dropAddress,
-            payment_type: 'Cash on Delivery',
+            payment_type: 'Cash',
             service_fee: serviceFee,
             order_status: statuses[0].tag,
             amount: totalPrice
-        } 
+        }
         axios.post(`${server.baseUrl}/${api.addorder}`,
             {
-               ...insertData
+                ...insertData
             },
-            { headers: {"Content-Type": 'application/json', apikey: server.apikey} })
+            { headers: { "Content-Type": 'application/json', apikey: server.apikey } })
             .then(response => {
                 const { status, message } = response.data;
                 if (status) {
@@ -130,20 +168,23 @@ useEffect(() => {
         const currentMonth = current.getMonth();
         const currentYear = current.getFullYear();
 
+        // const pickHour = pick.getHours() < 10 ? '0' + pick.getHours() : pick.getHours();
+        // const pickMinute = pick.getMinutes() < 10 ? '0' + pick.getMinutes() : pick.getMinutes();
+
         let dif_day = '';
 
         stringDate = `${pickDate} ${monthNames[pickMonth]} ${pickYear}`;
 
         if (currentMonth === pickMonth && currentYear === pickYear) {
-            if (pickDate === currentDate) {
-                dif_day = 'today';
-                stringDate = `${dif_day} ${pickDate} ${monthNames[pickMonth]}`;
-            } else if (pickDate - 1 === currentDate) {
-                dif_day = 'yesterday';
-                stringDate = `${dif_day} ${pickDate} ${monthNames[pickMonth]}`;
-            } else if (pickDate + 1 === currentDate) {
-                dif_day = 'tomorrow';
-                stringDate = `${dif_day} ${pickDate} ${monthNames[pickMonth]}`;
+            if (pickDate == currentDate) {
+                dif_day = 'Today';
+                stringDate = `${dif_day}`;
+            } else if (pickDate == currentDate -1) {
+                dif_day = 'Yesterday';
+                stringDate = `${dif_day}`;
+            } else if (currentDate +1 == pickDate) {
+                dif_day = 'Tomorrow';
+                stringDate = `${dif_day}`;
             }
 
         }
@@ -177,18 +218,18 @@ useEffect(() => {
 
     const getAddressInBox = (item) => {
         return (
-                <View>
-                    <View style={{ flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between' }}>
-                        <View style={{ flex: 1, flexDirection: 'row', alignItems: 'center', gap: 5 }}>
-                            <Text numberOfLines={1} style={{ fontSize: 16, fontWeight: 'bold' }}>{item.name}</Text>
-                            <Chip textStyle={{fontSize: 12}}>{item.type ? item.type.toUpperCase(): ''}</Chip>
-                        </View>
+            <View>
+                <View style={{ flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between' }}>
+                    <View style={{ flex: 1, flexDirection: 'row', alignItems: 'center', gap: 5 }}>
+                        <Text numberOfLines={1} style={{ fontSize: 16, fontWeight: 'bold' }}>{item.name}</Text>
+                        <Chip textStyle={{ fontSize: 12 }}>{item.type ? item.type.toUpperCase() : ''}</Chip>
                     </View>
-                    <Text>{item.mobile}</Text>
-                    <Text>{item.house} {item.nearby !== '' ? ','+item.nearby:'' }</Text>
-                    <Text>{item.area}</Text>
-                    <Text>{item.city}, {item.state}, {item.pincode}</Text>
                 </View>
+                <Text>{item.mobile}</Text>
+                <Text>{item.house} {item.nearby !== '' ? ',' + item.nearby : ''}</Text>
+                <Text>{item.area}</Text>
+                <Text>{item.city}, {item.state}, {item.pincode}</Text>
+            </View>
         )
     }
 
@@ -253,16 +294,16 @@ useEffect(() => {
                                             // backgroundColor: 'red'
                                         }}
                                     >
-                                        
+
                                         <FlatList
-                                        numColumns={3}
+                                            numColumns={3}
                                             data={item.services}
                                             keyExtractor={(item) => item.toString()}
-                                            renderItem={({item, index}) =>   {
+                                            renderItem={({ item, index }) => {
                                                 return (
-                                                    <Text key={index}>{item.name}{index==servicesLength-1 ? '' : ', '}</Text>
-                                                    )
-                                                }}
+                                                    <Text key={index}>{item.name}{index == servicesLength - 1 ? '' : ', '}</Text>
+                                                )
+                                            }}
                                         />
                                         <Text style={{ fontWeight: 'bold' }}> X {item.quantity}</Text>
 
@@ -278,7 +319,7 @@ useEffect(() => {
                                             <Text style={{ fontSize: 16 }}>{total * item.quantity}</Text>
                                         </View>
 
-                                        
+
                                     </View>
                                 </View>)
                         }}
@@ -310,19 +351,42 @@ useEffect(() => {
 
                     <View style={{ paddingHorizontal: 5, gap: 5 }}>
                         <Text style={{ color: MD2Colors.grey500, fontWeight: 'bold' }}>Pickup Address</Text>
-                        { getAddressInBox(addresses.pickupAddress) }
+                        {getAddressInBox(addresses.pickupAddress)}
                     </View>
 
                     <Divider />
 
                     <View style={{ paddingHorizontal: 5, gap: 5 }}>
                         <Text style={{ color: MD2Colors.grey500, fontWeight: 'bold' }}>Delivery Address</Text>
-                        { getAddressInBox(addresses.dropAddress) }
+                        {getAddressInBox(addresses.dropAddress)}
                     </View>
 
-                </View>
 
-                {/*  */}
+                    <Divider />
+
+                    {/* Addons */}
+                    <View style={{ paddingHorizontal: 5, gap: 5 }}>
+                        <Text style={{ color: MD2Colors.grey500, fontWeight: 'bold' }}>Addons</Text>
+                        <FlatList data={addonsList} contentContainerStyle={{ backgroundColor: MD2Colors.grey200, borderRadius: 10 }} scrollEnabled={false} renderItem={({ item, index }) => {
+                            return (
+                                <View style={{ flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between' }}>
+                                                               <View style={{flexDirection: 'row', marginStart: 8, alignItems: 'center'}}>
+                                        <MaterialCommunityIcons name='currency-inr' size={15} style={{ }} />
+                                        <Text style={{ fontSize: 18, }}>{item.price}</Text>
+                                    </View>
+                                    <Checkbox.Item
+                                        color={theme.colors.primary}
+                                        label={item.name}
+                                        status={item.active ? 'checked' : 'unchecked'}
+                                        onPress={() => handleChangeAddons(item)}
+                                    />
+                                </View>
+                            )
+                        }} />
+                    </View>
+
+
+                </View>
 
             </ScrollView>
 
@@ -365,11 +429,25 @@ useEffect(() => {
                     </View>
 
                 </View>
+
+                {
+                    totalAddonPrice > 0 ?
+                        (<View
+                            style={{ flexDirection: "row", alignItems: "center", justifyContent: "space-between", border: 1, borderColor: MD2Colors.grey200, paddingVertical: 5, paddingHorizontal: 18 }}>
+                            <Text style={{ fontWeight: 'bold', fontSize: 16 }}>Addons</Text>
+                            <View style={{ flexDirection: "row", marginTop: 2, gap: 0, alignItems: "center" }}>
+                                {serviceFee === 0 ? null : (<MaterialCommunityIcons size={15} color={MD2Colors.red600} name="currency-inr" />)}
+                                <Text style={{ fontSize: 16, color: MD2Colors.red600, fontWeight: 'bold' }}>{totalAddonPrice}</Text>
+                            </View>
+
+                        </View>)
+                        : null
+                }
                 <View style={{ flexDirection: "row", alignItems: "center", justifyContent: "space-between", border: 1, borderColor: MD2Colors.grey200, paddingVertical: 5, paddingHorizontal: 18 }}>
                     <Text style={{ fontWeight: 'bold', fontSize: 18 }}>Cash on Delivery</Text>
                     <View style={{ flexDirection: "row", marginTop: 2, gap: 0, alignItems: "center" }}>
                         <MaterialCommunityIcons size={20} color={theme.colors.primary} name="currency-inr" />
-                        <Text style={{ fontSize: 20, color: theme.colors.primary, fontWeight: 'bold' }}>{totalPrice + serviceFee}</Text>
+                        <Text style={{ fontSize: 20, color: theme.colors.primary, fontWeight: 'bold' }}>{totalPrice + serviceFee + totalAddonPrice}</Text>
                     </View>
 
                 </View>
@@ -391,7 +469,7 @@ useEffect(() => {
                 </Dialog>
             </Portal>
 
-            <Loader loader={loading} setLoader={setLoading}/>
+            <Loader loader={loading} setLoader={setLoading} />
 
             <Snackbar
                 visible={snackbar}

@@ -23,8 +23,15 @@ const ForgotPasswordScreen = ({navigation}) => {
             setSnackbar(true);
             // navigation.goBack();
         }).catch(error => {
+            const message = error.message;
             setLoading(false);
-            setMessage(error.toString());
+            if (message.includes('auth/invalid-email')) {
+                setMessage('Error: The email address you entered is not valid. Please make sure you entered a correct email address in the format yourname@example.com.');
+            } else if (message.includes('auth/user-not-found')) {
+                setMessage('Error: This email is not associated with any user account. Please double-check the email you provided or sign up for a new account.');
+            } else {
+                setMessage('An error occurred while sending the password reset link. Please try again later.');
+            }
             setSnackbar(true);
             console.log(error);
         })
@@ -58,7 +65,7 @@ const ForgotPasswordScreen = ({navigation}) => {
                         autoCompleteType='email'
                         value={email}
                         onChangeText={(text) => setEmail(text)}
-                        mode='outlined' theme={{ roundness: 100 }} contentStyle={{ backgroundColor: '#f3f3f3', borderRadius: 100, paddingHorizontal: 15 }} placeholder='enter your email' />
+                        mode='outlined' theme={{ roundness: 100 }} contentStyle={{ backgroundColor: '#f3f3f3', borderRadius: 100, paddingHorizontal: 15 }} placeholder='Enter your email' />
                 </View>
                 {/* <TouchableOpacity onPress={() => {}} style={{ marginTop: 15 }}>
                     <Text style={{fontWeight: 'bold', alignSelf: 'flex-end'}}>Forgot Password ?</Text>

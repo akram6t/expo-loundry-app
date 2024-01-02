@@ -20,10 +20,12 @@ import { useRoute } from "@react-navigation/native";
 const PickupDropScreen = ({ navigation }) => {
     const theme = useTheme();
     const route = useRoute();
-    const { shopname, shopid } = route.params;
+    const { shop, shopname, shopid } = route.params;
     const [timingData, setTimingData] = useState([]);
     const [tabIndex, setTabIndex] = useState(0);
-    const [pickupDateTime, setPickupDateTime] = useState(null);
+    const [pickupDateTime, setPickupDateTime] = useState({
+
+    });
     // const [dropDateTime, setDropDateTime] = useState(null);
     const [loader, setLoader] = useState(false);
 
@@ -98,10 +100,10 @@ const PickupDropScreen = ({ navigation }) => {
             <TabsProvider defaultIndex={tabIndex} onChangeIndex={(index) => setTabIndex(index)}>
                 <Tabs disableSwipe style={{ backgroundColor: theme.colors.background }}>
                     <TabScreen label="Pickup Date">
-                        <PickupDate setPickupData={(item) => setPickupDateTime({ ...item })} setMessage={setMessage} setSnackbar={setSnackbar} timingData={timingData} />
+                        <PickupDate startDay={shop.pickup_start_day} setPickupData={(item) => setPickupDateTime({ ...item })} setMessage={setMessage} setSnackbar={setSnackbar} timingData={timingData} />
                     </TabScreen>
                     <TabScreen label="Drop Date">
-                        <DropDate setDropData={(item) => handleOnSubmit({ ...item })} setMessage={setMessage} setSnackbar={setSnackbar} timingData={timingData} />
+                        <DropDate startDay={shop.delivery_start_day} setDropData={(item) => handleOnSubmit({ ...item })} setMessage={setMessage} setSnackbar={setSnackbar} timingData={timingData} />
                     </TabScreen>
                 </Tabs>
             </TabsProvider>
@@ -127,16 +129,17 @@ const PickupDropScreen = ({ navigation }) => {
 };
 
 
-const PickupDate = ({ setPickupData, setMessage, setSnackbar, timingData }) => {
+const PickupDate = ({startDay, setPickupData, setMessage, setSnackbar, timingData }) => {
     const theme = useTheme();
     const [selectedTime, setSelectedTime] = useState(-1);
 
     const tabNavigation = useTabNavigation();
 
-    const today = new Date(); // Get today's date
-    const [selectedDate, setSelectedDate] = useState(today);
-    const endDate = new Date(today); // Create a copy of today's date
+    const today = new Date();
+    today.setDate(today.getDate() + startDay) // Get today's date
+    const endDate = new Date(); // Create a copy of today's date
     endDate.setDate(today.getDate() + 7);
+    const [selectedDate, setSelectedDate] = useState(today);
     return (
         <View style={{ flex: 1 }}>
             <Text style={{ marginStart: 15, marginBottom: 10, marginTop: 20, fontSize: 14, color: theme.colors.primary }}>SELECT PICKUP DATE</Text>
@@ -194,18 +197,18 @@ const PickupDate = ({ setPickupData, setMessage, setSnackbar, timingData }) => {
 
 
 
-const DropDate = ({ setDropData, setMessage, setSnackbar, timingData }) => {
+const DropDate = ({ startDay, setDropData, setMessage, setSnackbar, timingData }) => {
     const theme = useTheme();
     const [selectedTime, setSelectedTime] = useState(-1);
 
     const tabNavigation = useTabNavigation();
 
     const today = new Date(); // Get today's date
-    const [selectedDate, setSelectedDate] = useState(today);
     const startDate = new Date(today);
-    startDate.setDate(today.getDate() + 1);
+    startDate.setDate(today.getDate() + startDay);
     const endDate = new Date(today); // Create a copy of today's date
     endDate.setDate(today.getDate() + 7);
+    const [selectedDate, setSelectedDate] = useState(startDate);
     return (
         <View style={{ flex: 1 }}>
             <Text style={{ marginStart: 15, marginBottom: 10, marginTop: 20, fontSize: 14, color: theme.colors.primary }}>SELECT DROP DATE</Text>

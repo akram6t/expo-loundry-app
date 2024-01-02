@@ -7,12 +7,12 @@ import {
     RefreshControl,
     ScrollView
 } from "react-native";
-import { Divider, MD2Colors, Snackbar, TouchableRipple } from 'react-native-paper';
+import { Button, Divider, MD2Colors, Snackbar, TouchableRipple } from 'react-native-paper';
 import React, { useState, useEffect } from "react";
 import { useTheme, } from "react-native-paper";
 import { Tabs, TabScreen, TabsProvider } from "react-native-paper-tabs";
 import { SafeAreaView } from "react-native-safe-area-context";
-import { Entypo, MaterialCommunityIcons } from "@expo/vector-icons";
+import { Entypo, FontAwesome, MaterialCommunityIcons } from "@expo/vector-icons";
 
 // import IconOrderConfirmed from '../../assets/images/icon_order_confirmed.png';
 // import IconOrderPickup from '../../assets/images/icon_order_pickup.png';
@@ -26,6 +26,7 @@ import axios from "axios";
 import ItemOrder from "../components/ItemOrder";
 import { useSelector } from "react-redux";
 import { StatusBar } from 'expo-status-bar';
+import { useFocusEffect } from "@react-navigation/native";
 
 const OrdersScreen = ({ navigation }) => {
     const [ordersList, setOrdersList] = useState([]);
@@ -34,6 +35,8 @@ const OrdersScreen = ({ navigation }) => {
     const [snackbar, setSnackbar] = useState(false);
     const [refreshing, setRefreshing] = useState(false);
     const [ status, setStatus ] = useState([]);
+    const [ skip, setSkip ] = useState(0);
+    const [ ordersEnd, setOrderEnd ] = useState(false);
 
     const theme = useTheme();
 
@@ -42,12 +45,16 @@ const OrdersScreen = ({ navigation }) => {
     function getOrders() {
         setLoading(true);
         const uid = auth.currentUser.uid;
-        axios.get(`${server.baseUrl}/${api.orders}/${uid}`, { headers: { "Content-Type": 'application/json', apikey: server.apikey } })
+        axios.get(`${server.baseUrl}/${api.orders}/${uid}?skip=${skip}`, { headers: { "Content-Type": 'application/json', apikey: server.apikey } })
             .then((result, err) => {
                 setLoading(false);
                 const { status, data } = result.data;
                 if (status) {
-                    setOrdersList([...data]);
+                    setSkip(skip + 7);
+                    setOrdersList([...ordersList, ...data]);
+                    if(data.length===0){
+                        setOrderEnd(true);
+                    }
                 }
             }).catch(err => {
                 setLoading(false);
@@ -56,6 +63,18 @@ const OrdersScreen = ({ navigation }) => {
                 console.log(err);
             })
     }
+
+    useFocusEffect(
+        React.useCallback(() => {
+            setSkip(0);
+            setOrdersList([]);
+            getOrders();
+
+            return () => {
+                console.log('ScreenA unfocused');
+            };
+        }, [])
+    );
 
     function getorderstatus() {
         setLoading(true);
@@ -81,6 +100,8 @@ const OrdersScreen = ({ navigation }) => {
 
 
     const onRefresh = React.useCallback(() => {
+        setSkip(0);
+        setOrdersList([]);
         setRefreshing(true);
         Promise.all([ getOrders(), getorderstatus() ]);
         setTimeout(() => {
@@ -111,16 +132,11 @@ const OrdersScreen = ({ navigation }) => {
                 <Text style={{ fontSize: 20 }}>My Orders</Text>
             </View>
 
-            {/* checkOrders */}
-            {
-                ordersList.length===0?
-                    <Text style={{ marginTop: 20, textAlign: 'center' }}>orders not found</Text>
-                :null
-            }
+            <ScrollView>
 
             <FlatList
                 refreshControl={<RefreshControl refreshing={refreshing} onRefresh={onRefresh} />}
-                nestedScrollEnabled
+                scrollEnabled={false}
                 overScrollMode="never"
                 data={ordersList}
                 renderItem={({ item, index }) => {
@@ -130,6 +146,10 @@ const OrdersScreen = ({ navigation }) => {
                     )
                 }}
                 keyExtractor={(item, index) => index.toString()} />
+                <Button disabled={ordersEnd} onPress={() => getOrders()} loading={loading}>{!ordersEnd ? 'load more' : 'No orders available'}</Button>
+
+                </ScrollView>
+
             <Loader loader={loading} setLoader={setLoading} />
 
             <Snackbar
@@ -144,6 +164,8 @@ const OrdersScreen = ({ navigation }) => {
                 }}>
                 {message}
             </Snackbar>
+
+
 
         </SafeAreaView>
     </View>

@@ -1,4 +1,4 @@
-import { View, AppState, FlatList, TouchableOpacity } from "react-native";
+import { View, AppState, FlatList, TouchableOpacity, Alert } from "react-native";
 import React, { useEffect, useRef, useState } from "react";
 import { useRoute } from "@react-navigation/native";
 import {
@@ -61,6 +61,26 @@ const ClothsScreen = ({ navigation }) => {
     let distance = '...';
     if(distanceinMeter > 1){
       distance = distanceinMeter.toFixed(2) + ' km';
+      console.log(distanceinMeter.toFixed(2));
+      console.log(shop.distance);
+      if(distanceinMeter.toFixed(2) > shop.distance){
+        Alert.alert(
+          'Service Availbale',
+          'Service not available on this area',
+          [
+            {
+              text: 'ok',
+              onPress: () => navigation.goBack(),
+              style: 'ok',
+            },
+          ],
+          {
+            cancelable: false,
+          }
+        )
+
+      }
+
     }else{
       distance = (distanceinMeter * 1000).toFixed(0) + ' m';
     }
@@ -229,7 +249,7 @@ const ClothsScreen = ({ navigation }) => {
           <MaterialCommunityIcons color={'white'} size={18} name="currency-inr" />
             <Text style={{color: 'white', fontSize: 18}}>{totalPrice}</Text>
         </View>
-        <Button onPress={() => navigation.navigate(routes.CartScreen, { shopname: shop.name, shopid: shop._id })} mode="elevated" buttonColor="white" style={{borderRadius: 100}}>View Cart</Button>
+        <Button onPress={() => navigation.navigate(routes.CartScreen, { shop: shop, shopname: shop.name, shopid: shop._id })} mode="elevated" buttonColor="white" style={{borderRadius: 100}}>View Cart</Button>
       </View>}
 
 
@@ -254,185 +274,6 @@ const ClothsScreen = ({ navigation }) => {
     </SafeAreaView>
   );
 };
-
-// products data
-const products_data = [
-  {
-    _id: 'mskdsldm',
-    image: "https://cdn-icons-png.flaticon.com/128/4643/4643574.png",
-    name: "shirt",
-    quantity: 0,
-    gender: "men",
-    services:[
-      {
-        name: 'Wash Only',
-        price: 10
-      },
-      {
-        name: 'Iron Only',
-        price: 10
-      },
-      {
-        name: 'Wash & Iron',
-        price: 20
-      },
-      {
-        name: 'Dry Clean',
-        price: 25
-      }
-    ]
-  },
-  {
-    _id: 'mskdsldmsmkd',
-    image: "https://cdn-icons-png.flaticon.com/128/892/892458.png",
-    name: "T-shirt",
-    quantity: 0,
-    gender: "men",
-    services:[
-      {
-        name: 'Wash Only',
-        price: 10
-      },
-      {
-        name: 'Iron Only',
-        price: 10
-      },
-      {
-        name: 'Wash & Iron',
-        price: 20
-      },
-      {
-        name: 'Dry Clean',
-        price: 25
-      }
-    ]
-  },
-  {
-    _id: 'mskdsldmamsdad',
-    image: "https://cdn-icons-png.flaticon.com/128/9609/9609161.png",
-    name: "dresses",
-    gender: "women",
-    quantity: 0,
-    services:[
-      {
-        name: 'Wash Only',
-        price: 10
-      },
-      {
-        name: 'Iron Only',
-        price: 10
-      },
-      {
-        name: 'Wash & Iron',
-        price: 20
-      },
-      {
-        name: 'Dry Clean',
-        price: 25
-      }
-    ]
-  },
-  {
-    _id: 'asmlskanl',
-    image: "https://cdn-icons-png.flaticon.com/128/599/599388.png",
-    name: "jeans",
-    quantity: 0,
-    gender: "men",
-    services:[
-      {
-        name: 'Wash Only',
-        price: 10
-      },
-      {
-        name: 'Iron Only',
-        price: 10
-      },
-      {
-        name: 'Wash & Iron',
-        price: 20
-      },
-      {
-        name: 'Dry Clean',
-        price: 25
-      }
-    ]
-  },
-  {
-    _id: 'asnklasmfk',
-    image: "https://cdn-icons-png.flaticon.com/128/9431/9431166.png",
-    name: "Sweater",
-    quantity: 0,
-    gender: "women",
-    services:[
-      {
-        name: 'Wash Only',
-        price: 10
-      },
-      {
-        name: 'Iron Only',
-        price: 10
-      },
-      {
-        name: 'Wash & Iron',
-        price: 20
-      },
-      {
-        name: 'Dry Clean',
-        price: 25
-      }
-    ]
-  },
-  {
-    _id: 'samflaskfs',
-    image: "https://cdn-icons-png.flaticon.com/128/3345/3345397.png",
-    name: "shorts",
-    quantity: 0,
-    gender: "women",
-    services:[
-      {
-        name: 'Wash Only',
-        price: 10
-      },
-      {
-        name: 'Iron Only',
-        price: 10
-      },
-      {
-        name: 'Wash & Iron',
-        price: 20
-      },
-      {
-        name: 'Dry Clean',
-        price: 25
-      }
-    ]
-  },
-  {
-    _id: 'asmnfoiasmfp',
-    image: "https://cdn-icons-png.flaticon.com/128/293/293241.png",
-    name: "Sleeveless",
-    quantity: 0,
-    gender: "women",
-    services:[
-      {
-        name: 'Wash Only',
-        price: 10
-      },
-      {
-        name: 'Iron Only',
-        price: 10
-      },
-      {
-        name: 'Wash & Iron',
-        price: 20
-      },
-      {
-        name: 'Dry Clean',
-        price: 25
-      }
-    ]
-  },
-];
 
 export default ClothsScreen;
 

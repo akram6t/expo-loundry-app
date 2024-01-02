@@ -21,7 +21,7 @@ const CartScreen = ({ navigation }) => {
     const theme = useTheme();
     const route = useRoute();
     const dispatch = useDispatch();
-    const { shopname, shopid } = route.params;
+    const { shop, shopname, shopid } = route.params;
     const cart = useSelector((state) => state.cart.cart);
 
     const [totalPrice, setTotalPrice] = useState(0);
@@ -145,7 +145,7 @@ const CartScreen = ({ navigation }) => {
 
             {totalPrice === 0 ? null : <Button contentStyle={{ padding: 5 }}
                 style={{ fontSize: 20, margin: 8 }}
-                onPress={() => navigation.navigate(routes.PickupDropScreen, { shopname: shopname, shopid: shopid })}
+                onPress={() => navigation.navigate(routes.PickupDropScreen, { shop: shop, shopname: shopname, shopid: shopid })}
                 mode="contained"
             >
                 Continue

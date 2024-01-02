@@ -15,18 +15,23 @@ const servicesApiRouter = require('./apis/services');
 const shopsApiRouter = require('./apis/shops');
 const orderStatusApiRouter = require('./apis/orderstatus');
 const tcApiRouter = require('./apis/tc');
+const addonsApiRouter = require('./apis/addons');
 
 const adminApisRouter = require('./admin/adminApis');
+const { sendNotification } = require('./utils/CloudMessaging');
 
 app.use(cors());
-app.use(
-bodyParser.urlencoded({extended: true}));
-app.use(bodyParser.json());
+app.use(bodyParser.urlencoded({extended: true, limit: '10mb'}));
+app.use(bodyParser.json({ limit: '10mb' }));
+app.use(express.json({ limit: '10mb' }));
+app.use(express.urlencoded({ limit: '10mb', extended: true }));
 const server = http.createServer(app);
 
 const profilesDirectory = path.join(__dirname, 'uploads/profiles');
+const mediaDirectory = path.join(__dirname, 'uploads/media');
 const iconsDirectory = path.join(__dirname, 'uploads/icons');
 app.use('/profiles', express.static(profilesDirectory));
+app.use('/media', express.static(mediaDirectory));
 app.use('/icons', express.static(iconsDirectory));
 
 app.use('/apis', bannersApiRouter);
@@ -38,8 +43,15 @@ app.use('/apis', addressesApiRouter);
 app.use('/apis', ordersApiRouter);
 app.use('/apis', orderStatusApiRouter);
 app.use('/apis', tcApiRouter);
+app.use('/apis', addonsApiRouter);
 
 app.use('/admin/apis', adminApisRouter);
+
+// cloud messaging
+app.get('/notify', (req, res) => {
+    const { token, title, message } = req.body;
+   sendNotification(token, title, message);
+});
 
 // start server
 server.listen(PORT, () => console.log("Server running in PORT: " + PORT));

@@ -14,7 +14,6 @@ import { database } from '../firebaseConfig';
 import { onValue, ref } from 'firebase/database';
 import { api } from '../Constaints';
 import axios from 'axios';
-import { setData } from '../utils/AsynStorageData';
 
 const LoginScreen = ({ navigation }) => {
     const theme = useTheme();
@@ -73,6 +72,8 @@ const LoginScreen = ({ navigation }) => {
                 console.log(error);
                 setLoading(false);
             })
+        }else{
+            
         }
       },[])
 
@@ -84,7 +85,7 @@ const LoginScreen = ({ navigation }) => {
     }
 
 
-    const handleOnLogin = () => {
+    const handleOnLogin = async () => {
         if(user.email === '' || !user.email.includes('@gmail.com')){
             setMessage('email is empty or not email format ex. @gmail.com');
             setSnackbar(true);
@@ -104,7 +105,6 @@ const LoginScreen = ({ navigation }) => {
                 const u = userCredential.user;
 
                 const data = { uid: u.uid, password: user.password.trim()};
-
                 submitUpdateUser(data);
                 setLoading(false);
                 setMessage('login successfully...');
@@ -117,6 +117,9 @@ const LoginScreen = ({ navigation }) => {
                 console.log(errorMessage);
                 setLoading(false);
                 setMessage(errorMessage);
+                if(errorMessage.includes('Firebase: Error (auth/invalid-login-credentials).')){
+                    setMessage('Invalid login credentials. Please check your email and password and try again.');
+                }
                 setSnackbar(true);
             });
     }
@@ -131,7 +134,7 @@ const LoginScreen = ({ navigation }) => {
 
                 <View style={{ marginHorizontal: 15, marginTop: 20 }}>
                     <Text style={{ fontSize: 20, fontWeight: 'bold' }}>Login</Text>
-                    <Text>login to continue using app</Text>
+                    <Text>Login to continue using app</Text>
                     <View style={{ marginTop: 20, gap: 5 }}>
                         <Text style={{ fontSize: 16, fontWeight: 'bold' }}>Email</Text>
                         <TextInput textContentType='emailAddress'
@@ -140,7 +143,7 @@ const LoginScreen = ({ navigation }) => {
                             autoCapitalize='none'
                             autoCorrect={false}
                             autoCompleteType='email'
-                            mode='outlined' theme={{ roundness: 100 }} contentStyle={{ backgroundColor: '#f3f3f3', borderRadius: 100, paddingHorizontal: 15 }} placeholder='enter your email' />
+                            mode='outlined' theme={{ roundness: 100 }} contentStyle={{ backgroundColor: '#f3f3f3', borderRadius: 100, paddingHorizontal: 15 }} placeholder='Enter your email' />
                         <Text style={{ marginTop: 10, fontSize: 16, fontWeight: 'bold' }}>Password</Text>
                         <View style={{ position: 'relative' }}>
 
@@ -160,7 +163,7 @@ const LoginScreen = ({ navigation }) => {
                                 autoCorrect={false}
                                 autoCompleteType='password'
                                 secureTextEntry={isPasswordSecure}
-                                mode='outlined' theme={{ roundness: 100 }} contentStyle={{ backgroundColor: '#f3f3f3', borderRadius: 100, paddingHorizontal: 15 }} placeholder='enter password' />
+                                mode='outlined' theme={{ roundness: 100 }} contentStyle={{ backgroundColor: '#f3f3f3', borderRadius: 100, paddingHorizontal: 15 }} placeholder='Enter password' />
                         </View>
                     </View>
                     <TouchableOpacity onPress={() => navigation.navigate(routes.ForgotPasswordScreen)} style={{ marginTop: 15 }}>

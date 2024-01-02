@@ -189,13 +189,6 @@ const MyAddressesScreen = ({ navigation }) => {
         // console.log(coords)
         if (coords) {
             const { latitude, longitude } = coords;
-            setAddress({
-                ...address,
-                latlon: {
-                    latitude: latitude,
-                    longitude: longitude
-                }
-            })
 
             let response = await Location.reverseGeocodeAsync({
                 latitude,
@@ -205,6 +198,10 @@ const MyAddressesScreen = ({ navigation }) => {
             for (let item of response) {
                 setAddress({
                     ...address,
+                    latlon: {
+                        latitude: latitude,
+                        longitude: longitude
+                    },
                     house: item.streetNumber ? item.streetNumber : '',
                     area: `${item.name ? item.name + ', ' : ''}${item.street ? item.street + ', ' : ''}${item.district ? item.district : ''}`,
                     city: item.city ? item.city : '',

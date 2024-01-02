@@ -84,7 +84,7 @@ router.post('/create_user', (req, res) => {
         console.log('create user...')
         const db = client.db();
         const collection = db.collection(Collections.USERS);
-        const insertData = { _id: data.uid, ...data, createdAt: new Date().toISOString() }
+        const insertData = { ...data, date: new Date().toISOString() }
         const result = await collection.insertOne(insertData);
 
         if (result.insertedId) {

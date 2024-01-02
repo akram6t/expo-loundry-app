@@ -65,11 +65,7 @@ const TermsAndConditionsScreen = ({ navigation }) => {
                             {item.title === '' || !item.title ? null :
                                 <Text style={{ color: theme.colors.primary, fontSize: 22, fontWeight: 'bold' }}>{item.title}</Text>
                             }
-                            <View style={{ marginStart: 2 }}>
-                                { item.description.map((item, index) => {
-                                    return<Text style={{ fontSize: 16 }} key={index}>{item}</Text>
-                                }) }
-                            </View>
+                                <Text style={{ fontSize: 16 }} key={index}>{item.description}</Text>
                         </View>
                     )
                 }} />

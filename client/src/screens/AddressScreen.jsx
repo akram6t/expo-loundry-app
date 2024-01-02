@@ -54,8 +54,12 @@ const AddressScreen = ({ navigation }) => {
                 setLoader(false);
                 const { status, data } = result.data;
                 if (status) {
+                    if(data.length === 0){
+                        setPickupAddress(-1);
+                        setDropAddress(-1);
+                    }
                     setAddressesList(data);
-                    console.log(data);
+                    // console.log(data);
                 }
             }).catch(err => {
                 setLoader(false);
@@ -106,14 +110,14 @@ const AddressScreen = ({ navigation }) => {
                 <View>
                     <View style={{ flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between' }}>
                         <View style={{ flex: 1, flexDirection: 'row', alignItems: 'center', gap: 5 }}>
-                            <Text numberOfLines={1} style={{ fontSize: 16, fontWeight: 'bold' }}>{item.name}</Text>
-                            <Chip textStyle={{ fontSize:12 }}>{item.type?item.type.toUpperCase():''}</Chip>
+                            <Text numberOfLines={1} style={{ fontSize: 16, fontWeight: 'bold' }}>{item?.name}</Text>
+                            <Chip textStyle={{ fontSize:12 }}>{item?.type?item.type.toUpperCase():''}</Chip>
                         </View>
                     </View>
-                    <Text>{item.mobile}</Text>
-                    <Text>{item.house} {item.nearby !== '' ? ','+item.nearby:'' }</Text>
-                    <Text>{item.area}</Text>
-                    <Text>{item.city}, {item.state}, {item.pincode}</Text>
+                    <Text>{item?.mobile}</Text>
+                    <Text>{item?.house} {item?.nearby !== '' ? ','+item?.nearby:'' }</Text>
+                    <Text>{item?.area}</Text>
+                    <Text>{item?.city}, {item?.state}, {item?.pincode}</Text>
                 </View>
         )
     }
@@ -153,7 +157,7 @@ const AddressScreen = ({ navigation }) => {
 
                         <TouchableRipple style={{ padding: 10, borderBottomWidth: 1 }} onPress={() => setOpenPickupDialog(true)}>
                             <View style={{ }}>
-                                { pickupAddress >=0 ? getAddressInBox(addressesList[pickupAddress])
+                                {  pickupAddress >=0 ? getAddressInBox(addressesList[pickupAddress])
                                     :<Text>Select pickup address</Text>
                                 } 
                             </View>

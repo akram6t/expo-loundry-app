@@ -53,6 +53,7 @@ const ProfileScreen = ({ navigation }) => {
 
   const showDialog = () => setVisible(true);
 
+
   const submitUpdateUser = (data) => {
     setLoader(true);
     hideDialog();
@@ -167,6 +168,15 @@ const ProfileScreen = ({ navigation }) => {
     getUser();
    }, []);
 
+   const signOut = async () => {
+    try {
+      await auth.signOut();
+      setUser(null);
+    } catch (error) {
+      console.error('Signout error:', error);
+    }
+   }
+
   return (
     <SafeAreaView style={{ flex: 1, backgroundColor: theme.colors.background }}>
       <View
@@ -263,7 +273,7 @@ const ProfileScreen = ({ navigation }) => {
 
             <Dialog.Actions>
               <Button onPress={() => setLogOutDialog(false)}>cancel</Button>
-              <Button onPress={() => auth.signOut()}>logout</Button>
+              <Button onPress={() => signOut()}>logout</Button>
             </Dialog.Actions>
 
           </Dialog>

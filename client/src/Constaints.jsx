@@ -29,6 +29,7 @@ const routes = {
 const api = {
     // baseUrl: '',
     // apiKey: '',
+    addons: 'apis/addons',
     createUser: 'apis/create_user',
     updateUser: 'apis/update_user',
     users: 'apis/users',
@@ -44,6 +45,7 @@ const api = {
     orders: 'apis/orders',
     orders_status: 'apis/orders_status',
     tc: 'apis/tc',
+    cancel_order: 'apis/cancel_order'
 }
 
 const monthNames = [

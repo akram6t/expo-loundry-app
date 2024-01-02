@@ -4,7 +4,8 @@ export const PathSlice = createSlice({
     name:"path",
     initialState:{
         path: {
-            baseUrl: ''
+            baseUrl: '',
+            apikey: ''
         },
     },
     reducers:{
