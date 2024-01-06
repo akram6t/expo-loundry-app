@@ -11,6 +11,7 @@ import {
 import { decrementQty, incrementQty } from "./../utils/reducers/ProductReducer";
 import { useEffect, useState, useRef } from 'react';
 import { useNavigation } from '@react-navigation/native';
+import { ImageIdentifier } from '../utils/ImageIdentifier';
 
 export default ProductItem = ({ item, index, service, setSnackbar, setMessage, cart }) => {
     const theme = useTheme();
@@ -18,7 +19,7 @@ export default ProductItem = ({ item, index, service, setSnackbar, setMessage, c
     const [servicesData, setServicesData] = useState([]);
     const [serviceDialog, setServiceDialog] = useState(false);
 
-
+    const server = useSelector(state => state.path.path);
 
     const addItemToCart = () => {
         dispatch(addToCart({ ...item, services: servicesData })); // cart
@@ -121,7 +122,7 @@ export default ProductItem = ({ item, index, service, setSnackbar, setMessage, c
             }}
         >
             <Image
-                source={{ uri: item.image }}
+                source={{ uri: ImageIdentifier(item.image, server) }}
                 style={{ width: 70, height: 70 }}
             />
             <View style={{ flex: 1 }}>

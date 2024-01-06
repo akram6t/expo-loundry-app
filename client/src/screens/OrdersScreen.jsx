@@ -66,9 +66,7 @@ const OrdersScreen = ({ navigation }) => {
 
     useFocusEffect(
         React.useCallback(() => {
-            setSkip(0);
-            setOrdersList([]);
-            getOrders();
+           onRefresh();
 
             return () => {
                 console.log('ScreenA unfocused');
@@ -100,6 +98,7 @@ const OrdersScreen = ({ navigation }) => {
 
 
     const onRefresh = React.useCallback(() => {
+        setOrderEnd(false);
         setSkip(0);
         setOrdersList([]);
         setRefreshing(true);
@@ -132,10 +131,9 @@ const OrdersScreen = ({ navigation }) => {
                 <Text style={{ fontSize: 20 }}>My Orders</Text>
             </View>
 
-            <ScrollView>
+            <ScrollView refreshControl={<RefreshControl refreshing={refreshing} onRefresh={onRefresh} />}>
 
             <FlatList
-                refreshControl={<RefreshControl refreshing={refreshing} onRefresh={onRefresh} />}
                 scrollEnabled={false}
                 overScrollMode="never"
                 data={ordersList}

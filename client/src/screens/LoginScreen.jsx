@@ -48,35 +48,6 @@ const LoginScreen = ({ navigation }) => {
         })
       }
 
-    // useEffect(() => {
-        // auth.authStateReady((user) => {
-            // if(user){
-                // console.log(user)
-            // }else{
-                // console.log('not user');
-            // }
-        // })
-    // },[])
-
-    const dispatch = useDispatch();
-
-    useEffect(() => {
-        if(server.baseUrl === ''){
-            setLoading(true);
-            const dbRef = ref(database, 'utils/path');
-            onValue(dbRef, (snapshot) => {
-                console.log(snapshot.val());
-                dispatch(setPath(snapshot.val()));
-                setLoading(false);
-            }, (error) => {
-                console.log(error);
-                setLoading(false);
-            })
-        }else{
-            
-        }
-      },[])
-
     const onValueChange = (name, text) => {
         setUser({
             ...user,
@@ -117,7 +88,7 @@ const LoginScreen = ({ navigation }) => {
                 console.log(errorMessage);
                 setLoading(false);
                 setMessage(errorMessage);
-                if(errorMessage.includes('Firebase: Error (auth/invalid-login-credentials).')){
+                if(errorMessage.includes('auth/invalid-login-credential') || errorMessage.includes('auth/invalid-credential') || errorMessage.includes('auth/user-not-found')){
                     setMessage('Invalid login credentials. Please check your email and password and try again.');
                 }
                 setSnackbar(true);

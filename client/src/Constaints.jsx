@@ -44,6 +44,7 @@ const api = {
     addorder: 'apis/add_order',
     orders: 'apis/orders',
     orders_status: 'apis/orders_status',
+    notifications: 'apis/notifications',
     tc: 'apis/tc',
     cancel_order: 'apis/cancel_order'
 }

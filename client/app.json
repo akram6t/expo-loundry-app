@@ -1,19 +1,14 @@
 {
   "expo": {
-    "name": "my-loundry-app",
+    "name": "Loundry App",
     "slug": "my-loundry-app",
     "version": "1.0.0",
     "orientation": "portrait",
-    "icon": "./assets/icon.png",
+    "icon": "./assets/images/background_logo.png",
     "userInterfaceStyle": "light",
     "assetBundlePatterns": [
       "**/*"
     ],
-    "splash": {
-      "image": "./assets/images/sticker_drop.png",
-      "backgroundColor": "#6400B0",
-      "resizeMode": "contain"
-    },
     "ios": {
       "supportsTablet": true
     },

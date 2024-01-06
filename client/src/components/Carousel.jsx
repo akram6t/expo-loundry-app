@@ -1,6 +1,7 @@
 import { useTheme } from "react-native-paper"
 import { View } from 'react-native';
 import { SliderBox } from 'react-native-image-slider-box';
+import { ImageIdentifier } from "../utils/ImageIdentifier";
 
 const Carousel = ({images}) => {
     const theme = useTheme();

@@ -11,6 +11,7 @@ import { useSelector } from 'react-redux';
 import * as ImagePicker from 'expo-image-picker';
 import * as FileSystem from 'expo-file-system';
 import * as ImageManipulator from 'expo-image-manipulator';
+import { ImageIdentifier } from '../utils/ImageIdentifier';
 
 const ProfileScreen = ({ navigation }) => {
   const server = useSelector(state => state.path.path);
@@ -139,6 +140,7 @@ const ProfileScreen = ({ navigation }) => {
       setLoader(false);
       const {status, data} = result.data;
       if(status){
+        console.log('fgh');
         if(data == null){
           getUser();
         }else{
@@ -202,7 +204,7 @@ const ProfileScreen = ({ navigation }) => {
         {/* Profile Section */}
         <TouchableRipple onPress={() => showDialog()}>
           <View style={{ padding: 10, marginTop: 10, gap: 15, flexDirection: 'row', alignItems: 'center' }}>
-            <Avatar.Image size={100} source={user.profile ? {uri: server.baseUrl + user.profile} : require('../../assets/images/icon_user.png')} />
+            <Avatar.Image size={100} source={user.profile ? {uri: ImageIdentifier(user.profile, server)} : require('../../assets/images/icon_user.png')} />
             <View style={{ gap: 5 }}>
               <Text numberOfLines={1} style={{ fontSize: 20, fontWeight: 'bold' }}>{ user.name }</Text>
               <Text numberOfLines={1} style={{  }}>{ user.email }</Text>

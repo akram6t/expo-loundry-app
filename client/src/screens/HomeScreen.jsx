@@ -14,6 +14,7 @@ import { useDispatch, useSelector } from 'react-redux';
 import { database } from './../firebaseConfig';
 import { onValue, ref } from 'firebase/database';
 import * as Location from 'expo-location';
+import { ImageIdentifier } from '../utils/ImageIdentifier';
 
 const HomeScreen = ({ navigation }) => {
   const theme = useTheme();
@@ -29,11 +30,11 @@ const HomeScreen = ({ navigation }) => {
   const [banners, setBanners] = useState([]);
   const [services, setServices] = useState([]);
   const [shops, setShops] = useState([]);
-  const [ locationServicesEnabled, setLocationServicesEnabled ] = useState(false);
+  const [locationServicesEnabled, setLocationServicesEnabled] = useState(false);
 
   const [currentLatLon, setCurrentLatLon] = useState(null);
 
-  const [ address, setAddress ] = useState('loading ...');
+  const [address, setAddress] = useState('loading ...');
 
   const dispatch = useDispatch();
 
@@ -41,50 +42,20 @@ const HomeScreen = ({ navigation }) => {
   const server = useSelector(state => state.path.path);
 
   // console.log(server.baseUrl);
-
-    useEffect(() => {
-        if(server.baseUrl === ''){
-            setLoader(true);
-            const dbRef = ref(database, 'utils/path');
-            onValue(dbRef, (snapshot) => {
-                console.log(snapshot.val());
-                dispatch(setPath(snapshot.val()));
-                console.log(server);
-                // setTimeout(() => onRefresh(), 300);
-            }, (error) => {
-                console.log(error);
-                setLoader(false);
-            })
-        }else{
-          setLoader(false);
-          apiFetch();
-        }
-      },[server])
-
-
-
-  const onRefresh = React.useCallback(() => {
-    setRefreshing(true);
-    checkIfLocationEnabled();
-    getCurrentLocation();
-    apiFetch();
-    setTimeout(() => {
-      setRefreshing(false);
-    }, 2000);
-  }, []);
   // const [assets, error] = useAssets([require('assets/images/icons_user.png')]);
 
   function apiFetch() {
 
     function getUser() {
+      if (auth.currentUser == null) return;
       setLoader(true);
       const uid = auth.currentUser.uid;
-      if (auth.currentUser == null) return;
       axios.get(`${server.baseUrl}/${api.users}/${uid}`, { headers: { "Content-Type": 'application/json', apikey: server.apikey } })
         .then((result, err) => {
           setLoader(false);
           const { status, data } = result.data;
           if (status) {
+            console.log('get user...');
             if (data == null) {
               getUser();
             } else {
@@ -101,9 +72,9 @@ const HomeScreen = ({ navigation }) => {
 
 
     function getBanners() {
+      if (auth.currentUser == null) return;
       setLoader(true);
       // const uid = auth.currentUser.uid;
-      if (auth.currentUser == null) return;
       axios.get(`${server.baseUrl}/${api.banners}`, { headers: { "Content-Type": 'application/json', apikey: server.apikey } })
         .then((result, err) => {
           setLoader(false);
@@ -111,6 +82,7 @@ const HomeScreen = ({ navigation }) => {
           if (status) {
             const images = data.map(obj => obj.image)
             setBanners(images);
+            console.log('get banners...');
           }
         }).catch(err => {
           setLoader(false);
@@ -121,9 +93,9 @@ const HomeScreen = ({ navigation }) => {
     }
 
     function getServices() {
+      if (auth.currentUser == null) return;
       setLoader(true);
       // const uid = auth.currentUser.uid;
-      if (auth.currentUser == null) return;
       axios.get(`${server.baseUrl}/${api.services}`, { headers: { "Content-Type": 'application/json', apikey: server.apikey } })
         .then((result, err) => {
           setLoader(false);
@@ -141,15 +113,16 @@ const HomeScreen = ({ navigation }) => {
     }
 
     function getShops() {
+      if (auth.currentUser == null) return;
       setLoader(true);
       // const uid = auth.currentUser.uid;
-      if (auth.currentUser == null) return;
       axios.get(`${server.baseUrl}/${api.shops}`, { headers: { "Content-Type": 'application/json', apikey: server.apikey } })
         .then((result, err) => {
           setLoader(false);
           const { status, data } = result.data;
           if (status) {
             setShops([...data]);
+            console.log('get shops...');
             // console.log(data);
           }
         }).catch(err => {
@@ -164,58 +137,53 @@ const HomeScreen = ({ navigation }) => {
 
   }
 
-  useEffect(() => {
-    checkIfLocationEnabled();
-    getCurrentLocation();
-    // if(server.baseUrl !== ''){
-    // }
-  }, []);
-
 
   // Location service enable
   const checkIfLocationEnabled = async () => {
     let enabled = await Location.hasServicesEnabledAsync();
     if (!enabled) {
-        // Alert.alert(
-        //     "Location services not enabled",
-        //     "Please enable the location services",
-        //     [
-        //         {
-        //             text: "Cancel",
-        //             onPress: () => console.log("Cancel Pressed"),
-        //             style: "cancel",
-        //         },
-        //         { text: "OK", onPress: () => console.log("OK Pressed") },
-        //     ],
-        //     { cancelable: false }
-        // );
+      checkIfLocationEnabled();
+      // Alert.alert(
+      //     "Location services not enabled",
+      //     "Please enable the location services",
+      //     [
+      //         {
+      //             text: "Cancel",
+      //             onPress: () => console.log("Cancel Pressed"),
+      //             style: "cancel",
+      //         },
+      //         { text: "OK", onPress: () => console.log("OK Pressed") },
+      //     ],
+      //     { cancelable: false }
+      // );
     } else {
-        setLocationServicesEnabled(enabled);
-        getCurrentLocation();
+      setLocationServicesEnabled(enabled);
+      getCurrentLocation();
     }
-};
+    getCurrentLocation();
+  };
 
-// get location
-const getCurrentLocation = async () => {
-  let { status } = await Location.requestForegroundPermissionsAsync();
+  // get location
+  const getCurrentLocation = async () => {
+    let { status } = await Location.requestForegroundPermissionsAsync();
 
-  if (status !== "granted") {
-    setLocationServicesEnabled(false);
-  }
+    if (status !== "granted") {
+      setLocationServicesEnabled(false);
+    }
 
-  // setLoader(true);
-  const { coords } = await Location.getCurrentPositionAsync();
-  // console.log(coords)
-  if (coords) {
+    // setLoader(true);
+    const { coords } = await Location.getCurrentPositionAsync();
+    // console.log(coords)
+    if (coords) {
       const { latitude, longitude } = coords;
       setCurrentLatLon({
-          latitude: latitude,
-          longitude: longitude
+        latitude: latitude,
+        longitude: longitude
       })
 
       let res = await Location.reverseGeocodeAsync({
-          latitude,
-          longitude,
+        latitude,
+        longitude,
       });
 
       // setLoader(false);
@@ -225,22 +193,39 @@ const getCurrentLocation = async () => {
       const response = res[0];
 
       setAddress(`${response.name ? response.name + ', ' : ''}${response.streetNumber ? response.streetNumber + ', ' : ''}${response.street ? response.street + ', ' : ''}${response.district ? response.district + ', ' : ''}${response.city ? response.city + ', ' : ''}${response.region ? response.region + ', ' : ''}${response.postalCode ? response.postalCode : ''} `);
-  }
-};
+    }
+  };
 
-useEffect(() => {
-  checkIfLocationEnabled();
-  getCurrentLocation();
-}, []);
+  useEffect(() => {
+    // if (server.baseUrl === '') {
+      // setLoader(true);
+    // } else {
+      // console.log(server.baseUrl);
+      // setLoader(false);
+      checkIfLocationEnabled();
+      getCurrentLocation();
+      apiFetch();
+    // }
+  }, []);
+
+
+  const onRefresh = React.useCallback(() => {
+    setRefreshing(true);
+    checkIfLocationEnabled();
+    apiFetch();
+    setTimeout(() => {
+      setRefreshing(false);
+    }, 2000);
+  }, []);
 
   return (
     <SafeAreaView style={{ backgroundColor: theme.colors.background, flex: 1 }}>
       <View style={{ paddingHorizontal: 8, paddingVertical: 10, flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between' }}>
-        <View style={{flex: 1, marginLeft: 10 }}>
+        <View style={{ flex: 1, marginLeft: 10 }}>
           <Text style={{ fontSize: 22, fontWeight: 'bold' }} numberOfLines={1}>{user.name}</Text>
-          <Text numberOfLines={1} style={{fontSize: 16 }}>{address}</Text>
+          <Text numberOfLines={1} style={{ fontSize: 16 }}>{address}</Text>
         </View>
-        <View style={{ flexDirection: 'row', alignItems:'center' }}>
+        <View style={{ flexDirection: 'row', alignItems: 'center' }}>
           <TouchableOpacity onPress={() => navigation.navigate(routes.NotificationsScreen)}>
             <Badge
               visible={unread && unread > 0}
@@ -257,7 +242,7 @@ useEffect(() => {
             />
           </TouchableOpacity>
           <TouchableOpacity activeOpacity={0.8} onPress={() => navigation.navigate(routes.ProfileScreen)}>
-            <Avatar.Image style={{ marginStart: 8, marginEnd: 8 }} size={40} source={ user.profile ? { uri: server.baseUrl + user.profile } : require('../../assets/images/icon_user.png')} />
+            <Avatar.Image style={{ marginStart: 8, marginEnd: 8 }} size={40} source={user.profile ? { uri: ImageIdentifier(user.profile, server) } : require('../../assets/images/icon_user.png')} />
           </TouchableOpacity>
         </View>
       </View>
@@ -289,7 +274,7 @@ useEffect(() => {
                   alignItems: 'center',
                   gap: 10,
                 }} >
-                  <Image style={{ width: 70, height: 70 }} source={{ uri: server.baseUrl + item.image }} />
+                  <Image style={{ width: 70, height: 70 }} source={{uri: ImageIdentifier(item.image, server)}} />
                   <Text style={{ fontSize: 16 }}>{item.name}</Text>
                 </View>
               </TouchableRipple>
@@ -300,9 +285,9 @@ useEffect(() => {
           />
         </View>
 
-        <Divider/>
-      {/* Carousel */}
-      <Carousel images={banners}/>
+        <Divider />
+        {/* Carousel */}
+        <Carousel images={banners.map(img => ImageIdentifier(img, server))} />
 
       </ScrollView>
 
@@ -368,25 +353,3 @@ export default HomeScreen
 //   "https://images.pexels.com/photos/5591581/pexels-photo-5591581.jpeg?auto=compress&cs=tinysrgb&w=800",
 // ];
 
-const services = [
-  {
-    image: "https://cdn-icons-png.flaticon.com/128/3003/3003984.png",
-    name: "Wash Only",
-    bgColor: '#FEFFEC'
-  },
-  {
-    image: "https://cdn-icons-png.flaticon.com/128/9753/9753675.png",
-    name: "Iron Only",
-    bgColor: '#EBFFEC'
-  },
-  {
-    image: "https://cdn-icons-png.flaticon.com/128/2975/2975175.png",
-    name: "Wash & Iron",
-    bgColor: '#EDEAFF'
-  },
-  {
-    image: "https://cdn-icons-png.flaticon.com/128/995/995016.png",
-    name: "Dry Clean",
-    bgColor: '#EFFEFF'
-  },
-];

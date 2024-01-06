@@ -18,7 +18,8 @@ import * as Clipboard from 'expo-clipboard';
 import Loader from "../components/Loader";
 import axios from "axios";
 import { auth } from "../firebaseConfig";
-// import * as Linking from 'expo-linking';
+import { ImageIdentifier } from "../utils/ImageIdentifier";
+import * as Linking from 'expo-linking';
 // import * as Call from 'expo-call';
 
 const OrdersScreen = ({ navigation }) => {
@@ -219,6 +220,19 @@ const OrdersScreen = ({ navigation }) => {
         getStatusColorCode()
     }, [])
 
+    const deliveryBoyWhatsapp = (number) => {
+        if(number === '0000000000'){
+            setMessage('This features not available');
+            setSnackbar(true);
+        }else{
+            Linking.openURL(`http://api.whatsapp.com/send?phone=+91${number}`);
+        }
+    }
+
+    const deliveryBoyCall = (number) => {
+        Linking.openURL(`tel:+91${number}`);
+    }
+
 
     const getAddressInBox = (item) => {
         return (
@@ -256,7 +270,7 @@ const OrdersScreen = ({ navigation }) => {
                 >
                     <Entypo name="chevron-thin-left" size={24} />
                 </TouchableOpacity>
-                <Text numberOfLines={1} style={{ fontSize: 20 }}>order no - {item.order_id}</Text>
+                <Text numberOfLines={1} style={{ fontSize: 20 }}>order Id - #{item.order_id}</Text>
                 <IconButton icon={'content-copy'} onPress={() => copyToClipboard()} />
             </View>
             {/* Appbat End */}
@@ -273,8 +287,8 @@ const OrdersScreen = ({ navigation }) => {
                         </View>
                     </View>
                     <View style={{ flexDirection: 'row', alignItems: 'center' }}>
-                        <IconButton icon="whatsapp" onPress={() => { 'phone_number' }} />
-                        <IconButton icon="phone" onPress={() => { 'whatsapp_number' }} />
+                        <IconButton icon="whatsapp" onPress={() => deliveryBoyWhatsapp(shop?.delivery_partner?.whatsapp_number)} />
+                        <IconButton icon="phone" onPress={() => deliveryBoyCall(shop?.delivery_partner?.phone_number)} />
                     </View>
                 </View>
 
@@ -283,7 +297,7 @@ const OrdersScreen = ({ navigation }) => {
                 <View style={{ flexDirection: 'row', alignItems: 'center', justifyContent: 'space-around', marginTop: 10 }}>
                     <View style={{ padding: 25, borderWidth: 1, borderRadius: 100, borderColor: MD2Colors.grey400 }}>
                         <Image style={{ width: 50, height: 50 }} source={
-                            { uri: server.baseUrl + iconPutting() }
+                            { uri: ImageIdentifier(iconPutting(), server)}
                         } />
                     </View>
                     <View style={{ gap: 5 }}>

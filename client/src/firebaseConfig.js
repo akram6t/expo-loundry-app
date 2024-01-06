@@ -3,7 +3,7 @@ import  { initializeApp } from "firebase/app";
 import { getAuth, getReactNativePersistence, initializeAuth} from "firebase/auth";
 import ReactNativeAsyncStorage from '@react-native-async-storage/async-storage';
 import { getDatabase } from 'firebase/database';
-import { getMessaging, getToken } from 'firebase/messaging';
+// import { getMessaging, getToken } from 'firebase/messaging';
 import { getAnalytics } from "firebase/analytics";
 
 const firebaseConfig = {
@@ -25,5 +25,5 @@ export const auth = initializeAuth(app, {
 });
 
 export const database = getDatabase(app);
-export const messaging = getMessaging(app);
+// export const messaging = getMessaging(app);
 export const analytics = getAnalytics(app);

@@ -4,11 +4,15 @@ import * as NavigationBar from 'expo-navigation-bar';
 import AuthNavigator from './src/navigator/AuthNavigator';
 import StackNavigator from './src/navigator/StackNavigator';
 import { useAuthentication } from './src/utils/useAuthentication';
-import { Provider } from 'react-redux';
+import { Provider, useDispatch } from 'react-redux';
 import store from './src/Store';
-import { useEffect } from 'react';
+import { useEffect, useState } from 'react';
 import { getToken } from 'firebase/messaging';
-import { messaging } from './src/firebaseConfig';
+import { database, messaging } from './src/firebaseConfig';
+import { onValue, ref } from 'firebase/database';
+import { setPath } from './src/utils/reducers/DatabaseReducer';
+import Splash from './src/components/layouts/Splash';
+import { setBackgroundColorAsync, setVisibilityAsync } from 'expo-navigation-bar';
 
 const myTheme = {
   ...DefaultTheme,
@@ -16,11 +20,11 @@ const myTheme = {
   colors: {
     ...DefaultTheme.colors,
     secondary: '#24A6C6',
-    // primary: '#8700B0',
-    primary: '#6400B0',
-    primaryLight: '#E8E4EC',
+    primary: '#003BA0',
+    primaryLight: '#DEE1E6',
+    primaryDark: '#003BA0',
     background: 'white',
-    
+
     transparent1: '#E6DFF6',
     transparent2: '#FAF3EC',
     transparent3: '#ECFAF0',
@@ -29,7 +33,7 @@ const myTheme = {
 };
 
 export default function App() {
-  
+
   NavigationBar.setBackgroundColorAsync(myTheme.colors.background);
   NavigationBar.setButtonStyleAsync("dark");
 
@@ -39,26 +43,46 @@ export default function App() {
     })
   }, []);
 
-  function Main(){
-    // This code for when open app check user and change navigator
-    
-    const { liveUser } = useAuthentication();
-
-
-    return (
-      <PaperProvider theme={myTheme}>
-      <StatusBar backgroundColor={myTheme.colors.background} style='dark' />
-      { liveUser ? <StackNavigator/> : <AuthNavigator/>}
-    </PaperProvider>
-    )
-  }
-
 
   return (
     <Provider store={store}>
-      <Main/>
+      <Main />
     </Provider>
   );
+}
+
+
+
+function Main() {
+  const dispatch = useDispatch();
+  const [dbPath, setDbPath] = useState(false);
+  const { liveUser } = useAuthentication();
+  //  set baseUrl
+  useState(() => {
+    const dbRef = ref(database, 'utils/path');
+    onValue(dbRef, (snapshot) => {
+      // console.log(snapshot.val());
+      // dispatch(setPath(snapshot.val()));
+      setDbPath(true);
+    }, (error) => {
+      console.log(error);
+    })
+  }, []);
+
+
+  if(!dbPath){
+    return <Splash bg={myTheme.colors.primaryDark}/>
+  }
+
+  setVisibilityAsync('visible');
+  setBackgroundColorAsync('white');
+
+  return (
+    <PaperProvider theme={myTheme}>
+      <StatusBar backgroundColor={myTheme.colors.background} style='dark' />
+      {liveUser ? <StackNavigator /> : <AuthNavigator />}
+    </PaperProvider>
+  )
 }
 
 

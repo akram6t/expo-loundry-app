@@ -4,6 +4,7 @@ import { useTheme, TouchableRipple, MD2Colors, Divider } from 'react-native-pape
 import { useNavigation } from '@react-navigation/native'
 import { monthNames, routes } from '../Constaints'
 import { MaterialCommunityIcons } from '@expo/vector-icons'
+import { ImageIdentifier } from '../utils/ImageIdentifier'
 
 const ItemOrder = ({item, index, status, server}) => {
     const theme = useTheme();
@@ -104,8 +105,8 @@ const ItemOrder = ({item, index, status, server}) => {
                 <View style={{ flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between' }}>
                     <View style={{ gap: 2 }}>
                         <Text style={{ fontWeight: 'bold', fontSize: 18 }}>{item.storename}</Text>
-                        <Text style={{ fontSize: 16 }}>Order id - {item.order_id}</Text>
-                        <Text style={{ fontSize: 14, opacity: 0.8 }}>{dateFormated(item.order_date)}</Text>
+                        <Text style={{ fontSize: 16 }}>Order Id - #{item.order_id}</Text>
+                        <Text style={{ fontSize: 14, opacity: 0.8, fontWeight: 'bold' }}>{dateFormated(item.order_date)}</Text>
                     </View>
                     <View>
                         <View style={{ alignItems: 'flex-end' }}>
@@ -131,7 +132,7 @@ const ItemOrder = ({item, index, status, server}) => {
                             }
                             return (
                                 <View key={index} style={{ flex: 1, alignItems: 'center', gap: 5, opacity: opacity }}>
-                                    <Image style={{ width: 25, height: 25 }} source={{ uri: server.baseUrl+status.icon}} />
+                                    <Image style={{ width: 25, height: 25 }} source={{ uri: ImageIdentifier(status.icon, server)}} />
                                     <Text style={{ fontSize: 11 }}>{status.tag}</Text>
                                 </View>
                             )
