@@ -11,6 +11,7 @@ import { auth } from '../firebaseConfig';
 import { createUserWithEmailAndPassword } from 'firebase/auth';
 import axios from 'axios';
 import { useSelector } from 'react-redux';
+import { getTokenforNotification } from '../utils/notification/getToken';
 
 const SignupScreen = ({ navigation }) => {
     const [isPasswordSecure, setIsPasswordSecure] = useState(true);
@@ -79,6 +80,8 @@ const SignupScreen = ({ navigation }) => {
 
         createUserWithEmailAndPassword(auth, user.email.trim(), user.password.trim())
             .then((userCredential) => {
+
+                getTokenforNotification().then(token => {
                 // Signed up 
                 const currentUser = userCredential.user;
                 axios.post(`${server.baseUrl}/${api.createUser}`,
@@ -87,6 +90,7 @@ const SignupScreen = ({ navigation }) => {
                         name: user.name.trim(), 
                         email:user.email.trim(), 
                         mobile: user.mobile.trim(),
+                        notificationToken: token,
                         password: user.password.trim()
                     }, 
                     {headers: {"Content-Type": 'application/json', apikey: server.apikey}})
@@ -99,12 +103,15 @@ const SignupScreen = ({ navigation }) => {
                         console.log('user created successfully...');
                     }
 
+
                 }).catch(err => {
                     console.log(err);
                     setMessage(err);
                     setLoading(false);
                     setSnackbar(true);
                 })
+
+            })
                 
                 // ...
             })

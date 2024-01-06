@@ -2,8 +2,9 @@ const { MongoClient } = require('mongodb');
 
 const DB_URL = process.env.DB_URL;
 const { ObjectId } = require('mongodb');
+const sendNotification = require('../sendNotification');
 
-async function postDirectData(req, res) {
+async function postNotification(req, res) {
     // console.log("kdmskd");
     const { data, collection } = req.body;
     console.log(data);
@@ -40,6 +41,7 @@ async function postDirectData(req, res) {
                 status: true,
                 message: `${collection} added`
             })
+            sendNotification(data);
         }else{
             res.json({
                 status: false,
@@ -60,4 +62,4 @@ async function postDirectData(req, res) {
   }
   
 
-module.exports = postDirectData;
+module.exports = postNotification;

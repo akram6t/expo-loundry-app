@@ -1,5 +1,5 @@
 import { StyleSheet, View, Image, FlatList, ScrollView, TouchableOpacity, RefreshControl, Alert } from 'react-native'
-import React, { useEffect, useState } from 'react'
+import React, { useCallback, useEffect, useState } from 'react'
 // import { Asset, useAssets } from 'expo-asset';
 import { SafeAreaView } from 'react-native-safe-area-context'
 import { useTheme, Appbar, Badge, Text, Avatar, TouchableRipple, Snackbar, BottomNavigation, MD2Colors, Button, Divider } from 'react-native-paper'
@@ -15,6 +15,8 @@ import { database } from './../firebaseConfig';
 import { onValue, ref } from 'firebase/database';
 import * as Location from 'expo-location';
 import { ImageIdentifier } from '../utils/ImageIdentifier';
+import { useFocusEffect } from '@react-navigation/native';
+import { getNotificationToken } from '../utils/notification/getToken';
 
 const HomeScreen = ({ navigation }) => {
   const theme = useTheme();
@@ -26,7 +28,7 @@ const HomeScreen = ({ navigation }) => {
   const [snackbar, setSnackbar] = useState(false);
   const [message, setMessage] = useState('');
   const [loader, setLoader] = useState(false);
-  const [unread, setunread] = useState(1);
+  const [unread, setunread] = useState(0);
   const [banners, setBanners] = useState([]);
   const [services, setServices] = useState([]);
   const [shops, setShops] = useState([]);
@@ -137,6 +139,36 @@ const HomeScreen = ({ navigation }) => {
 
   }
 
+  function getNotificationsCount() {
+    if (auth.currentUser == null) return;
+    // const uid = auth.currentUser.uid;
+    axios.get(`${server.baseUrl}/${api.notification_COUNTS}/${auth.currentUser.uid}`, { headers: { "Content-Type": 'application/json', apikey: server.apikey } })
+      .then((result, err) => {
+        const { status, data } = result.data;
+        if (status) {
+          setunread(typeof data === 'string' ? parseInt(data) : data);
+          console.log('notifications count: '+data);
+        }
+      }).catch(err => {
+        // setMessage(`${err}`);
+        // setSnackbar(true);
+        console.log(err);
+      })
+  }
+
+  
+  useFocusEffect(
+    useCallback(() => {
+
+        getNotificationsCount();
+
+        return () => {
+            // console.log(' unfocused');
+        };
+    }, [])
+);
+
+
 
   // Location service enable
   const checkIfLocationEnabled = async () => {
@@ -205,6 +237,7 @@ const HomeScreen = ({ navigation }) => {
       checkIfLocationEnabled();
       getCurrentLocation();
       apiFetch();
+      Promise.all([ getNotificationsCount() ])
     // }
   }, []);
 

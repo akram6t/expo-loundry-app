@@ -10,7 +10,8 @@ const Collections = {
     ADDRESSES: 'addresses',
     TC: 'tc',
     MEDIA: 'media',
-    ADDONS: 'addons'
+    ADDONS: 'addons',
+    NOTIFICATIONS: 'notifications'
 }
 
 const Messages = {

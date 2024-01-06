@@ -16,6 +16,7 @@ const shopsApiRouter = require('./apis/shops');
 const orderStatusApiRouter = require('./apis/orderstatus');
 const tcApiRouter = require('./apis/tc');
 const addonsApiRouter = require('./apis/addons');
+const notificationsApiRouter = require('./apis/notification');
 
 const adminApisRouter = require('./admin/adminApis');
 const { sendNotification } = require('./utils/CloudMessaging');
@@ -44,6 +45,7 @@ app.use('/apis', ordersApiRouter);
 app.use('/apis', orderStatusApiRouter);
 app.use('/apis', tcApiRouter);
 app.use('/apis', addonsApiRouter);
+app.use('/apis', notificationsApiRouter);
 
 app.use('/admin/apis', adminApisRouter);
 

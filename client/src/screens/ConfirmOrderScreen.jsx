@@ -119,7 +119,7 @@ const CartScreen = ({ navigation }) => {
             storename: shopname,
             storeid: shopid,
             order_status: statuses[0],
-            addons: addonsFilter,
+            addons: addonsFilter.map(addon =>  {return {name:addon.name, price: addon.price}}),
             items: [...cart],
             pickup_date: dateTime.pickupDateTime,
             delivery_date: dateTime.dropDateTime,

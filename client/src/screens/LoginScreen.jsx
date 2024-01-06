@@ -14,8 +14,10 @@ import { database } from '../firebaseConfig';
 import { onValue, ref } from 'firebase/database';
 import { api } from '../Constaints';
 import axios from 'axios';
+import { getTokenforNotification } from '../utils/notification/getToken';
 
 const LoginScreen = ({ navigation }) => {
+
     const theme = useTheme();
     const [ message, setMessage ] = useState('login successfully...');
     const [ snackbar, setSnackbar ] = useState(false);
@@ -75,11 +77,22 @@ const LoginScreen = ({ navigation }) => {
                 // Signed in 
                 const u = userCredential.user;
 
-                const data = { uid: u.uid, password: user.password.trim()};
-                submitUpdateUser(data);
-                setLoading(false);
-                setMessage('login successfully...');
-                setSnackbar(true);
+                Promise.all([saveData()]);
+
+                function saveData (){
+
+                getTokenforNotification().then(token => {
+                    console.log(token);
+                    const data = { uid: u.uid,
+                        notificationToken: token,
+                        password: user.password.trim()};
+                        submitUpdateUser(data);
+                        setLoading(false);
+                        setMessage('login successfully...');
+                        setSnackbar(true);
+                });
+
+            }
                 // ...
             })
             .catch((error) => {

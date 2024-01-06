@@ -52,7 +52,7 @@ const OrdersScreen = ({ navigation }) => {
                 if (status) {
                     setSkip(skip + 7);
                     setOrdersList([...ordersList, ...data]);
-                    if(data.length===0){
+                    if(data.length < 7){
                         setOrderEnd(true);
                     }
                 }
