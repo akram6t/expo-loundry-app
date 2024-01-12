@@ -91,7 +91,7 @@ router.post('/add_order', (req, res) => {
         const collection = db.collection(Collections.ORDERS);
         const count = await collection.countDocuments();
         // Convert count to a string
-        let countString = count.toString();
+        let countString = (count+1).toString();
         // Calculate the number of zeros to add
         let zerosToAdd = Math.max(4 - countString.length, 0);
         // Add leading zeros

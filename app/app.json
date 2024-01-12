@@ -15,7 +15,7 @@
     "android": {
       "googleServicesFile": "./google-services.json",
       "adaptiveIcon": {
-        "foregroundImage": "./assets/images/forground_logo.png",
+        "foregroundImage": "./assets/images/background_logo.png",
         "backgroundColor": "#ffffff"
       },
       "package": "com.uniqeapp.loundryapp"
