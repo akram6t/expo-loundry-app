@@ -1,0 +1,56 @@
+{
+  "expo": {
+    "name": "Loundry App",
+    "slug": "my-loundry-app",
+    "version": "1.0.0",
+    "orientation": "portrait",
+    "icon": "./assets/images/background_logo.png",
+    "userInterfaceStyle": "light",
+    "assetBundlePatterns": [
+      "**/*"
+    ],
+    "ios": {
+      "supportsTablet": true
+    },
+    "android": {
+      "googleServicesFile": "./google-services.json",
+      "adaptiveIcon": {
+        "foregroundImage": "./assets/images/forground_logo.png",
+        "backgroundColor": "#ffffff"
+      },
+      "package": "com.uniqeapp.loundryapp"
+    },
+    "web": {
+      "favicon": "./assets/favicon.png"
+    },
+    "extra": {
+      "firebase": {
+        "apiKey": "AIzaSyBYSiCp6qKZb6rMHMqwcAKwFW53_JbgZKw",
+        "authDomain": "loundry-app-e29df.firebaseapp.com",
+        "projectId": "loundry-app-e29df",
+        "storageBucket": "loundry-app-e29df.appspot.com",
+        "messagingSenderId": "378433334013",
+        "appId": "1:378433334013:web:8d25c005c0d10fd1bbac94",
+        "measurementId": "G-BJJ3KET9JZ"
+      },
+      "eas": {
+        "projectId": "3ed0fe4d-7f06-4deb-b696-fa669e18f94b"
+      }
+    },
+    "plugins": [
+      [
+        "expo-image-picker",
+        {
+          "photosPermission": "The app accesses your photos to let you share them with your friends."
+        }
+      ],
+      [
+        "expo-notifications",
+        {
+          "icon": "./assets/images/forground_logo.png",
+          "color": "#ffffff"
+        }
+      ]
+    ]
+  }
+}
