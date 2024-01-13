@@ -14,21 +14,23 @@ const resend = new Resend(process.env.RESEND_EMAIL_API_KEY);
 const forgotPasswordEmail = async (req, res) => {
     if(!ApiAuthentication(req, res)){
         return res.json({ status: false, message: Messages.wrongApi});
-    }
+    }    
     const serverOrigin = `${req.protocol}://${req.get('host')}`;
 
     const client = new MongoClient(DB_URL);
-    const db = client.db();
-    const col_store = await db.collection(Collections.SHOPS);
-    const col_admin = await db.collection(Collections.ADMIN);
+    const db =  client.db();
+    const col_store =  db.collection(Collections.SHOPS);
+    const col_admin = db.collection(Collections.ADMIN);
     
     const store = await col_store.find().project({ name: 1 }).toArray();
     const admin = await col_admin.find().toArray();
 
     const genratedPassword = uuid.v1().slice(0,8).replace('-', '');
 
+    const correctDomain = store[0]?.name.toLowerCase().replaceAll(' ', '_')+'@'+DOMAIN;
+
     const { data, error } = await resend.emails.send({
-        from: `${store[0]?.name} <${DOMAIN ? DOMAIN : 'onboarding@resend.dev'}>`,
+        from: `${store[0]?.name} <${DOMAIN ? correctDomain : 'onboarding@resend.dev'}>`,
         to: [admin[0]?.email],
         subject: `Password Received from ${store[0]?.name}`,
         html: htmlContent({
@@ -43,6 +45,7 @@ const forgotPasswordEmail = async (req, res) => {
         return res.status(400).json({
             status: false,
             message: error,
+            to: admin[0]?.email
         });
     }
 
