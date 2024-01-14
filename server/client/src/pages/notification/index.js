@@ -161,6 +161,7 @@ function Notifications() {
                     <div>
                       <h2 className="font-semibold text-lg">{item?.title}</h2>
                       <p className="font-normal">{item?.message}</p>
+                      <p className="font-normal">{formatDate(item?.date)} {formatTime(item?.date)}</p>
                     </div>
                   </div>
                   <button onClick={() => deleteNotification(item._id)} className="transition-all hover:bg-red-200 active:bg-red-300 px-2 rounded-full">
