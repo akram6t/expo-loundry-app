@@ -130,7 +130,7 @@ router.post('/cancel_order', (req, res) => {
             console.log(result.modifiedCount);
             const notify = {
                 title: 'An order has been Cancelled.',
-                message: `order id: #${order_id}`,
+                message: `order id: #${order_id}: ${cancelReason}`,
                 type: 'order'
             }
             sendNotificationToServer(notify);
