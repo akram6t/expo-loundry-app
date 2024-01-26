@@ -112,7 +112,7 @@ router.post('/cancel_order', (req, res) => {
     if (!ApiAuthentication(req, res)) {
         return res.json({ status: false, message: Messages.wrongApi });
     }
-    const {order_id, update_status} = req.body;
+    const {order_id, update_status, cancelReason} = req.body;
     const run = async () => {
         const client = new MongoClient(DB_URL);
         await client.connect();
@@ -122,7 +122,7 @@ router.post('/cancel_order', (req, res) => {
         const result = await collection.updateOne(
             { order_id: order_id },
             {
-                $set: { order_status: update_status }
+                $set: { order_status: update_status, cancelReason: cancelReason}
             }
             );
 
@@ -130,7 +130,7 @@ router.post('/cancel_order', (req, res) => {
             console.log(result.modifiedCount);
             const notify = {
                 title: 'An order has been Cancelled.',
-                message: `order id: #${order_id} by`,
+                message: `order id: #${order_id}`,
                 type: 'order'
             }
             sendNotificationToServer(notify);
