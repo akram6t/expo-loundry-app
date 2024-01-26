@@ -22,7 +22,7 @@ function OrderDateTime() {
   const [ordersTimingList, setOrdersTimingList] = useState([]);
   const [sidebarToggle] = useOutletContext();
   const [loading, setLoading] = useState(false);
-  const [itemsPerPage, setItemsPerPage] = useState(10);
+  const [itemsPerPage, setItemsPerPage] = useState(25);
   const [searchTerm, setSearchTerm] = useState('');
   const [currentPage, setCurrentPage] = useState(1);
   const [CUModal, setCUModal] = useState({ status: false });
@@ -50,7 +50,7 @@ function OrderDateTime() {
     setLoading(true);
     const params = {
       collection: Collections.STORE,
-      select: JSON.stringify({_id: 1, pickup_start_day: 1, delivery_start_day: 1}),
+      select: JSON.stringify({_id: 1, pickup_start_day: 1}),
       limit: 1
     }
     try {
@@ -163,7 +163,7 @@ function OrderDateTime() {
           <div className="border w-full border-gray-200 bg-white py-4 px-6 rounded-md">
             {/* FilterBar Start */}
             <div className="flex items-center justify-between pb-3">
-              <EntryOptions onChange={(value) => setItemsPerPage(value)} />
+              <EntryOptions itemsPerPage={itemsPerPage} onChange={(value) => setItemsPerPage(value)} />
               <div className="flex flex-wrap items-center justify-end gap-y-2 md:flex md:items-center md:gap-x-4">
                 <SearchTable searchTerm={searchTerm} handleSearch={(e) => handleSearch(e)} />
                 {/* <FilterDropDown filter={dateFilter} setFilter={(value) => setDateFilter(value)}/> */}

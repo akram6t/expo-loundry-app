@@ -35,7 +35,6 @@ const ClothsScreen = ({ navigation }) => {
   const cart = useSelector((state) => state.cart.cart);
   const [ loader, setLoader ] = useState(false);
   // const total = cart.map((item) => item.quantity * item.price).reduce((curr,prev) => curr + prev,0);
-  const [ totalPrice, setTotalPrice ] = useState(0);
   const theme = useTheme();
   const [ distance, setDistance ] = useState('...');
   // const [ currentLatLon, setCurrentLatLon ] = useState({});
@@ -89,54 +88,31 @@ const ClothsScreen = ({ navigation }) => {
 
   }, [])
 
-  function getCloths(){
-    dispatch(cleanProduct());
-    dispatch(cleanCart());
-      setLoader(true);
-      // const uid = auth.currentUser.uid;
-      // if(auth.currentUser == null) return;
-      axios.get(`${server.baseUrl}/${api.products}/${shop._id}`, {headers: {"Content-Type": 'application/json', apikey: server.apikey}})
-      .then((result, err) => {
-        setLoader(false);
-        const {status, data} = result.data;
-        if(status){
-            // setShops([...data]);
-            // console.log(data);
-            [...data].map(item => dispatch(getProducts(item)));
-        }
-      }).catch(err => {
-        setLoader(false);
-        setMessage(`${err}`);
-        setSnackbar(true);
-        console.log(err);
-      })
-  }
-
-  useEffect(() => {
-    getCloths();
-  }, []);
+  // useEffect(() => {
+    // getCloths();
+  // }, []);
 
 
-  useEffect(() =>{ 
-    function calculateTotalPrice(cartData) {
-      let totalPrice = 0;
+  // useEffect(() =>{ 
+  //   function calculateTotalPrice(cartData) {
+  //     let totalPrice = 0;
 
-      for (let i = 0; i < cartData.length; i++) {
-        const item = cartData[i];
+  //     for (let i = 0; i < cartData.length; i++) {
+  //       const item = cartData[i];
         
-        if (item.quantity > 0) {
-          for (let j = 0; j < item.services.length; j++) {
-            const service = item.services[j];
-            totalPrice += service.price * item.quantity;
-          }
-        }
-      }
+  //       if (item.quantity > 0) {
+  //         for (let j = 0; j < item.services.length; j++) {
+  //           const service = item.services[j];
+  //           totalPrice += service.price * item.quantity;
+  //         }
+  //       }
+  //     }
     
-      return totalPrice;
-    }
+  //     return totalPrice;
+  //   }
     
-    setTotalPrice(calculateTotalPrice(cart));
-   },[cart]);
+  //   setTotalPrice(calculateTotalPrice(cart));
+  //  },[cart]);
 
   return (
     <SafeAreaView style={{ flex: 1, backgroundColor: theme.colors.background }}>
@@ -237,17 +213,17 @@ const ClothsScreen = ({ navigation }) => {
         </Tabs>
       </TabsProvider>
 
-      { totalPrice === 0  ? null :
+      { cart.length <= 0 ? null :
       <View style={{backgroundColor: theme.colors.primary, padding: 15, flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between'}}>
         <View style={{flexDirection: 'row', alignItems: 'center'}}>
           <Feather name="shopping-cart" size={25} color={'white'}/>
-          <Text style={{color: 'white', fontSize: 18, marginStart: 10}}>{cart.length} items</Text>
+          <Text style={{color: 'white', fontSize: 18, marginStart: 10}}>{cart.length} x {cart.reduce((t, q) => t + q.quantity, 0) || 0}</Text>
           <Entypo size={18}
             color={'white'}
             name="flow-line"
           />
-          <MaterialCommunityIcons color={'white'} size={18} name="currency-inr" />
-            <Text style={{color: 'white', fontSize: 18}}>{totalPrice}</Text>
+          {/* <MaterialCommunityIcons color={'white'} size={18} name="currency-inr" /> */}
+            <Text style={{color: 'white', fontSize: 18}}>items</Text>
         </View>
         <Button onPress={() => navigation.navigate(routes.CartScreen, { shop: shop, shopname: shop.name, shopid: shop._id })} mode="elevated" buttonColor="white" style={{borderRadius: 100}}>View Cart</Button>
       </View>}

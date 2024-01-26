@@ -73,24 +73,13 @@ export default function App() {
 
 
 function Main() {
-  const dispatch = useDispatch();
+  const [  isClothFetch, setIsCloth ] = useState(false);
   const [dbPath, setDbPath] = useState(false);
   const { liveUser } = useAuthentication();
-  //  set baseUrl
-  useState(() => {
-    const dbRef = ref(database, 'utils/path');
-    onValue(dbRef, (snapshot) => {
-      console.log(snapshot.val());
-      dispatch(setPath(snapshot.val()));
-      setDbPath(true);
-    }, (error) => {
-      console.log(error);
-    })
-  }, []);
 
 
-  if (!dbPath) {
-    return <Splash bg={myTheme.colors.primaryDark} />
+  if (!dbPath || !isClothFetch) {
+    return <Splash setDbPath={() => setDbPath(true)} setIsCloth={() => setIsCloth(true)} bg={myTheme.colors.primaryDark} />
   }
 
   setVisibilityAsync('visible');

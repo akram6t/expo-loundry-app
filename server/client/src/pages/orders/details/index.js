@@ -17,10 +17,13 @@ import { paymentMethods } from "../../../data/payment_method";
 import { toast } from "react-toastify";
 import ProgressBar from "../../../components/Other/ProgressBar";
 import { SetTitle } from './../../../utils/SetTitle';
+import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
+import { faEdit } from "@fortawesome/free-solid-svg-icons";
 
 function OrderDetails() {
   SetTitle('Order Details');
   const [isModalVisibility, setModalVisible] = useState({ status: false });
+  const [ amountModalVisible, setAmountModalVisible ] = useState({ status: false });
   const [sidebarToggle] = useOutletContext();
   const [paymentsList, setpaymentsList] = useState([]);
   const [loading, setLoading] = useState(false);
@@ -216,6 +219,16 @@ function OrderDetails() {
     })
   }
 
+  const handleChangeClothsAmount = (name, value) => {
+    setAmountModalVisible({
+      ...amountModalVisible,
+      data: {
+        ...amountModalVisible.data,
+        [name]: value
+      }
+    })
+  }
+
   if (details == null || order_status == null) {
     return (
       <AppIndicator />
@@ -269,13 +282,7 @@ function OrderDetails() {
                   <h3><span className="font-medium">Date: </span>{formatDate(details.pickup_date.date)}</h3>
                   <h3><span className="font-medium">Time: </span>{details.pickup_date.time}</h3>
                 </div>
-                <div className="font-semibold">
-                  <h1 className="text-lg text-black font-bold">Delivery Date</h1>
-                  <h3><span className="font-medium">Date: </span>{formatDate(details.delivery_date.date)}</h3>
-                  <h3><span className="font-medium">Time: </span>{details.delivery_date.time}</h3>
-                </div>
               </div>
-
 
               {/* divider */}
               <div className="border border-emerald-100 mt-3"></div>
@@ -284,6 +291,19 @@ function OrderDetails() {
                 <AddressDetails name={'Pickup'} address={details.pickup_address} />
                 <AddressDetails name={'Delivery'} address={details.delivery_address} />
               </div>
+
+              { details?.instruction !== "" &&
+                <>
+                  {/* divider */}
+                  <div className="border border-emerald-100 mt-3"></div>
+
+                  {/* notes */}
+                    <div className="font-semibold mt-2">
+                        <h1 className="text-lg text-black font-bold">Instructions: </h1>
+                        <h3><span className="font-medium">{details?.instruction}</span></h3>
+                    </div>
+                </>
+              }
 
 
               {/* divider */}
@@ -295,10 +315,9 @@ function OrderDetails() {
 
             {/* right container */}
             <div className="w-full lg:w-60 border bg-white border-gray-200 py-4 px-6 rounded-md">
-
               <div>
                 <h1 className="font-semibold text-lg mb-2">Payment Details</h1>
-                <h2 className="flex items-center justify-between">Sub Total: <span className="font-semibold">₹ {details.amount}</span></h2>
+                <h2 className="flex items-center justify-between">Sub Total: <span className="font-semibold">{details?.amount <= 0 ? 'Not set' : '₹ ' + details?.amount} <FontAwesomeIcon onClick={() => setAmountModalVisible({status: true, collection: Collections.ORDERS, data: { _id: details?._id, amount: details?.amount }})} className=" text-emerald-500 hover:text-emerald-400 transition-all active:text-emerald-300 cursor-pointer" icon={faEdit}/> </span></h2>
                 <h2 className="flex items-center justify-between">Service Fee: <span className="font-semibold">₹ {details.service_fee}</span></h2>
                 {
                   details?.addons?.map((item, index) => (
@@ -346,6 +365,31 @@ function OrderDetails() {
         </div>
       </main>
 
+      {/* count and weight cloths and set */}
+      <ModalCreate title={'Amount'} isModalVisible={amountModalVisible} onRefresh={() => getOrder()} setModalVisibility={(obj) => setAmountModalVisible(obj)}>
+        <label>
+          Weight and calculate the total amount of cloths and set amount.
+        </label>
+         {/* input start */}
+         <div className="relative mr-1">
+            <label className="font-bold text-sm text-gray-600">
+              Amount
+              <span className="text-red-600 font-bold ml-2">*</span>
+            </label>
+            <input
+              value={amountModalVisible.data?.amount}
+              onChange={(e) => handleChangeClothsAmount('amount', e.target.value)}
+              id="inputWithIcon"
+              type="number"
+              name="inputWithIcon"
+              className="text-md placeholder-gray-500 px-4 rounded-lg border border-gray-200 w-full md:py-2 py-3 focus:outline-none focus:border-emerald-400 mt-1"
+              placeholder="Enter amount"
+            />
+          </div>
+          {/* input end */}
+      </ModalCreate>
+
+      {/* add payments */}
       <ModalCreate title={'Payment'} isModalVisible={isModalVisibility} onRefresh={() => getpayments()} setModalVisibility={(obj) => setModalVisible(obj)}>
         <div className="flex items-center justify-between">
           <span>Customer Name:</span>

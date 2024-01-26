@@ -1,11 +1,11 @@
 import { View, Text, TouchableOpacity, FlatList } from 'react-native'
 import React, { useEffect, useState } from 'react'
 import { SafeAreaView } from 'react-native-safe-area-context'
-import { Entypo } from '@expo/vector-icons'
+import { AntDesign, Entypo } from '@expo/vector-icons'
 import { useTheme, Snackbar } from 'react-native-paper'
 import axios from 'axios'
 import { useSelector } from 'react-redux'
-import { api } from '../Constaints'
+import { api, routes } from '../Constaints'
 import Loader from '../components/Loader'
 
 const TermsAndConditionsScreen = ({ navigation }) => {
@@ -39,8 +39,10 @@ const TermsAndConditionsScreen = ({ navigation }) => {
 
     return (
         <SafeAreaView style={{ flex: 1, backgroundColor: theme.colors.background }}>
-            <View
+{/* Appbar */}
+<View
                 style={{
+                    // marginTop: 20,
                     height: 50,
                     gap: 10,
                     flexDirection: "row",
@@ -54,8 +56,19 @@ const TermsAndConditionsScreen = ({ navigation }) => {
                 >
                     <Entypo name="chevron-thin-left" size={24} />
                 </TouchableOpacity>
-                <Text style={{ fontSize: 20 }}>Terms And Conditions</Text>
+                <View style={{ flex: 1, alignItems: 'center', justifyContent: 'space-between', flexDirection: 'row' }}>
+                <Text style={{ fontSize: 20 }}>Terms & Conditions</Text>
+                <TouchableOpacity onPress={() => {
+                        navigation.reset({
+                            index: 0,
+                            routes: [{ name: routes.HomeScreen }]
+                          })
+                }}>
+                    <AntDesign size={25} name="home"/>
+                </TouchableOpacity>
+                </View>
             </View>
+            {/* Appbat End */}
 
             <FlatList data={tCList}
             contentContainerStyle={{ padding: 10, gap: 12 }}

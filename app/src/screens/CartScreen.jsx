@@ -9,7 +9,7 @@ import {
 import React, { useState, useEffect } from "react";
 import { Button, MD2Colors, useTheme } from "react-native-paper";
 import { SafeAreaView } from "react-native-safe-area-context";
-import { MaterialCommunityIcons, Entypo } from "@expo/vector-icons";
+import { MaterialCommunityIcons, Entypo, AntDesign } from "@expo/vector-icons";
 import { routes } from "../Constaints";
 import CartItem from "../components/CartItem";
 import { useSelector, useDispatch } from 'react-redux';
@@ -50,7 +50,8 @@ const CartScreen = ({ navigation }) => {
 
     return (
         <SafeAreaView style={{ flex: 1, backgroundColor: theme.colors.background }}>
-            <View
+            {/* Appbar */}
+        <View
                 style={{
                     // marginTop: 20,
                     height: 50,
@@ -66,9 +67,20 @@ const CartScreen = ({ navigation }) => {
                 >
                     <Entypo name="chevron-thin-left" size={24} />
                 </TouchableOpacity>
+                <View style={{ flex: 1, alignItems: 'center', justifyContent: 'space-between', flexDirection: 'row' }}>
                 <Text style={{ fontSize: 20 }}>Your Cart</Text>
+                <TouchableOpacity onPress={() => {
+                        navigation.reset({
+                            index: 0,
+                            routes: [{ name: routes.HomeScreen }]
+                          })
+                }}>
+                    <AntDesign size={25} name="home"/>
+                </TouchableOpacity>
+                </View>
             </View>
             {/* Appbat End */}
+
 
             {totalPrice === 0 ? (
                 <View style={{ flex: 1, alignItems: 'center', justifyContent: 'center' }}>
@@ -109,7 +121,7 @@ const CartScreen = ({ navigation }) => {
 
                 </ScrollView>
                 )}
-            {totalPrice === 0 ? null
+            {/* {totalPrice === 0 ? null
                 :
                 (<View>
                     <Text style={{ marginStart: 18, marginTop: 10 + 2, color: theme.colors.primary }}>PAYMENT INFO</Text>
@@ -141,14 +153,16 @@ const CartScreen = ({ navigation }) => {
 
                     </View>
                 </View>
-                )}
+                )} */}
 
-            {totalPrice === 0 ? null : <Button contentStyle={{ padding: 5 }}
+            {cart.length <= 0 ? null : <Button contentStyle={{ padding: 5 }}
                 style={{ fontSize: 20, margin: 8 }}
                 onPress={() => navigation.navigate(routes.PickupDropScreen, { shop: shop, shopname: shopname, shopid: shopid })}
                 mode="contained"
+                icon={'arrow-right'}
+                labelStyle={{ textTransform: 'none' }}
             >
-                Continue
+                Timeslot
             </Button>
             }
 

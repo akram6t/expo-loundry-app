@@ -9,8 +9,8 @@ import {
     addServices
 } from "./../utils/reducers/CartReducer";
 import { decrementQty, incrementQty } from "./../utils/reducers/ProductReducer";
-import { useEffect, useState, useRef } from 'react';
-import { useNavigation } from '@react-navigation/native';
+import { useEffect, useState, useRef, useCallback } from 'react';
+import { useFocusEffect, useNavigation } from '@react-navigation/native';
 import { ImageIdentifier } from '../utils/ImageIdentifier';
 
 export default ProductItem = ({ item, index, service, setSnackbar, setMessage, cart }) => {
@@ -25,7 +25,6 @@ export default ProductItem = ({ item, index, service, setSnackbar, setMessage, c
         dispatch(addToCart({ ...item, services: servicesData })); // cart
         dispatch(incrementQty({ ...item, services: servicesData })); // product
     };
-
     
     useEffect(() => {
         let servicematch = false;
@@ -43,7 +42,7 @@ export default ProductItem = ({ item, index, service, setSnackbar, setMessage, c
 
 
     // const [price, setPrice] = useState(0);
-    const price = servicesData.reduce((total, service) => total + service.price, 0);
+    // const price = servicesData.reduce((total, service) => total + service.price, 0);
 
     useEffect(() => {
         dispatch(
@@ -127,7 +126,7 @@ export default ProductItem = ({ item, index, service, setSnackbar, setMessage, c
             />
             <View style={{ flex: 1 }}>
                 <Text style={{ fontSize: 20 }}>{item.name}</Text>
-                <View
+                {/* <View
                     style={{
                         flexDirection: "row",
                         marginTop: 2,
@@ -137,7 +136,7 @@ export default ProductItem = ({ item, index, service, setSnackbar, setMessage, c
                 >
                     <MaterialCommunityIcons size={20} name="currency-inr" />
                     <Text style={{ fontSize: 16 }}>{price}</Text>
-                </View>
+                </View> */}
                 <View style={{ marginTop: 8, flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between' }}>
                     <TouchableOpacity activeOpacity={0.7} onPress={() => setServiceDialog(true)}>
                         <View style={{ flexDirection: 'row', gap: 5, alignItems: 'center', padding: 8, borderRadius: 25, backgroundColor: theme.colors.primaryLight }}>
@@ -186,10 +185,10 @@ export default ProductItem = ({ item, index, service, setSnackbar, setMessage, c
                             })
                             return (
                                 <View key={index} style={{ flexDirection: 'row' }}>
-                                    <View style={{ flexDirection: 'row', marginStart: 10, alignItems: 'center' }}>
+                                    {/* <View style={{ flexDirection: 'row', marginStart: 10, alignItems: 'center' }}>
                                         <MaterialCommunityIcons size={18} color={theme.colors.primary} name='currency-inr' />
                                         <Text style={{ fontWeight: 'bold', color: theme.colors.primary }}>{service.price}</Text>
-                                    </View>
+                                    </View> */}
                                     <View style={{ flex: 1 }}>
                                         <Checkbox.Item
                                         color={theme.colors.primary}

@@ -6,7 +6,7 @@ import { KeyboardAwareScrollView } from 'react-native-keyboard-aware-scroll-view
 import { useState, useEffect } from 'react';
 import { AntDesign, Entypo, MaterialIcons } from '@expo/vector-icons';
 import axios from 'axios';
-import { api } from '../Constaints';
+import { api, routes } from '../Constaints';
 import { auth } from '../firebaseConfig';
 import * as Location from 'expo-location';
 import { useSelector } from 'react-redux';
@@ -259,8 +259,10 @@ const MyAddressesScreen = ({ navigation }) => {
     return (
         <SafeAreaView style={{ flex: 1, backgroundColor: MD2Colors.grey200 }}>
             <StatusBar backgroundColor={MD2Colors.grey200} />
-            <View
+{/* Appbar */}
+<View
                 style={{
+                    // marginTop: 20,
                     height: 50,
                     gap: 10,
                     flexDirection: "row",
@@ -274,8 +276,20 @@ const MyAddressesScreen = ({ navigation }) => {
                 >
                     <Entypo name="chevron-thin-left" size={24} />
                 </TouchableOpacity>
+                <View style={{ flex: 1, alignItems: 'center', justifyContent: 'space-between', flexDirection: 'row' }}>
                 <Text style={{ fontSize: 20 }}>Saved Address</Text>
+                <TouchableOpacity onPress={() => {
+                        navigation.reset({
+                            index: 0,
+                            routes: [{ name: routes.HomeScreen }]
+                          })
+                }}>
+                    <AntDesign size={25} name="home"/>
+                </TouchableOpacity>
+                </View>
             </View>
+            {/* Appbat End */}
+
 
             <View style={{ paddingHorizontal: 15 }}>
 

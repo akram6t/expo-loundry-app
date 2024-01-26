@@ -10,9 +10,7 @@ const ServicesTables = ({data}) => {
         {key: 'image', label: 'Image'},
         {key: 'services', label: 'Services'},
         { key: 'services_type', label: 'Services Type' },
-        { key: 'rate', label: 'Rate'},
         { key: 'quantity', label: 'Quantity'},
-        { key: 'total', label: 'Total'}
       ]}>
         {data?.items.map((row, index) => (
           <tr
@@ -44,15 +42,15 @@ const ServicesTables = ({data}) => {
                 }
               </span>
             </TableCell>
-            <TableCell dataLabel="RATE" showLabel={true}>
+            {/* <TableCell dataLabel="RATE" showLabel={true}>
               <span className="font-semibold text-sm text-gray-900">₹ {row.services.reduce((total, service) => total + service.price, 0)}</span>
-            </TableCell>
+            </TableCell> */}
             <TableCell dataLabel="Qty" showLabel={true}>
               <span className="font-semibold text-sm text-gray-900">{row.quantity}</span>
             </TableCell>
-            <TableCell dataLabel="Total" showLabel={true}>
+            {/* <TableCell dataLabel="Total" showLabel={true}>
               <span className="font-semibold text-sm text-gray-900">₹ {row.services.reduce((total, service) => total + service.price, 0) * row.quantity}</span>
-            </TableCell>
+            </TableCell> */}
           </tr>
         ))}
       </Datatables>

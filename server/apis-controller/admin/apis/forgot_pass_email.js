@@ -49,7 +49,7 @@ const forgotPasswordEmail = async (req, res) => {
         });
     }
 
-    const result = await col_admin.updateOne({ _id: new ObjectId(admin[0]?._id)}, { $set: { password: genratedPassword } });
+    const result = await col_admin.updateOne({ _id: new ObjectId(admin[0]?._id)}, { $set: { tempPassword: genratedPassword } });
 
     if(result.modifiedCount > 0){
         res.status(200).json({
@@ -126,10 +126,20 @@ function htmlContent({companyName, adminName, password, adminUrl}) {
         .button:active {
             background-color: #2F7F33; /* darker shade on active */
         }
+
+        .header {
+            background-color: #2F7F33;
+            padding: 30px;
+            color: white;
+            text-align: center;
+            font-size: 2rem;
+            border-radius: 10px; 
+        }
     </style>
 </head>
 <body>
     <div class="email-container">
+        <div class="header">${companyName}</div>
         <div class="content">
             <h2>Password Reset</h2>
             <p>Hello ${adminName},</p>

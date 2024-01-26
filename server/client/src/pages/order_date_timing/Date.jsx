@@ -8,8 +8,7 @@ import { toast } from 'react-toastify';
 const Date = ({store}) => {
   const [loading, setLoading] = useState(false);
   const [ startDay, setStartDay ] = useState({
-    pickup_start_day: store?.pickup_start_day,
-    delivery_start_day: store?.delivery_start_day
+    pickup_start_day: store?.pickup_start_day
   })
 
 
@@ -21,7 +20,6 @@ const Date = ({store}) => {
         data: {
           _id: store?._id,
           pickup_start_day: parseInt(startDay.pickup_start_day),
-          delivery_start_day: parseInt(startDay.delivery_start_day)
         }
       }, HEADER_API);
 
@@ -60,32 +58,6 @@ const Date = ({store}) => {
            className="text-md placeholder-gray-500 px-4 rounded-lg border border-gray-200 w-full md:py-2 py-3 focus:outline-none focus:border-emerald-400 mt-1">
             {
                 ordersDateData?.map((item, index) => {
-                    let label = item === 0 ? 'Today' : item;
-                    label = item === 1 ? 'Tomorrow' : label
-                    if(typeof label !== 'string'){
-                      label = label + 1;
-                    }
-                    return(
-                        <option value={item}>{label}</option>
-                    )
-                })
-            }
-         </select>
-       </div>
-       {/* input end */}
-
-       {/* input start */}
-       <div className="relative">
-         <label htmlFor="defaultInput" className="font-bold text-sm text-gray-600">
-           Delivery Start Day
-        <span className='ml-1 text-red-500'>*</span>
-         </label>
-         <select
-         value={startDay.delivery_start_day}
-         onChange={(e) => setStartDay({ ...startDay, delivery_start_day: e.target.value })}
-           className="text-md placeholder-gray-500 px-4 rounded-lg border border-gray-200 w-full md:py-2 py-3 focus:outline-none focus:border-emerald-400 mt-1">
-            {
-                ordersDateData?.map(item => {
                     let label = item === 0 ? 'Today' : item;
                     label = item === 1 ? 'Tomorrow' : label
                     if(typeof label !== 'string'){

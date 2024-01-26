@@ -1,11 +1,11 @@
 import { View, Text, TouchableOpacity, Image, ScrollView } from 'react-native'
 import React, { useEffect, useState } from 'react'
 import { SafeAreaView } from 'react-native-safe-area-context'
-import { Entypo, MaterialIcons } from '@expo/vector-icons'
+import { AntDesign, Entypo, MaterialIcons } from '@expo/vector-icons'
 import { useTheme, Snackbar, MD2Colors, Button, Title, TouchableRipple, TextInput } from 'react-native-paper'
 import axios from 'axios'
 import { useSelector } from 'react-redux'
-import { api } from '../Constaints'
+import { api, routes } from '../Constaints'
 import Loader from '../components/Loader'
 import * as Linking from 'expo-linking';
 import { auth } from '../firebaseConfig'
@@ -81,8 +81,10 @@ const SupportScreen = ({ navigation }) => {
 
     return (
         <SafeAreaView style={{ flex: 1, backgroundColor: theme.colors.background }}>
-            <View
+          {/* Appbar */}
+        <View
                 style={{
+                    // marginTop: 20,
                     height: 50,
                     gap: 10,
                     flexDirection: "row",
@@ -96,8 +98,19 @@ const SupportScreen = ({ navigation }) => {
                 >
                     <Entypo name="chevron-thin-left" size={24} />
                 </TouchableOpacity>
+                <View style={{ flex: 1, alignItems: 'center', justifyContent: 'space-between', flexDirection: 'row' }}>
                 <Text style={{ fontSize: 20 }}>Support</Text>
+                <TouchableOpacity onPress={() => {
+                        navigation.reset({
+                            index: 0,
+                            routes: [{ name: routes.HomeScreen }]
+                          })
+                }}>
+                    <AntDesign size={25} name="home"/>
+                </TouchableOpacity>
+                </View>
             </View>
+            {/* Appbat End */}
 
             <ScrollView contentContainerStyle={{ padding: 10 }}>
 

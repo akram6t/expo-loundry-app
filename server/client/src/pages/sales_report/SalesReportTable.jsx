@@ -25,7 +25,7 @@ function SalesReportTable({ loading, dataHeader, data, currentPage, itemsPerPage
             <span className="font-medium text-sm text-gray-900">{row?.pickup_address?.name}</span>
           </TableCell>
           <TableCell dataLabel="SUB TOTAL" showLabel={true}>
-            <span className="font-medium text-sm text-gray-900">₹ {row?.amount}</span>
+            <span className="font-medium text-sm text-gray-900">{row?.amount <= 0 ? 'Not set' : `₹ ${row?.amount}`}</span>
           </TableCell>
           <TableCell dataLabel="ADDON TOTAL" showLabel={true}>
             <span className="font-medium text-sm text-gray-900">₹ {row?.addons?.reduce((total, addon) => total+addon.price, 0) || 0}</span>

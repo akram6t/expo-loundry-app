@@ -10,9 +10,9 @@ import { Button, Checkbox, Chip, Dialog, Divider, IconButton, MD2Colors, MD3Colo
 import React, { useState, useEffect } from "react";
 import { useTheme } from "react-native-paper";
 import { SafeAreaView } from "react-native-safe-area-context";
-import { Entypo, MaterialCommunityIcons } from "@expo/vector-icons";
+import { AntDesign, Entypo, MaterialCommunityIcons } from "@expo/vector-icons";
 import { useRoute } from "@react-navigation/native";
-import { api, monthNames } from "../Constaints";
+import { api, routes } from "../Constaints";
 import { useSelector } from "react-redux";
 import * as Clipboard from 'expo-clipboard';
 import Loader from "../components/Loader";
@@ -20,6 +20,7 @@ import axios from "axios";
 import { auth } from "../firebaseConfig";
 import { ImageIdentifier } from "../utils/ImageIdentifier";
 import * as Linking from 'expo-linking';
+import { formatDate } from "../utils/FormatDate";
 // import * as Call from 'expo-call';
 
 const OrdersScreen = ({ navigation }) => {
@@ -120,42 +121,6 @@ const OrdersScreen = ({ navigation }) => {
             }
         })
         return co;
-    }
-
-
-    const readableDate = (pick_date) => {
-        let stringDate = '';
-
-        const pick = new Date(pick_date);
-        const pickDate = pick.getDate();
-        const pickMonth = pick.getMonth();
-        const pickYear = pick.getFullYear();
-
-        const current = new Date();
-        const currentDate = current.getDate();
-        const currentMonth = current.getMonth();
-        const currentYear = current.getFullYear();
-
-        let dif_day = '';
-
-        stringDate = `${pickDate} ${monthNames[pickMonth]} ${pickYear}`;
-
-        if (currentMonth === pickMonth && currentYear === pickYear) {
-            if (pickDate === currentDate) {
-                dif_day = 'Today';
-                stringDate = `${dif_day}`;
-            } else if (pickDate === currentDate - 1) {
-                dif_day = 'Yesterday';
-                stringDate = `${dif_day}`;
-            } else if (pickDate === currentDate + 1) {
-                dif_day = 'Tomorrow';
-                stringDate = `${dif_day}`;
-            }
-
-        }
-
-        return stringDate;
-
     }
 
     function calculateTotalPrice(cartData) {
@@ -270,8 +235,17 @@ const OrdersScreen = ({ navigation }) => {
                 >
                     <Entypo name="chevron-thin-left" size={24} />
                 </TouchableOpacity>
-                <Text numberOfLines={1} style={{ fontSize: 20 }}>order Id - #{item.order_id}</Text>
-                <IconButton icon={'content-copy'} onPress={() => copyToClipboard()} />
+                <View style={{ flex: 1, alignItems: 'center', justifyContent: 'space-between', flexDirection: 'row' }}>
+                    <Text style={{ fontSize: 20 }}>Order Id - #{item?.order_id}</Text>
+                    <TouchableOpacity onPress={() => {
+                        navigation.reset({
+                            index: 0,
+                            routes: [{ name: routes.HomeScreen }]
+                        })
+                    }}>
+                        <AntDesign size={25} name="home" />
+                    </TouchableOpacity>
+                </View>
             </View>
             {/* Appbat End */}
 
@@ -303,7 +277,7 @@ const OrdersScreen = ({ navigation }) => {
                     <View style={{ gap: 5 }}>
                         <Text style={{ opacity: 0.7, fontSize: 16 }}>Order Status</Text>
                         <Text style={{ fontSize: 18, color: statusColor, fontWeight: 'bold' }}>{orderStatus}</Text>
-                        <Text style={{ opacity: 0.6 }}>{readableDate(item.order_date)}</Text>
+                        <Text style={{ opacity: 0.6 }}>{formatDate(item.order_date)}</Text>
                     </View>
                 </View>
 
@@ -312,14 +286,14 @@ const OrdersScreen = ({ navigation }) => {
                 <View style={{ paddingHorizontal: 5, flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between' }}>
                     <View style={{ gap: 5 }}>
                         <Text style={{ color: MD2Colors.grey500, fontWeight: 'bold' }}>Pick Up</Text>
-                        <Text style={{ fontSize: 16, fontWeight: 'bold' }}>{readableDate(dateTime.pickupDateTime.date)}</Text>
+                        <Text style={{ fontSize: 16, fontWeight: 'bold' }}>{formatDate(dateTime.pickupDateTime.date)}</Text>
                         <Text style={{ opacity: 0.9, fontWeight: 'bold' }}>{dateTime.pickupDateTime.time}</Text>
                     </View>
-                    <View style={{ gap: 5 }}>
+                    {/* <View style={{ gap: 5 }}>
                         <Text style={{ color: MD2Colors.grey500, fontWeight: 'bold' }}>Delivery</Text>
-                        <Text style={{ fontSize: 16, fontWeight: 'bold' }}>{readableDate(dateTime.dropDateTime.date)}</Text>
+                        <Text style={{ fontSize: 16, fontWeight: 'bold' }}>{formatDate(dateTime.dropDateTime.date)}</Text>
                         <Text style={{ opacity: 0.9, fontWeight: 'bold' }}>{dateTime.dropDateTime.time}</Text>
-                    </View>
+                    </View> */}
                 </View>
 
                 <Divider />
@@ -342,7 +316,7 @@ const OrdersScreen = ({ navigation }) => {
                     <Text style={{ color: MD2Colors.grey500, fontWeight: 'bold' }}>Cloth List</Text>
 
                     {
-                        item.items.map((item, index) => {
+                        item?.items?.map((item, index) => {
                             const servicesLength = item.services.length;
                             const total = item.services.reduce((total, next) => total + next.price, 0);
                             return <View key={index} style={{ flexDirection: 'row', gap: 5, padding: 3, justifyContent: 'space-between' }}>
@@ -365,10 +339,10 @@ const OrdersScreen = ({ navigation }) => {
                                         />
                                     </View>
                                 </View>
-                                <View style={{ flexDirection: 'row', alignItems: 'center' }}>
+                                {/* <View style={{ flexDirection: 'row', alignItems: 'center' }}>
                                     <MaterialCommunityIcons name='currency-inr' size={14} style={{ fontWeight: 'bold' }} />
                                     <Text style={{ fontSize: 15, fontWeight: 'bold' }}>{total * item.quantity}</Text>
-                                </View>
+                                </View> */}
                             </View>
                         })
                     }
@@ -403,13 +377,14 @@ const OrdersScreen = ({ navigation }) => {
                 <Divider />
 
                 <View style={{ paddingHorizontal: 8, gap: 5 }}>
-                    <View style={{ flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between' }}>
+                    {/* Sub Total */}
+                    {totalAddonPrice > 0 && <View style={{ flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between' }}>
                         <Text style={{ fontWeight: 'bold' }}>Sub Total</Text>
                         <View style={{ flexDirection: 'row', alignItems: 'center' }}>
                             <MaterialCommunityIcons name='currency-inr' size={15} style={{ fontWeight: 'bold' }} />
                             <Text style={{ fontSize: 18, fontWeight: 'bold' }}>{totalPrice}</Text>
                         </View>
-                    </View>
+                    </View>}
                     <View style={{ flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between' }}>
                         <Text style={{ fontWeight: 'bold' }}>Service Fee</Text>
                         <View style={{ flexDirection: 'row', alignItems: 'center' }}>
@@ -428,13 +403,15 @@ const OrdersScreen = ({ navigation }) => {
                             </View>)
                             : null
                     }
-                    <View style={{ flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between' }}>
-                        <Text style={{ color: theme.colors.primary, fontWeight: 'bold', fontSize: 18 }}>{item.payment_type}</Text>
+                    {/* Total */}
+                    {item?.amount > 0 && <View style={{ flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between' }}>
+                        <Text style={{ color: theme.colors.primary, fontWeight: 'bold', fontSize: 18 }}>Total</Text>
                         <View style={{ flexDirection: 'row', alignItems: 'center' }}>
                             <MaterialCommunityIcons name='currency-inr' color={theme.colors.primary} size={18} style={{ fontWeight: 'bold' }} />
                             <Text style={{ fontSize: 20, fontWeight: 'bold', color: theme.colors.primary }}>{totalPrice + item.service_fee + totalAddonPrice}</Text>
                         </View>
-                    </View>
+                    </View>}
+
                 </View>
 
                 <Divider />

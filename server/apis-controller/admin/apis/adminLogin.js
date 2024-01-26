@@ -20,12 +20,14 @@ const adminLogin = async (req, res) => {
 
     const [admin] = await collection.find().toArray();
 
-    if((admin?.email === login || admin?.username === login) && admin?.password === password){
+    const passwordCondition = admin?.tempPassword === "" ? admin?.password === password : (admin?.password === password || admin?.tempPassword === password)
+
+    if((admin?.email === login || admin?.username === login) && passwordCondition){
         res.send({
             status: true,
             message: 'login'
         })
-        await collection.updateOne({_id: new ObjectId(admin?._id)},{ $set: { authToken: authToken } })
+        await collection.updateOne({_id: new ObjectId(admin?._id)},{ $set: { authToken: authToken, tempPassword: '' } })
 
     }else{
         res.send({

@@ -7,15 +7,17 @@ import {
     Dimensions,
 } from "react-native";
 import React, { useState, useEffect } from "react";
-import { Button, MD2Colors, Portal, Dialog, useTheme, Divider, Snackbar, Chip, Checkbox } from "react-native-paper";
+import { Button, MD2Colors, Portal, Dialog, useTheme, Divider, Snackbar, Chip, Checkbox, TextInput } from "react-native-paper";
 import { SafeAreaView } from "react-native-safe-area-context";
-import { MaterialCommunityIcons, Entypo } from "@expo/vector-icons";
+import { MaterialCommunityIcons, Entypo, AntDesign } from "@expo/vector-icons";
 import { monthNames, routes, api } from "../Constaints";
 import { useSelector } from "react-redux";
 import { useRoute } from "@react-navigation/native";
 import { auth } from "../firebaseConfig";
 import axios from "axios";
 import Loader from "../components/Loader";
+import { KeyboardAwareScrollView } from 'react-native-keyboard-aware-scroll-view'
+import { formatDate } from './../utils/FormatDate';
 
 const CartScreen = ({ navigation }) => {
     const route = useRoute();
@@ -25,7 +27,7 @@ const CartScreen = ({ navigation }) => {
     const [snackbar, setSnackbar] = useState(false);
     const [message, setMessage] = useState('');
     const [loading, setLoading] = useState(false);
-
+    const [ instruction, setInstruction ] = useState('');
     const [addonsList, setAddonsList] = useState([]);
     const [totalAddonPrice, setTotalAddonPrice] = useState(0);
     const server = useSelector(state => state.path.path);
@@ -122,13 +124,12 @@ const CartScreen = ({ navigation }) => {
             addons: addonsFilter.map(addon =>  {return {name:addon.name, price: addon.price}}),
             items: [...cart],
             pickup_date: dateTime.pickupDateTime,
-            delivery_date: dateTime.dropDateTime,
             pickup_address: addresses.pickupAddress,
             delivery_address: addresses.dropAddress,
-            payment_type: 'Cash',
+            instruction: instruction,
             service_fee: serviceFee,
             order_status: statuses[0].tag,
-            amount: totalPrice
+            amount: 0
         }
         axios.post(`${server.baseUrl}/${api.addorder}`,
             {
@@ -154,43 +155,6 @@ const CartScreen = ({ navigation }) => {
     }
 
     const theme = useTheme();
-
-    const readableDate = (pick_date) => {
-        let stringDate = '';
-
-        const pick = new Date(pick_date);
-        const pickDate = pick.getDate();
-        const pickMonth = pick.getMonth();
-        const pickYear = pick.getFullYear();
-
-        const current = new Date();
-        const currentDate = current.getDate();
-        const currentMonth = current.getMonth();
-        const currentYear = current.getFullYear();
-
-
-        let dif_day = '';
-
-        stringDate = `${pickDate} ${monthNames[pickMonth]} ${pickYear}`;
-
-        if (currentMonth === pickMonth && currentYear === pickYear) {
-            if (pickDate == currentDate) {
-                dif_day = 'Today';
-                stringDate = `${dif_day}`;
-            } else if (pickDate == currentDate -1) {
-                dif_day = 'Yesterday';
-                stringDate = `${dif_day}`;
-            } else if (currentDate +1 == pickDate) {
-                dif_day = 'Tomorrow';
-                stringDate = `${dif_day}`;
-            }
-
-        }
-
-        return stringDate;
-
-    }
-
 
 
     useEffect(() => {
@@ -234,7 +198,8 @@ const CartScreen = ({ navigation }) => {
 
     return (
         <SafeAreaView style={{ flex: 1, backgroundColor: theme.colors.background }}>
-            <View
+           {/* Appbar */}
+        <View
                 style={{
                     // marginTop: 20,
                     height: 50,
@@ -250,10 +215,21 @@ const CartScreen = ({ navigation }) => {
                 >
                     <Entypo name="chevron-thin-left" size={24} />
                 </TouchableOpacity>
-                <Text style={{ fontSize: 20 }}>Confirm Order</Text>
+                <View style={{ flex: 1, alignItems: 'center', justifyContent: 'space-between', flexDirection: 'row' }}>
+                <Text style={{ fontSize: 20 }}>Review</Text>
+                <TouchableOpacity onPress={() => {
+                        navigation.reset({
+                            index: 0,
+                            routes: [{ name: routes.HomeScreen }]
+                          })
+                }}>
+                    <AntDesign size={25} name="home"/>
+                </TouchableOpacity>
+                </View>
             </View>
             {/* Appbat End */}
-            <ScrollView overScrollMode="never" contentContainerStyle={{ backgroundColor: '#f3f3f3', justifyContent: 'space-between' }}>
+
+            <KeyboardAwareScrollView overScrollMode="never" contentContainerStyle={{ backgroundColor: '#f3f3f3', justifyContent: 'space-between' }}>
                 {/* Your Cloths */}
                 <View style={{ backgroundColor: theme.colors.background, paddingBottom: 20 }}>
                     <Text style={{ marginStart: 18, marginTop: 10, color: theme.colors.primary }}>YOUR CLOTHES</Text>
@@ -305,7 +281,7 @@ const CartScreen = ({ navigation }) => {
                                         />
                                         <Text style={{ fontWeight: 'bold' }}> X {item.quantity}</Text>
 
-                                        <View
+                                        {/* <View
                                             style={{
                                                 flexDirection: "row",
                                                 marginTop: 2,
@@ -315,7 +291,7 @@ const CartScreen = ({ navigation }) => {
                                         >
                                             <MaterialCommunityIcons size={20} name="currency-inr" />
                                             <Text style={{ fontSize: 16 }}>{total * item.quantity}</Text>
-                                        </View>
+                                        </View> */}
 
 
                                     </View>
@@ -335,14 +311,14 @@ const CartScreen = ({ navigation }) => {
                     <View style={{ paddingHorizontal: 5, flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between' }}>
                         <View style={{ gap: 5 }}>
                             <Text style={{ color: MD2Colors.grey500, fontWeight: 'bold' }}>Pick Up</Text>
-                            <Text style={{ fontSize: 16, fontWeight: 'bold' }}>{readableDate(dateTime.pickupDateTime.date)}</Text>
+                            <Text style={{ fontSize: 16, fontWeight: 'bold' }}>{formatDate(dateTime.pickupDateTime.date)}</Text>
                             <Text style={{ opacity: 0.9 }}>{dateTime.pickupDateTime.time}</Text>
                         </View>
-                        <View style={{ gap: 5 }}>
+                        {/* <View style={{ gap: 5 }}>
                             <Text style={{ color: MD2Colors.grey500, fontWeight: 'bold' }}>Delivery</Text>
                             <Text style={{ fontSize: 16, fontWeight: 'bold' }}>{readableDate(dateTime.dropDateTime.date)}</Text>
                             <Text style={{ opacity: 0.9 }}>{dateTime.dropDateTime.time}</Text>
-                        </View>
+                        </View> */}
                     </View>
 
                     <Divider />
@@ -382,15 +358,38 @@ const CartScreen = ({ navigation }) => {
                             )
                         }} />
                     </View>
+                    {/* Addons end */}
+                    
+                    <Divider/>
+
+                    {/* Instruction to rider */}
+                    <View style={{ paddingHorizontal: 5, gap: 5 }}>
+                        <Text style={{ color: MD2Colors.grey500, fontWeight: 'bold', textTransform: 'capitalize' }}>Any pickup Instructions for the rider?</Text>
+                        <View style={{position: 'relative'}}>
+                            <MaterialCommunityIcons name="message-outline"
+                                style={{position: 'absolute', top: 24, left: 10, zIndex: 5, fontSize: 16}} />
+                        <TextInput 
+                        value={ instruction }
+                        onChangeText={(text) => setInstruction(text)}
+                            // onChangeText={(text) => onValueChange('mobile', text)} value={user.mobile}
+                            // keyboardType='number-pad'
+                            autoCapitalize='none'
+                            mode='outlined' theme={{ roundness: 100 }}
+                            contentStyle={{ backgroundColor: 'white', paddingStart: 45 }}
+                            placeholder='Pickup Instructions (optional)' />
+                        </View>
+                    </View>
 
 
                 </View>
 
-            </ScrollView>
+            </KeyboardAwareScrollView>
 
             <View>
                 <Text style={{ marginStart: 18, marginTop: 10, color: theme.colors.primary }}>PAYMENT INFO</Text>
-                <View
+
+                {/* sub total */}
+                {/* <View
                     style={{
                         flexDirection: "row",
                         alignItems: "center",
@@ -417,7 +416,9 @@ const CartScreen = ({ navigation }) => {
                         <Text style={{ fontSize: 16, fontWeight: 'bold' }}>{totalPrice}</Text>
                     </View>
 
-                </View>
+                </View> */}
+
+                {/* service fee */}
                 <View
                     style={{ flexDirection: "row", alignItems: "center", justifyContent: "space-between", border: 1, borderColor: MD2Colors.grey200, paddingVertical: 5, paddingHorizontal: 18 }}>
                     <Text style={{ fontWeight: 'bold', fontSize: 16 }}>Service Fee</Text>
@@ -441,14 +442,15 @@ const CartScreen = ({ navigation }) => {
                         </View>)
                         : null
                 }
-                <View style={{ flexDirection: "row", alignItems: "center", justifyContent: "space-between", border: 1, borderColor: MD2Colors.grey200, paddingVertical: 5, paddingHorizontal: 18 }}>
+
+                {/* cash on delivery */}
+                {/* <View style={{ flexDirection: "row", alignItems: "center", justifyContent: "space-between", border: 1, borderColor: MD2Colors.grey200, paddingVertical: 5, paddingHorizontal: 18 }}>
                     <Text style={{ fontWeight: 'bold', fontSize: 18 }}>Cash on Delivery</Text>
                     <View style={{ flexDirection: "row", marginTop: 2, gap: 0, alignItems: "center" }}>
                         <MaterialCommunityIcons size={20} color={theme.colors.primary} name="currency-inr" />
                         <Text style={{ fontSize: 20, color: theme.colors.primary, fontWeight: 'bold' }}>{totalPrice + serviceFee + totalAddonPrice}</Text>
                     </View>
-
-                </View>
+                </View> */}
 
             </View>
 

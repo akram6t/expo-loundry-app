@@ -38,7 +38,7 @@ function LoginIndex({ setToken }) {
           setLoading(false);
           const { status, message } = response.data;
           if (status) {
-            toast.success(`${message}`);
+            // toast.success(`${message}`);
             setToken(true);
             localStorage.setItem('authToken', genrateToken);
             navigate(routes.DASHBOARD);

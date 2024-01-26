@@ -12,14 +12,14 @@ import React, { useState, useEffect } from "react";
 import { useTheme, } from "react-native-paper";
 import { Tabs, TabScreen, TabsProvider } from "react-native-paper-tabs";
 import { SafeAreaView } from "react-native-safe-area-context";
-import { Entypo, FontAwesome, MaterialCommunityIcons } from "@expo/vector-icons";
+import { AntDesign, Entypo, FontAwesome, MaterialCommunityIcons } from "@expo/vector-icons";
 
 // import IconOrderConfirmed from '../../assets/images/icon_order_confirmed.png';
 // import IconOrderPickup from '../../assets/images/icon_order_pickup.png';
 // import IconOrderProcess from '../../assets/images/icon_order_process.png';
 // import IconOrderShipped from '../../assets/images/icon_order_shipped.png';
 // import IconOrderDelivered from '../../assets/images/icon_order_delivered.png';
-import { api } from '../Constaints';
+import { api, routes } from '../Constaints';
 import Loader from "../components/Loader";
 import { auth } from "../firebaseConfig";
 import axios from "axios";
@@ -112,7 +112,8 @@ const OrdersScreen = ({ navigation }) => {
         <StatusBar backgroundColor={MD2Colors.grey200} />
 
         <SafeAreaView style={{ flex: 1, backgroundColor: MD2Colors.grey200 }}>
-            <View
+        {/* Appbar */}
+        <View
                 style={{
                     // marginTop: 20,
                     height: 50,
@@ -128,8 +129,19 @@ const OrdersScreen = ({ navigation }) => {
                 >
                     <Entypo name="chevron-thin-left" size={24} />
                 </TouchableOpacity>
-                <Text style={{ fontSize: 20 }}>My Orders</Text>
+                <View style={{ flex: 1, alignItems: 'center', justifyContent: 'space-between', flexDirection: 'row' }}>
+                <Text style={{ fontSize: 20 }}>Orders</Text>
+                <TouchableOpacity onPress={() => {
+                        navigation.reset({
+                            index: 0,
+                            routes: [{ name: routes.HomeScreen }]
+                          })
+                }}>
+                    <AntDesign size={25} name="home"/>
+                </TouchableOpacity>
+                </View>
             </View>
+            {/* Appbat End */}
 
             <ScrollView refreshControl={<RefreshControl refreshing={refreshing} onRefresh={onRefresh} />}>
 

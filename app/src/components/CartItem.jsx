@@ -158,7 +158,7 @@ export default CartItem = ({ item, index }) => {
                             <Entypo size={18} name="plus" />
                         </TouchableOpacity>
                     </View>
-                    <View
+                    {/* <View
                         style={{
                             flexDirection: "row",
                             marginTop: 2,
@@ -168,7 +168,7 @@ export default CartItem = ({ item, index }) => {
                     >
                         <MaterialCommunityIcons size={20} name="currency-inr" />
                         <Text style={{ fontSize: 16 }}>{price * item.quantity}</Text>
-                    </View>
+                    </View> */}
                 </View>
             </View>
 
@@ -185,10 +185,10 @@ export default CartItem = ({ item, index }) => {
                             })
                             return (
                                 <View key={index} style={{ flexDirection: 'row' }}>
-                                    <View style={{ flexDirection: 'row', marginStart: 10, alignItems: 'center' }}>
+                                    {/* <View style={{ flexDirection: 'row', marginStart: 10, alignItems: 'center' }}>
                                         <MaterialCommunityIcons size={18} color={theme.colors.primary} name='currency-inr' />
                                         <Text style={{ fontWeight: 'bold', color: theme.colors.primary }}>{service.price}</Text>
-                                    </View>
+                                    </View> */}
                                     <View style={{ flex: 1 }}>
                                         <Checkbox.Item
                                             color={theme.colors.primary}

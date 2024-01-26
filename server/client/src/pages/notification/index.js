@@ -12,6 +12,8 @@ import LINKING_DATA from "../../data/linking_data";
 import ProgressBar from "../../components/Other/ProgressBar";
 import { ImageItentifier } from "../../utils/ImageIdentifier";
 import { toast } from "react-toastify";
+import { formatDate } from './../../utils/FormatDate';
+import formatTime from './../../utils/FormatTime';
 
 function Notifications() {
   SetTitle('Notifications');
@@ -155,13 +157,14 @@ function Notifications() {
                   readNotification(item?._id);
                 }
               return(
-                <div className={`p-2 border ${item?.type === 'auth' ? 'bg-emerald-50 border-emerald-300' : ''} rounded-md flex flex-row items-center justify-between`}>
+                <div className={`p-2 border ${item?.type === 'auth' ? 'bg-emerald-50 border-emerald-300' : ''} rounded-md flex relative flex-row items-center justify-between`}>
+                  { item?.status === 'unread' && <span className="absolute top-0 left-0 px-2 py-1 bg-emerald-600 mt-1 ms-1 rounded-full text-white text-xs">new</span> }
                   <div className="flex items-center space-x-3">
                     <img src={ImageItentifier(store?.logo)} className="w-10 h-10"/>
                     <div>
                       <h2 className="font-semibold text-lg">{item?.title}</h2>
                       <p className="font-normal">{item?.message}</p>
-                      <p className="font-normal">{formatDate(item?.date)} {formatTime(item?.date)}</p>
+                      <p className="font-normal text-gray-400">{formatDate(item?.date)} {formatTime(item?.date)}</p>
                     </div>
                   </div>
                   <button onClick={() => deleteNotification(item._id)} className="transition-all hover:bg-red-200 active:bg-red-300 px-2 rounded-full">

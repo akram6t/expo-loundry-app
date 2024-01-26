@@ -80,12 +80,12 @@ function OrdersTable({
                 Order date:
                 <span className="font-bold">{formatDate(row.order_date)}</span>
               </p>
-              <p key={index}>
-                Delivery date:
-                <span className="font-bold">
-                  {formatDate(row.delivery_date.date)}
-                </span>
-              </p>
+              {/* <p key={index}> */}
+                {/* Delivery date: */}
+                {/* <span className="font-bold"> */}
+                  {/* {formatDate(row.delivery_date.date)} */}
+                {/* </span> */}
+              {/* </p> */}
             </span>
           </TableCell>
           <TableCell dataLabel="CUSTOMER" showLabel={true}>
@@ -95,7 +95,7 @@ function OrdersTable({
           </TableCell>
           <TableCell dataLabel="AMOUNT" showLabel={true}>
             <span className="font-medium text-sm text-gray-900">
-              ₹ {row.amount}
+              { row.amount <= 0 ? 'Not set' : `₹ ${row?.amount}` }
             </span>
           </TableCell>
           <TableCell dataLabel="PAYMENT" showLabel={true}>
@@ -105,12 +105,14 @@ function OrdersTable({
               <p key={index}>
                 Total amount:
                 <span className="ml-2 font-bold">
-                  ₹ {row.amount +
+
+                { row.amount <=0 ? 'Not set' : (`₹ ${row.amount +
                     row.service_fee +
                     (row.addons?.reduce(
                       (total, item) => total + item.price,
                       0
-                    ) || 0)}
+                    ) || 0)}`)
+                }
                 </span>
               </p>
               <p key={index}>
