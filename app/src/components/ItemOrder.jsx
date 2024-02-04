@@ -63,22 +63,22 @@ const ItemOrder = ({item, index, status, server}) => {
 
     }
 
-    function calculateTotalPrice(cartData) {
-        let totalPrice = 0;
+    // function calculateTotalPrice(cartData) {
+        // let totalPrice = 0;
 
-        for (let i = 0; i < cartData.length; i++) {
-            const item = cartData[i];
+        // for (let i = 0; i < cartData.length; i++) {
+            // const item = cartData[i];
 
-            if (item.quantity > 0) {
-                for (let j = 0; j < item.services.length; j++) {
-                    const service = item.services[j];
-                    totalPrice += service.price * item.quantity;
-                }
-            }
-        }
+            // if (item.quantity > 0) {
+                // for (let j = 0; j < item.services.length; j++) {
+                    // const service = item.services[j];
+                    // totalPrice += service.price * item.quantity;
+                // }
+            // }
+        // }
 
-        return totalPrice;
-    }
+        // return totalPrice;
+    // }
 
     const checkItemisCancelled = () => {
         let bool = false;
@@ -94,7 +94,8 @@ const ItemOrder = ({item, index, status, server}) => {
     }
 
     useEffect(() => {
-        setTotalPrice(calculateTotalPrice(item.items));
+        let addonsPrice = item?.addons?.reduce((total, addon) => total + addon.price, 0) || 0;
+        setTotalPrice(addonsPrice + item?.service_fee+item?.amount);
     }, []);
 
 
@@ -110,10 +111,15 @@ const ItemOrder = ({item, index, status, server}) => {
                     </View>
                     <View>
                         <View style={{ alignItems: 'flex-end' }}>
-                            <View style={{ flexDirection: 'row', alignItems: 'center' }}>
+                            {
+
+                                (item?.amount > 0) && (<View style={{ flexDirection: 'row', alignItems: 'center' }}>
                                 <MaterialCommunityIcons size={18} name="currency-inr" />
-                                <Text style={{ fontSize: 18, fontWeight: 'bold' }}>{totalPrice + item.service_fee}</Text>
-                            </View>
+                                <Text style={{ fontSize: 18, fontWeight: 'bold' }}>{totalPrice}</Text>
+                            </View>)
+                            
+                            }
+
                             <Text style={{ color: 'white', backgroundColor: statusColor, fontWeight: 'bold', paddingHorizontal: 5, paddingVertical: 2, borderRadius: 100 }}>{item.order_status}</Text>
                         </View>
                     </View>

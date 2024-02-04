@@ -22,7 +22,7 @@ import { useDispatch, useSelector } from "react-redux";
 import { getProducts, cleanProduct } from "../utils/reducers/ProductReducer";
 import Loader from "../components/Loader";
 import axios from "axios";
-
+import * as Location from 'expo-location';
 import { api } from "../Constaints";
 import { cleanCart } from "../utils/reducers/CartReducer";
 import getDistance from "../utils/getDistance";
@@ -43,17 +43,30 @@ const ClothsScreen = ({ navigation }) => {
   // const [ shop, setShop ] = useState();
 
   const {shop} = route.params;
-  const currentLatLon = route.params.latlon;
+  const [currentLatLon, setCurrentLatLon] = useState(route.params.latlon);
   // const [products, setProducts] = useState(products_data);
 
-  const server = useSelector(state => state.path.path);
-
   const products = useSelector((state) => state.product.product);
-  const dispatch = useDispatch();
+
+    // get location
+    const getCurrentLocation = async () => {
+      let { status } = await Location.requestForegroundPermissionsAsync();
+  
+      // setLoader(true);
+      const { coords } = await Location.getCurrentPositionAsync();
+      if (coords) {
+        const { latitude, longitude } = coords;
+        setCurrentLatLon({
+          latitude: latitude,
+          longitude: longitude
+        })    
+      }
+    };
 
   useEffect(() => {
     if(!currentLatLon){
-      setDistance('please enable location');
+      getCurrentLocation();
+      setDistance('disabled');
       return;
     }
     const distanceinMeter = getDistance(currentLatLon, shop.latlon);
@@ -86,7 +99,7 @@ const ClothsScreen = ({ navigation }) => {
 
     setDistance(distance);
 
-  }, [])
+  }, [currentLatLon])
 
   // useEffect(() => {
     // getCloths();

@@ -7,7 +7,7 @@ import Carousel from './../components/Carousel';
 import axios from 'axios';
 import { api, routes } from '../Constaints';
 import { auth } from '../firebaseConfig';
-import { Feather, MaterialCommunityIcons } from '@expo/vector-icons';
+import { Entypo, Feather, MaterialCommunityIcons } from '@expo/vector-icons';
 import Loader from '../components/Loader';
 import { setDatabaseData, setPath } from '../utils/reducers/DatabaseReducer';
 import { useDispatch, useSelector } from 'react-redux';
@@ -179,6 +179,7 @@ const HomeScreen = ({ navigation }) => {
     useCallback(() => {
 
         getNotificationsCount();
+        getCurrentLocation();
 
         return () => {
             // console.log(' unfocused');
@@ -186,44 +187,14 @@ const HomeScreen = ({ navigation }) => {
     }, [])
 );
 
-
-
-  // Location service enable
-  const checkIfLocationEnabled = async () => {
-    let enabled = await Location.hasServicesEnabledAsync();
-    if (!enabled) {
-      checkIfLocationEnabled();
-      // Alert.alert(
-      //     "Location services not enabled",
-      //     "Please enable the location services",
-      //     [
-      //         {
-      //             text: "Cancel",
-      //             onPress: () => console.log("Cancel Pressed"),
-      //             style: "cancel",
-      //         },
-      //         { text: "OK", onPress: () => console.log("OK Pressed") },
-      //     ],
-      //     { cancelable: false }
-      // );
-    } else {
-      setLocationServicesEnabled(enabled);
-      getCurrentLocation();
-    }
-  };
-
   // get location
   const getCurrentLocation = async () => {
     let { status } = await Location.requestForegroundPermissionsAsync();
 
-    if (status !== "granted") {
-      setLocationServicesEnabled(false);
-    }
-
     // setLoader(true);
     const { coords } = await Location.getCurrentPositionAsync();
-    // console.log(coords)
     if (coords) {
+      setLocationServicesEnabled(true);
       const { latitude, longitude } = coords;
       setCurrentLatLon({
         latitude: latitude,
@@ -242,12 +213,6 @@ const HomeScreen = ({ navigation }) => {
   };
 
   useEffect(() => {
-    // if (server.baseUrl === '') {
-      // setLoader(true);
-    // } else {
-      // console.log(server.baseUrl);
-      // setLoader(false);
-      checkIfLocationEnabled();
       getCurrentLocation();
       apiFetch();
       Promise.all([ getNotificationsCount() ])
@@ -257,16 +222,19 @@ const HomeScreen = ({ navigation }) => {
 
   const onRefresh = React.useCallback(() => {
     setRefreshing(true);
-    checkIfLocationEnabled();
+    getCurrentLocation();
     apiFetch();
     setTimeout(() => {
       setRefreshing(false);
-    }, 2000);
+    }, 500);
   }, []);
 
   return (
     <SafeAreaView style={{ backgroundColor: theme.colors.background, flex: 1 }}>
       <View style={{ paddingHorizontal: 8, paddingVertical: 10, flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between' }}>
+        <View>
+          <Entypo size={28} color={MD2Colors.red700} name="location-pin" />
+        </View>
         <View style={{ flex: 1, marginLeft: 10 }}>
           <Text style={{ fontSize: 22, fontWeight: 'bold' }} numberOfLines={1}>{user.name}</Text>
           <Text numberOfLines={1} style={{ fontSize: 16 }}>{address}</Text>
@@ -321,17 +289,19 @@ const HomeScreen = ({ navigation }) => {
                   marginTop: 15,
                   paddingHorizontal: 10,
                   paddingVertical: 20,
+                  marginBottom: 5,
                 }}>
                   <Image style={{ width: 70, height: 70 }} source={{uri: ImageIdentifier(item.image, server)}} />
                   <Text style={{ fontSize: 16 }}>{item.name}</Text>
                 </View>
+
                 {/* kg and pc */}
                 <View style={{ position: 'absolute', flexDirection: 'row', alignItems: 'center', top: 5, right: 8 }}>
                   <Text style={{ fontWeight: 'bold', color: theme.colors.primary }}>{item.type==='pc' ? 'Starting ': ''}</Text>
                   <MaterialCommunityIcons size={16} name='currency-inr' color={theme.colors.primary}/>
-                  <Text style={{ fontWeight: 'bold', color: theme.colors.primary }}>{item.price} / {item.type}</Text>
-                </View>
-
+                  <Text style={{fontWeight: 'bold', color: theme.colors.primary }}>{item.price} / {item.type}</Text>
+                </View> 
+                  <Text style={{ position: 'absolute', padding: 2, bottom: 1, right: 1, fontWeight: 'bold', color: MD2Colors.grey500 }}>{item?.time}</Text>
                </View>
               </TouchableRipple>
             }}
@@ -352,7 +322,7 @@ const HomeScreen = ({ navigation }) => {
         !locationServicesEnabled ? (
           <View style={{ padding: 5, elevation: 3, margin: 8, borderRadius: 20, backgroundColor: theme.colors.primaryLight, flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between' }}>
             <Text style={{marginStart: 8, fontSize: 16, fontWeight: 'bold' }}>Please enable the location</Text>
-            <Button onPress={() => { checkIfLocationEnabled() }}>enable</Button>
+            <Button onPress={() => { getCurrentLocation() }}>enable</Button>
           </View>
         ) : null
       }

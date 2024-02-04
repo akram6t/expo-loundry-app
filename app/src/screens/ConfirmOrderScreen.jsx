@@ -18,9 +18,13 @@ import axios from "axios";
 import Loader from "../components/Loader";
 import { KeyboardAwareScrollView } from 'react-native-keyboard-aware-scroll-view'
 import { formatDate } from './../utils/FormatDate';
+import { useDispatch } from "react-redux";
+import { cleanCart } from "../utils/reducers/CartReducer";
+import { quantityReset } from "../utils/reducers/ProductReducer";
 
 const CartScreen = ({ navigation }) => {
     const route = useRoute();
+    const dispatch = useDispatch();
     const { shopname, shopid } = route.params;
     const [visible, setVisible] = React.useState(false);
     const [totalPrice, setTotalPrice] = useState(0);
@@ -139,6 +143,9 @@ const CartScreen = ({ navigation }) => {
             .then(response => {
                 const { status, message } = response.data;
                 if (status) {
+                    // clean the cart and clean quantity of products
+                    dispatch(cleanCart());
+                    dispatch(quantityReset());
                     setMessage(message);
                     setLoading(false);
                     setSnackbar(true);

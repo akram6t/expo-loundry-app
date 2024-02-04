@@ -6,7 +6,7 @@ import {
     Image,
     ScrollView
 } from "react-native";
-import { Button, Checkbox, Chip, Dialog, Divider, IconButton, MD2Colors, MD3Colors, Modal, Portal, Snackbar, TouchableRipple } from 'react-native-paper';
+import { Button, Checkbox, Chip, Dialog, Divider, IconButton, MD2Colors, MD3Colors, Modal, Portal, Snackbar, TextInput, TouchableRipple } from 'react-native-paper';
 import React, { useState, useEffect } from "react";
 import { useTheme } from "react-native-paper";
 import { SafeAreaView } from "react-native-safe-area-context";
@@ -31,7 +31,6 @@ const OrdersScreen = ({ navigation }) => {
     const { item, status } = route.params;
     const [ orderStatus, setOrderStatus ] = useState(item.order_status);
     // const [OrdersList, setOrdersList] = useState(orders_data);
-    const [totalPrice, setTotalPrice] = useState(0);
 
     const [shop, setShop] = useState(null);
     const [cancelledStep, setCancelledStep] = useState(0);
@@ -39,6 +38,7 @@ const OrdersScreen = ({ navigation }) => {
     const [loader, setLoader] = useState(false);
     const [message, setMessage] = useState('');
     const [snackbar, setSnackbar] = useState(false);
+    const [cancelReason, setCancelReason] = useState('');
 
     const [totalAddonPrice, setTotalAddonPrice] = useState(0);
 
@@ -79,20 +79,11 @@ const OrdersScreen = ({ navigation }) => {
             return;
         }
         const totalPrice = item?.addons?.reduce((acc, obj) => {
-            if (obj.active === true) {
                 return acc + obj.price;
-            }
-            return acc;
         }, 0);
         setTotalAddonPrice(totalPrice);
         // console.log("price" + totalPrice);
     }, [])
-
-    const copyToClipboard = async () => {
-        await Clipboard.setStringAsync(item.order_id);
-        setMessage('copied...');
-        setSnackbar(true);
-    };
 
 
     const [dateTime, setDateTime] = useState({
@@ -123,26 +114,23 @@ const OrdersScreen = ({ navigation }) => {
         return co;
     }
 
-    function calculateTotalPrice(cartData) {
-        let totalPrice = 0;
 
-        for (let i = 0; i < cartData.length; i++) {
-            const item = cartData[i];
+    // function calculateTotalPrice(cartData) {
+    //     let totalPrice = 0;
 
-            if (item.quantity > 0) {
-                for (let j = 0; j < item.services.length; j++) {
-                    const service = item.services[j];
-                    totalPrice += service.price * item.quantity;
-                }
-            }
-        }
+    //     for (let i = 0; i < cartData.length; i++) {
+    //         const item = cartData[i];
 
-        return totalPrice;
-    }
+    //         if (item.quantity > 0) {
+    //             for (let j = 0; j < item.services.length; j++) {
+    //                 const service = item.services[j];
+    //                 totalPrice += service.price * item.quantity;
+    //             }
+    //         }
+    //     }
 
-    useEffect(() => {
-        setTotalPrice(calculateTotalPrice(item.items));
-    }, []);
+    //     return totalPrice;
+    // }
 
     const cancelStatusFind = () => {
         const updateStatus = status.find((e) => e.type==='cancelled').tag;
@@ -155,12 +143,14 @@ const OrdersScreen = ({ navigation }) => {
         setLoader(true);
         axios.post(`${server.baseUrl}/${api.cancel_order}`, {
           order_id: item.order_id,
+          cancelReason: cancelReason,
           update_status: cancelStatusFind()
         }, {headers: {"Content-Type": 'application/json', apikey: server.apikey}})
         .then((result, err) => {
             setLoader(false);
           const {status, message} = result.data;
           if(status){
+            setCancelledStep(status?.length-1);
             setMessage(message);
             setSnackbar(true);
             setOrderStatus(cancelStatusFind());
@@ -365,7 +355,7 @@ const OrdersScreen = ({ navigation }) => {
                                         disabled
                                         color={theme.colors.primary}
                                         label={item.name}
-                                        status={item.active ? 'checked' : 'unchecked'}
+                                        status={'checked'}
                                     />
                                 </View>
                             )
@@ -378,11 +368,11 @@ const OrdersScreen = ({ navigation }) => {
 
                 <View style={{ paddingHorizontal: 8, gap: 5 }}>
                     {/* Sub Total */}
-                    {totalAddonPrice > 0 && <View style={{ flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between' }}>
+                    {item?.amount > 0 && <View style={{ flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between' }}>
                         <Text style={{ fontWeight: 'bold' }}>Sub Total</Text>
                         <View style={{ flexDirection: 'row', alignItems: 'center' }}>
                             <MaterialCommunityIcons name='currency-inr' size={15} style={{ fontWeight: 'bold' }} />
-                            <Text style={{ fontSize: 18, fontWeight: 'bold' }}>{totalPrice}</Text>
+                            <Text style={{ fontSize: 18, fontWeight: 'bold' }}>{item?.amount}</Text>
                         </View>
                     </View>}
                     <View style={{ flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between' }}>
@@ -408,7 +398,7 @@ const OrdersScreen = ({ navigation }) => {
                         <Text style={{ color: theme.colors.primary, fontWeight: 'bold', fontSize: 18 }}>Total</Text>
                         <View style={{ flexDirection: 'row', alignItems: 'center' }}>
                             <MaterialCommunityIcons name='currency-inr' color={theme.colors.primary} size={18} style={{ fontWeight: 'bold' }} />
-                            <Text style={{ fontSize: 20, fontWeight: 'bold', color: theme.colors.primary }}>{totalPrice + item.service_fee + totalAddonPrice}</Text>
+                            <Text style={{ fontSize: 20, fontWeight: 'bold', color: theme.colors.primary }}>{item?.amount + item?.service_fee + totalAddonPrice}</Text>
                         </View>
                     </View>}
 
@@ -443,11 +433,14 @@ const OrdersScreen = ({ navigation }) => {
                 <Dialog visible={openCancelDialog} onDismiss={() => setOpenCancelDialog(false)}>
                     <Dialog.Title>Cancel Order</Dialog.Title>
                     <Dialog.Content>
-                        <Text variant="bodyMedium">Are you sure want to cancel order.</Text>
+                        <Text variant="bodyMedium">Are you sure want to cancel the order.</Text>
+                        <TextInput 
+                        value={cancelReason} onChangeText={(value) => setCancelReason(value)} 
+                        multiline={true} style={{ marginTop: 8 }} numberOfLines={3} mode='outlined' label={'Describe your reason...'} />
                     </Dialog.Content>
                     <Dialog.Actions>
                         <Button onPress={() => setOpenCancelDialog(false)}>Cancel</Button>
-                        <Button onPress={() => handleCancelOrder()}>Confirm</Button>
+                        <Button disabled={ cancelReason.trim() === "" } onPress={() => handleCancelOrder()}>Confirm</Button>
                     </Dialog.Actions>
                 </Dialog>
             </Portal>

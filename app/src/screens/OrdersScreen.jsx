@@ -13,12 +13,6 @@ import { useTheme, } from "react-native-paper";
 import { Tabs, TabScreen, TabsProvider } from "react-native-paper-tabs";
 import { SafeAreaView } from "react-native-safe-area-context";
 import { AntDesign, Entypo, FontAwesome, MaterialCommunityIcons } from "@expo/vector-icons";
-
-// import IconOrderConfirmed from '../../assets/images/icon_order_confirmed.png';
-// import IconOrderPickup from '../../assets/images/icon_order_pickup.png';
-// import IconOrderProcess from '../../assets/images/icon_order_process.png';
-// import IconOrderShipped from '../../assets/images/icon_order_shipped.png';
-// import IconOrderDelivered from '../../assets/images/icon_order_delivered.png';
 import { api, routes } from '../Constaints';
 import Loader from "../components/Loader";
 import { auth } from "../firebaseConfig";
@@ -37,8 +31,6 @@ const OrdersScreen = ({ navigation }) => {
     const [ status, setStatus ] = useState([]);
     const [ skip, setSkip ] = useState(0);
     const [ ordersEnd, setOrderEnd ] = useState(false);
-
-    const theme = useTheme();
 
     const server = useSelector(state => state.path.path);
 
@@ -105,7 +97,7 @@ const OrdersScreen = ({ navigation }) => {
         Promise.all([ getOrders(), getorderstatus() ]);
         setTimeout(() => {
             setRefreshing(false);
-        }, 2000);
+        }, 500);
     }, []);
 
     return (<View style={{ flex: 1 }}>
