@@ -21,7 +21,7 @@ router.get('/ordertiming', (req, res) => {
         console.log('order timing...');
         const db = client.db();
         const collection = db.collection(Collections.ORDERTIMING);
-        collection.find({}).toArray().then((result, err) => {
+        collection.find({status: 'Active'}).toArray().then((result, err) => {
             if (err) throw err;
             res.send({
                 status: true,
