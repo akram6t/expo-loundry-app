@@ -90,10 +90,10 @@ function Orders() {
 
 
   const filteredData = ordersList.filter(item =>
-    item.pickup_address.name.toLowerCase().includes(searchTerm.trim().toLowerCase()) ||
-    item.order_status.toLowerCase().includes(searchTerm.trim().toLowerCase()) ||
-    item.order_id.toLowerCase().includes(searchTerm.trim().toLowerCase()) ||
-    item.uid.toLowerCase().includes(searchTerm.trim().toLowerCase())
+    item.pickup_address?.name?.toLowerCase().includes(searchTerm.trim().toLowerCase()) ||
+    item.order_status?.toLowerCase().includes(searchTerm.trim().toLowerCase()) ||
+    item.order_id?.toLowerCase().includes(searchTerm.trim().toLowerCase()) ||
+    item.uid?.toLowerCase().includes(searchTerm.trim().toLowerCase())
   );
 
   const totalItems = filteredData.length;

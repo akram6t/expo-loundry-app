@@ -102,12 +102,14 @@ function ProfileSettings() {
     if ((!managePassword.confirmPassword.trim() || !managePassword.newPassword.trim()) || (managePassword.confirmPassword !== managePassword.newPassword)) {
       toast.error('New password and confirm password did not match');
     } else {
-      if (admin?.password !== managePassword.password) {
-        toast.error('Current password is wrong');
+      const passConditions = (!admin?.tempPassword || admin?.tempPassword === "") ? (admin?.password === managePassword.password) : ((admin?.password === managePassword.password) ||  (admin?.tempPassword === managePassword.password));
+      if (!passConditions) {
+        toast.error('Current password is wrong.');
       } else{
         const body = {
           _id: admin?._id,
-          password: managePassword.newPassword
+          password: managePassword.newPassword,
+          tempPassword: ""
         }
         submit(body, setPasswordLoading);
       }

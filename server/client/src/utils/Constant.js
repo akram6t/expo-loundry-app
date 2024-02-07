@@ -40,6 +40,8 @@ const  routes = {
 
 }
 
+export const currencyIcon = ``;
+
 export const BASE_URL = process.env.REACT_APP_SERVER_URL || window.location.origin;
 const API_KEY = process.env.REACT_APP_SERVER_API_KEY;
 

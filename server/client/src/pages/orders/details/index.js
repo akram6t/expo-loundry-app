@@ -19,6 +19,7 @@ import ProgressBar from "../../../components/Other/ProgressBar";
 import { SetTitle } from './../../../utils/SetTitle';
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faEdit } from "@fortawesome/free-solid-svg-icons";
+import { showInvoice } from "../../../utils/Invoice";
 
 function OrderDetails() {
   SetTitle('Order Details');
@@ -349,10 +350,10 @@ function OrderDetails() {
                 <button onClick={() => setModalVisible({ status: true, collection: paymentCollection, data: { ...paymentData, amount: ((details?.amount + details?.service_fee + addonsAmount) - (paidAmount || 0)) < 0 ? 0 :(details?.amount + details?.service_fee + addonsAmount) - (paidAmount || 0) } })} className="hover:bg-opacity-80 active:bg-opacity-50 transition-all w-full bg-emerald-600 text-gray-100 px-3 py-2 rounded-lg shadow-lg text-sm">
                   Add Payment
                 </button>
-                <button onClick={() => window.print()} className="hover:bg-opacity-80 active:bg-opacity-50 transition-all w-full bg-black text-gray-100 px-3 py-2 rounded-lg shadow-lg text-sm">
+                <button onClick={() => showInvoice('print', details, paymentsList)} className="hover:bg-opacity-80 active:bg-opacity-50 transition-all w-full bg-black text-gray-100 px-3 py-2 rounded-lg shadow-lg text-sm">
                   Print Invoice
                 </button>
-                <button className="invisible hover:bg-opacity-80 active:bg-opacity-50 transition-all w-full bg-black text-gray-100 px-3 py-2 rounded-lg shadow-lg text-sm">
+                <button onClick={() => showInvoice('download', details, paymentsList)} className="hover:bg-opacity-80 active:bg-opacity-50 transition-all w-full bg-black text-gray-100 px-3 py-2 rounded-lg shadow-lg text-sm">
                   Download Pdf
                 </button>
 

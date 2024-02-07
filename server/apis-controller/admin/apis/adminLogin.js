@@ -27,7 +27,7 @@ const adminLogin = async (req, res) => {
             status: true,
             message: 'login'
         })
-        await collection.updateOne({_id: new ObjectId(admin?._id)},{ $set: { authToken: authToken, tempPassword: '' } })
+        await collection.updateOne({_id: new ObjectId(admin?._id)},{ $set: { authToken: authToken } })
 
     }else{
         res.send({

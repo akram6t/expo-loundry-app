@@ -317,7 +317,7 @@ function ServicesEdit() {
 
                             <div className="rounded-md p-2 font-medium flex item-center bg-emerald-600 text-white">
                                 <h2 className="flex-1">Service Type</h2>
-                                <h2 className="flex-1">Service Price</h2>
+                                {/* <h2 className="flex-1">Service Price</h2> */}
                             </div>
                             {
                                 product?.services?.map((item, index) => {
@@ -330,7 +330,7 @@ function ServicesEdit() {
                                                     })
                                                 }
                                             </select>
-                                            <input type="number" value={product?.services[index]?.price} onChange={(e) => handleChangeServices(index, 'price', e.target.value)} className="flex-1 text-sm placeholder-gray-500 px-4 rounded-lg border border-gray-200 w-full md:py-2 py-3 focus:outline-none focus:border-emerald-400 mt-1" />
+                                            {/* <input type="number" value={product?.services[index]?.price} onChange={(e) => handleChangeServices(index, 'price', e.target.value)} className="flex-1 text-sm placeholder-gray-500 px-4 rounded-lg border border-gray-200 w-full md:py-2 py-3 focus:outline-none focus:border-emerald-400 mt-1" /> */}
                                             <button onClick={() => removeService(index)} className="m-3 mb-5 hover:bg-opacity-80 active:bg-opacity-60 transition-all bg-red-600 text-gray-100 px-3 py-2 rounded-lg shadow-lg text-sm">
                                                 <FontAwesomeIcon icon={faRemove} />
                                             </button>

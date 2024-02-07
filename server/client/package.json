@@ -16,6 +16,8 @@
     "chart.js": "^4.3.0",
     "firebase": "^10.7.1",
     "framer-motion": "^10.12.12",
+    "jspdf": "^2.5.1",
+    "jspdf-autotable": "^3.8.1",
     "react": "^18.2.0",
     "react-chartjs-2": "^5.2.0",
     "react-color": "^2.19.3",

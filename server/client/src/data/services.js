@@ -27,6 +27,8 @@ export const servicesHeader = [
 
 export const genders = ["Man", "Woman", "Kids", "Others"];
 
+export const service_base = ["kg", 'pc'];
+
 export const servicesTypesHeader = [
     {
         key: 'serial_number',
@@ -43,6 +45,14 @@ export const servicesTypesHeader = [
     {
         key: 'color',
         label: 'Color'
+    },
+    {
+        key: 'price',
+        label: 'Price'
+    },
+    {
+        key: 'time',
+        label: 'Time'
     },
     {
         key: 'status',

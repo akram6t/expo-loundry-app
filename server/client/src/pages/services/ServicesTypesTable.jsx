@@ -46,10 +46,16 @@ const deleteData = (id, title) => {
             </span>
           </TableCell>
           <TableCell dataLabel="NAME" showLabel={true}>
-            <span className="font-semibold text-sm text-gray-900">{row.name}</span>
+            <span className="font-semibold text-sm text-gray-900">{row?.name}</span>
           </TableCell>
           <TableCell dataLabel="COLOR" showLabel={true}>
             <span className={`font-semibold text-sm p-2 rounded-md border`} style={{backgroundColor: row.color}}>{row.color}</span>
+          </TableCell>
+          <TableCell dataLabel="PRICE" showLabel={true}>
+            <span className="font-semibold text-sm text-gray-900">₹ {row?.price} / {row?.type}</span>
+          </TableCell>
+          <TableCell dataLabel="TIME" showLabel={true}>
+            <span className="font-semibold text-sm text-gray-900">{row?.time}</span>
           </TableCell>
           <TableCell dataLabel="STATUS" showLabel={true}>
             <span className={`font-medium text-sm text-gray-900 ${status.find(item => item.label === row.status).color} px-2 py-1 rounded-full shadow`}>

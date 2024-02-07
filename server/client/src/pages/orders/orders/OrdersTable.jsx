@@ -147,12 +147,12 @@ function OrdersTable({
                 View
               </Link>
 
-              {/* <button */}
-                {/* onClick={() => window} */}
-                {/* className="text-white bg-yellow-600 border border-gray-100 px-3 py-2 rounded-lg shadow-lg text-sm" */}
-              {/* > */}
-                {/* Print */}
-              {/* </button> */}
+              {/* <button
+                 onClick={() => invoice}
+                 className="text-white bg-yellow-600 border border-gray-100 px-3 py-2 rounded-lg shadow-lg text-sm"
+              >
+                Print
+               </button> */}
             </span>
           </TableCell>
         </tr>);

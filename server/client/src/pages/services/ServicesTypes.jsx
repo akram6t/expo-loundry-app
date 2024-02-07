@@ -8,7 +8,7 @@ import Linking from "../../components/Other/Linking";
 import LINKINGDATA from "../../data/linking_data";
 import EntryOptions from "../../components/Other/EntryOptions";
 import SearchTable from "../../components/Other/SearchTable";
-import { servicesTypesHeader, servicesTypesData } from "../../data/services";
+import { servicesTypesHeader, servicesTypesData, service_base } from "../../data/services";
 import ServicesTypeTable from "./ServicesTypesTable";
 import { Collections, DATE_ACC_DESC, HEADER_API, URL_GET_LIST, sampleIcon } from "../../utils/Constant";
 import axios from "axios";
@@ -36,6 +36,9 @@ function ServicesTypes() {
     image: sampleIcon,
     name: '',
     color: '#FEFFEC',
+    price: 0,
+    type: service_base[0],
+    time: '42 Hrs.',
     status: status[0].label
   }
 
@@ -184,6 +187,64 @@ function ServicesTypes() {
           />
         </div>
         {/* input end */}
+
+        {/* price and bass */}
+        <div className="flex gap-2">
+          {/* input start */}
+          <div className="relative flex-1">
+            <label className="font-bold text-sm text-gray-600">
+              Price /
+              <span className="text-red-600 font-bold ml-2">*</span>
+            </label>
+            <input
+              value={CUModal?.data?.price}
+              onChange={(e) => handleChangeValue('price', e.target.value)}
+              id="inputWithIcon"
+              type="number"
+              name="inputWithIcon"
+              className="text-md placeholder-gray-500 px-4 rounded-lg border border-gray-200 w-full md:py-2 py-3 focus:outline-none focus:border-emerald-400 mt-1"
+              placeholder="Enter Price"
+            />
+          </div>
+          {/* input end */}
+
+          {/* select start */}
+          <div className="relative flex-1">
+            <label className="font-bold text-sm text-gray-600">
+              Base
+              <span className="text-red-600 font-bold ml-2">*</span>
+            </label>
+            <select
+              value={CUModal?.data?.type}
+              onChange={(e) => handleChangeValue('type', e.target.value)}
+              className="text-md placeholder-gray-500 px-4 rounded-lg border border-gray-200 w-full md:py-2 py-3 focus:outline-none focus:border-emerald-400 mt-1">
+              {
+                service_base.map(item => (
+                  <option value={item}>{item}</option>
+                ))
+              }
+            </select>
+          </div>
+          {/* select end */}
+        </div>
+        {/* input start */}
+        <div className="relative flex-1">
+          <label className="font-bold text-sm text-gray-600">
+            Service Time
+            <span className="text-red-600 font-bold ml-2">*</span>
+          </label>
+          <input
+            value={CUModal?.data?.time}
+            onChange={(e) => handleChangeValue('time', e.target.value)}
+            id="inputWithIcon"
+            type="text"
+            name="inputWithIcon"
+            className="text-md placeholder-gray-500 px-4 rounded-lg border border-gray-200 w-full md:py-2 py-3 focus:outline-none focus:border-emerald-400 mt-1"
+            placeholder="Enter Service Time ex. - 42 Hrs."
+          />
+        </div>
+        {/* input end */}
+
         {/* input start */}
         <div className="relative my-2">
           <label className="font-bold text-sm text-gray-600">
@@ -198,6 +259,7 @@ function ServicesTypes() {
           </div>
         </div>
         {/* input end */}
+
         {/* input start */}
         {
           CUModal?.data?._id &&
@@ -222,7 +284,7 @@ function ServicesTypes() {
         }
         {/* input end */}
       </ModalCreate>
-      <ModalColorPicker show={showColorPicker} setShow={setShowColorPicker} color={CUModal?.data?.color} onChangeColor={(color) => handleChangeValue('color', color)}/>
+      <ModalColorPicker show={showColorPicker} setShow={setShowColorPicker} color={CUModal?.data?.color} onChangeColor={(color) => handleChangeValue('color', color)} />
       <ModalMedia onChangeMedia={(item) => { setCUModal({ ...CUModal, data: { ...CUModal.data, image: item.media } }); setShowMedia(false) }} showMedia={showMedia} setShowMedia={setShowMedia} />
     </>
   );

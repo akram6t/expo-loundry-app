@@ -4,9 +4,9 @@ const { Collections, Messages } = require('./../../../Constaints');
 const { ApiAuthentication } = require('../../../utils/ApiAuthentication');
 
 async function incomeChart(req, res) {
-  if(!ApiAuthentication(req, res)){
-    return res.json({ status: false, message: Messages.wrongApi});
-}
+  // if(!ApiAuthentication(req, res)){
+    // return res.json({ status: false, message: Messages.wrongApi});
+  // }
   try {
     const client = new MongoClient(url); // Replace with your MongoDB connection URI
     await client.connect();
@@ -18,64 +18,81 @@ async function incomeChart(req, res) {
     // const allowedStatuses = [...statusList];
 
     const counts = await ordersCollection.aggregate([
-        {
-          $match: {
-            "order_date": {
-              $gte: new Date("2024-01-01T00:00:00.000Z"),
-              $lt: new Date("2025-01-01T00:00:00.000Z"),
-            },
-          },
-        },
-        {
-          $project: {
-            year: { $year: "$order_date" },
-            month: { $month: "$order_date" },
-            amount: { $sum: ["$amount", "$service_fee", { $sum: "$addons.price" }] },
-          },
-        },
-        {
-          $group: {
-            _id: { year: "$year", month: "$month" },
-            totalAmount: { $sum: "$amount" },
-          },
-        },
-        {
-          $sort: { "_id.year": 1, "_id.month": 1 },
-        },
-        {
-          $group: {
-            _id: null,
-            data: {
-              $push: {
-                label: {
-                  $concat: [
-                    { $substr: ["$_id.month", 0, -1] },
-                    "-",
-                    { $substr: ["$_id.month", -1, 1] },
-                  ],
-                },
-                value: "$totalAmount",
-              },
-            },
-          },
-        },
-        {
-          $project: {
-            _id: 0,
-            labels: ["Jan-Feb", "Mar-Apr", "May-Jun", "Jul-Aug", "Sep-Oct", "Nov-Dec"],
-            datasets: [
-              {
-                label: "2024",
-                data: "$data",
-              },
-              {
-                label: "Target",
-                data: ["11", "20", "89", "149", "150"],
-                type: "line",
-              },
-            ],
-          },
-        },
+
+      {
+        $project: {
+          order_status: 1,
+          order_date: 1,
+          amount: 1,
+          addons: 1,
+          service_fee: 1
+        }
+      },
+      { 
+        $group: {
+          _id: '$order_status',
+          totalAmount: { '$addons': { $sum: '$price' } }
+        }
+      }
+      
+        // {
+        //   $match: {
+        //     "order_date": {
+        //       $gte: new Date("2022-01-01T00:00:00.000Z"),
+        //       $lt: new Date("2025-01-01T00:00:00.000Z"),
+        //     },
+        //   },
+        // },
+        // {
+        //   $project: {
+        //     year: { $year: "$order_date" },
+        //     month: { $month: "$order_date" },
+        //     amount: { $sum: ["$amount", "$service_fee", { $sum: "$addons.price" }] },
+        //   },
+        // },
+        // {
+        //   $group: {
+        //     _id: { year: "$year", month: "$month" },
+        //     totalAmount: { $sum: "$amount" },
+        //   },
+        // },
+        // {
+        //   $sort: { "_id.year": 1, "_id.month": 1 },
+        // },
+        // {
+        //   $group: {
+        //     _id: null,
+        //     data: {
+        //       $push: {
+        //         label: {
+        //           $concat: [
+        //             { $substr: ["$_id.month", 0, -1] },
+        //             "-",
+        //             { $substr: ["$_id.month", -1, 1] },
+        //           ],
+        //         },
+        //         value: "$totalAmount",
+        //       },
+        //     },
+        //   },
+        // },
+        // {
+        //   $project: {
+        //     _id: 0,
+        //     labels: ["Jan-Feb", "Mar-Apr", "May-Jun", "Jul-Aug", "Sep-Oct", "Nov-Dec"],
+        //     datasets: [
+        //       {
+        //         label: "2024",
+        //         data: "$data",
+        //       },
+        //       {
+        //         label: "Target",
+        //         data: ["11", "20", "89", "149", "150"],
+        //         type: "line",
+        //       },
+        //     ],
+        //   },
+        // },
       ]).toArray();
       
 

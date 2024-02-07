@@ -19,7 +19,6 @@ function Services() {
   const [servicesList, setServicesList ] = useState([]);
   const [sidebarToggle] = useOutletContext();
   const [loading, setLoading] = useState(false);
-  const [dateFilter, setDateFilter] = useState(filterDate[2]);
   const [itemsPerPage, setItemsPerPage] = useState(10);
   const [searchTerm, setSearchTerm] = useState('');
   const [currentPage, setCurrentPage] = useState(1);
